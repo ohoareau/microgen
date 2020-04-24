@@ -1,0 +1,36 @@
+{
+  "name": "@ohoareau/microgen",
+  "version": "0.8.2",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__",
+    "bin": "bin"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "templates"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
+    "gen": "./bin/microgen"
+  },
+  "dependencies": {
+    "ejs": "^3.0.2",
+    "fs-extra": "^8.1.0",
+    "stringify-object": "^3.3.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.663.0"
+  },
+  "bin": {
+    "microgen": "./bin/microgen"
+  }
+}

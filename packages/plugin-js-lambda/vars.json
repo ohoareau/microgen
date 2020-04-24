@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "description": "AWS Lambda project",
+  "url": "https://github.com",
+  "scripts": {
+    "build": "build-package",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@ohoareau/microlib": "^0.6.49"
+  },
+  "devDependencies": {
+    "jest": "^25.1.0",
+    "aws-sdk": "^2"
+  }
+}

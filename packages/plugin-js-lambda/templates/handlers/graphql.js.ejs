@@ -1,0 +1,45 @@
+const {ApolloServer, gql} = require('apollo-server-lambda');
+const r = n => {
+    const h = require(`./handlers/${n}`).handler;
+    return async (parent, params = {}, {event, context}, info) => {
+        const handlerEvent = {params};
+        (!!event && !!event.user) && (handlerEvent.user = event.user);
+        !!parent && (handlerEvent.params.parent = parent);
+        return h(handlerEvent, {...context, info});
+    };
+};
+const jwtSecret = String(process.env.JWT_SECRET || 'the-very-secret-secret');
+
+<% if ('undefined' !== typeof schemaFile) { -%>
+const typeDefs = gql(require('fs').readFileSync(`${__dirname}/<%- schemaFile -%>`, 'utf8'));
+<% } else { -%>
+const typeDefs = gql`
+<%- 'undefined' !== typeof schema ? schema : '' -%>
+`;
+<% } -%>
+
+const resolvers = {
+<% Object.entries((('undefined' !== typeof resolvers) ? resolvers : undefined) || {}).forEach(([typeName, queries]) => { -%>
+    <%- typeName -%>: {
+<% Object.entries(queries).forEach(([k, v]) => { -%>
+        <%- k -%>: r('<%- v -%>'),
+<% }) -%>
+    },
+<% }) -%>
+};
+
+const context = ({event, context, req}) => {
+    if (!!event && !!event.headers && !!event.headers.Authorization) {
+        event.user = require('jsonwebtoken').verify((event.headers.Authorization || '').split(' ')[1], jwtSecret);
+    }
+    return {event, context};
+};
+
+module.exports = {
+    handler: new ApolloServer({typeDefs, resolvers, context}).createHandler({
+        cors: {
+            origin: true,
+            credentials: true,
+        },
+    }),
+};

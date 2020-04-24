@@ -1,0 +1,16 @@
+<%- pre_init %>
+const <%- fnName -%> = async () => ({});
+<%- post_init %>
+<% var len = operations.reduce((acc, o) => o.length > acc ? o.length : acc, 0); -%>
+module.exports = {
+    handler: async (event, context) => {
+        let h;
+        switch ((event || {}).handler) {
+<% operations.forEach(operation => { -%>
+            case '<%- operation -%>': <%- ''.padStart(len - operation.length, ' ') %>h = require('.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/<%- 'undefined' !== typeof prefix ? `${prefix}_` : '' -%><%- operation -%>').handler; break;
+<% }) -%>
+            default: h = hn; break;
+        }
+        return h(event, context);
+    },
+};

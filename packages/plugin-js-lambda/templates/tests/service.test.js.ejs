@@ -1,0 +1,8 @@
+<% if (test.mocks) { test.mocks.forEach(mock => { %>jest.mock('<%- mock %>');
+<% }) } -%>
+const service = require('../../<%- directory ? `${directory.split('/').map(() => '..').join('/')}/${directory}/` : '' -%><%- name -%>');
+
+describe('', () => {
+    it('', () => {
+    });
+});

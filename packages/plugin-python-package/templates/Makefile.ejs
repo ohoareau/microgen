@@ -1,0 +1,52 @@
+env ?= dev
+pypi_repo = <%= pypi_repo %>
+
+all: install
+
+system-install:
+	@python3 -m pip install --upgrade pip
+	@python3 -m pip install --upgrade setuptools wheel twine
+
+create-venv:
+	@virtualenv venv
+
+clean-venv:
+	@virtualenv venv
+
+venv-activate:
+	@. venv/bin/activate
+
+venv-deactivate:
+	@deactivate
+
+pre-install: create-venv
+
+install:
+	@source venv/bin/activate && pip3 install -r requirements.txt
+
+install-test:
+	@source venv/bin/activate && pip3 install -r requirements.txt -i https://test.pypi.org/simple
+
+clean:
+	@rm -rf dist
+
+test:
+	@source venv/bin/activate && python -m unittest tests/*.py -v
+
+test-cov:
+	@source venv/bin/activate && python -m unittest tests/*.py -v
+
+test-ci:
+	@source venv/bin/activate && python -m unittest tests/*.py -v
+
+build: clean
+	@source venv/bin/activate && python3 setup.py sdist bdist_wheel
+
+deploy:
+	@source venv/bin/activate && twine upload --repository $(pypi_repo) dist/*
+
+.PHONY: all install test build clean deploy migrate<% if (true === deployable) { %>
+deploy:
+	@echo "todo"
+<% } %>
+.PHONY: all pre-install install test build clean<%- true === deployable ? ' deploy' : '' -%>

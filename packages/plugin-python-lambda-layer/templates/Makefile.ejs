@@ -1,0 +1,53 @@
+env ?= dev
+pypi_repo = <%= pypi_repo %>
+
+all: install
+
+create-venv:
+	@virtualenv venv
+
+clean-venv:
+	@virtualenv venv
+
+venv-activate:
+	@. venv/bin/activate
+
+venv-deactivate:
+	@deactivate
+
+pre-install: create-venv
+
+install:
+ifdef CI
+	@echo "Pre-installing virtual env for CI"
+	@make pre-install
+endif
+	@. ./venv/bin/activate && pip3 install -r requirements.txt
+
+install-test:
+	@. ./venv/bin/activate && pip3 install -r requirements.txt -i https://test.pypi.org/simple
+
+clean:
+	@rm -rf build
+
+test:
+	@. ./venv/bin/activate && python -m unittest tests/*.py -v
+
+test-cov:
+	@. ./venv/bin/activate && python -m unittest tests/*.py -v
+
+test-ci:
+	@. ./venv/bin/activate && python -m unittest tests/*.py -v
+
+build: clean
+	@mkdir -p build/temp/python
+	@. ./venv/bin/activate && pip3 install -r requirements.txt --target build/temp/python
+	@cd build/temp && zip -r9 ../layer.zip . >/dev/null
+	@rm -rf build/temp
+	@cd layer && zip -g ../build/layer.zip * >/dev/null
+
+<% if (true === deployable) { %>
+deploy:
+	@echo ""
+<% } %>
+.PHONY: all pre-install install test build clean<%- true === deployable ? ' deploy' : '' -%>

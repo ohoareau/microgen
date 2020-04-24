@@ -1,0 +1,1 @@
+export default () => ({type: 'string', validators: [{type: '@match', config: {pattern: '^[0-9]{4}[A-Z]{1}$', flags: 'i', message: 'Not a valid APE code'}}], upper: true})

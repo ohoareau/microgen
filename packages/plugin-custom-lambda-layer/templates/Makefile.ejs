@@ -1,0 +1,33 @@
+env ?= dev
+
+all: install
+
+pre-install:
+	@true
+
+install:
+	@sh ./bin/install
+
+install-test:
+	@true
+
+clean:
+	@sh ./bin/clean
+
+test:
+	@true
+
+test-cov:
+	@true
+
+test-ci:
+	@true
+
+build: clean
+	@sh ./bin/build
+
+<% if (true === deployable) { %>
+deploy:
+	@true
+<% } %>
+.PHONY: all pre-install install test build clean<%- true === deployable ? ' deploy' : '' -%>

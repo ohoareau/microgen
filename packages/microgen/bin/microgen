@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+require(`${__dirname}/../lib/index.js`).default(process.cwd(), ...process.argv.slice(2)).then(() => {}).catch(e => {
+    console.error(`Error: ${e.message}`);
+});

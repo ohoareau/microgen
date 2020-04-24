@@ -1,0 +1,54 @@
+const r = (handlerName, forcedParams = {}) => async (event = {}, context = {}) => {
+    let response = {statusCode: 200, body: '{}'};
+    try {
+<% if (('undefined' !== typeof jwt) && jwt) { -%>
+        event.headers && event.headers.Authorization && (event.user = require('jsonwebtoken').verify(
+            event.headers.Authorization.split(' ')[1],
+            String(process.env.JWT_SECRET || 'the-very-secret-secret')
+        ));
+<% } -%>
+        response.body = JSON.stringify(await require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/<%- 'undefined' !== typeof prefix ? `${prefix}_` : '' -%>${handlerName}`).handler({
+            user: event.user || undefined,
+            params: {
+                ...JSON.parse(event.body || '{}'),
+                ...(event.queryStringParameters || {}),
+                ...(event.pathParameters || {}),
+                ...forcedParams,
+            },
+        }, {...context}));
+    } catch (e) {
+<% var errorConfig = Object.entries(((('undefined' !== typeof errors) && errors) ? errors : undefined) || {}) -%>
+<% if (errorConfig.length) { -%>
+        response.statusCode = ('number' === typeof e.code) ? e.code : 500;
+        response.body = JSON.stringify(e.serialize ? e.serialize(): e.message);
+        switch (response.statusCode) {
+<% var len2 = errorConfig.reduce((acc, r) => `${r[0]}`.length > acc ? `${r[0]}`.length : acc, 0); -%>
+<% errorConfig.sort((a, b) => a[0] < b[0] ? -1 : (a[0] > b[0] ? 1 : 0)) -%>
+<% errorConfig.forEach(([k, v]) => { -%>
+            case <%- k -%>: <%- ''.padStart(len2 - `${k}`.length, ' ') %>response = {statusCode: <%- JSON.stringify(v.code) -%>, body: <%- JSON.stringify(v.message) -%>}; break;
+<% }) -%>
+        }
+<% } else { -%>
+        response.statusCode = ('number' === typeof e.code) ? e.code : 500;
+        response.body = JSON.stringify(e.serialize ? e.serialize(): e.message);
+<% } -%>
+    }
+    return response;
+};
+
+<%- pre_init %>
+const <%- fnName -%> = async () => { throw Object.assign(new Error('Not Found'), {code: 404}); };
+<%- post_init %>
+<% var len = Object.keys(routes).reduce((acc, r) => r.length > acc ? r.length : acc, 0); -%>
+module.exports = {
+    handler: async (event = {}, context = {}) => {
+        let h;
+        switch (`${event.httpMethod} ${event.resource}`) {
+<% Object.entries(routes).forEach(([k, v]) => { -%>
+            case '<%- k -%>': <%- ''.padStart(len - k.length, ' ') %>h = r('<%- 'string' === typeof v ? v : v.handler -%>'<%- 'string' === typeof v ? '' : (v.config ? `, ${JSON.stringify(v.config)}` : '') %>); break;
+<% }) -%>
+            default: h = hn; break;
+        }
+        return h(event, context);
+    },
+};

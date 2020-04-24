@@ -1,0 +1,1 @@
+export default () => ({type: 'string', validators: [{type: '@uuid'}]})

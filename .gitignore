@@ -1,0 +1,10 @@
+/.idea/
+node_modules/
+lerna-debug.log
+npm-debug.log
+/packages/*/lib/
+/packages/*/*/lib/
+coverage/
+/generated/*
+*.log
+*.tsbuildinfo
