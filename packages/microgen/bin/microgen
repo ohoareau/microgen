@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-require('yargonaut').style('green').font('Small Slant');
+require('yargonaut').style('green');
 
 const yargs = require('yargs');
 const {Generator} = require('..');
+const pkg = require('../package');
 
 yargs
     .scriptName('microgen')
@@ -15,6 +16,7 @@ yargs
             return {};
         }
     })
+    .count('verbose')
     .options({
         config: {
             alias: 'c',
@@ -30,9 +32,11 @@ yargs
         return await new Generator({
             ...argv.config,
             rootDir: process.cwd(),
+            verbose: argv.verbose,
         }).generate({
             targetDir: argv.target,
             write: true,
+            verbose: argv.verbose,
         });
     })
     .command('list-packages', 'list all the packages', {
@@ -40,14 +44,15 @@ yargs
         (await new Generator({
             ...argv.config,
             rootDir: process.cwd(),
+            verbose: argv.verbose,
         }).describePackages()).map(p => {
             console.log(`${p.name} (${p.type})`);
         })
     })
-    .alias('v', 'version')
-    .version(require('../package').version)
-    .describe('v', 'show version information')
+    .alias('v', 'verbose')
+    .version(pkg.version)
+    .describe('version', 'show version information')
     .help('h')
     .showHelpOnFail(false, "Specify --help for available options")
-    .epilog('copyright 2015')
+    .epilog(`copyright 2020 - ${pkg.author.name} <${pkg.author.email}>`)
     .argv

@@ -1,5 +1,8 @@
 class Package {
-    name = 'mylocaltype';
+    constructor(config) {
+        this.name = config.name;
+        this.packageType = config.packageType;
+    }
     generate() {
         return {
             ['dir1/file1.txt']: () => 'This is the content of the file',
@@ -8,6 +11,6 @@ class Package {
 }
 module.exports = class Plugin {
     register(g) {
-        g.registerPackager('mylocaltype', () => new Package());
+        g.registerPackager('mylocaltype', c => new Package(c));
     }
 }
