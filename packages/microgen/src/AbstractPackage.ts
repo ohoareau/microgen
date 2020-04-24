@@ -2,6 +2,7 @@ import IPackage from './IPackage';
 
 export type BasePackageConfig = {
     name: string,
+    packageType: string,
     sources?: string[],
     files?: {[key: string]: any},
     vars?: {[key: string]: any},
@@ -10,6 +11,7 @@ export type BasePackageConfig = {
 const fs = require('fs');
 
 export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageConfig> implements IPackage {
+    public readonly packageType: string;
     public readonly name: string;
     public readonly sources: string[];
     public readonly vars: {[key: string]: any};
@@ -17,9 +19,13 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
     constructor(config: C) {
         this.name = config.name;
+        this.packageType = config.packageType;
         this.sources = config.sources || [];
         this.files = config.files || {};
         this.vars = config.vars || {};
+    }
+    public getPackageType(): string {
+        return this.packageType;
     }
     public getName(): string {
         return this.name;
@@ -48,7 +54,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         }, {})));
         if (vars.write) {
             if (!vars.targetDir) throw new Error('No target directory specified');
-            const root = vars.configFileDir;
+            const root = vars.rootDir;
             await Promise.all(this.buildSources(vars, pluginCfg).map(async dir => {
                 if (!fs.existsSync(`${root}/${dir}`)) return [];
                 return Promise.all(fs.readdirSync(`${root}/${dir}`, {}).map(async f => {

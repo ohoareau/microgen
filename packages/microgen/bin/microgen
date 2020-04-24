@@ -1,4 +1,53 @@
 #!/usr/bin/env node
-require(`${__dirname}/../lib/index.js`).default(process.cwd(), ...process.argv.slice(2)).then(() => {}).catch(e => {
-    console.error(`Error: ${e.message}`);
-});
+
+require('yargonaut').style('green').font('Small Slant');
+
+const yargs = require('yargs');
+const {Generator} = require('..');
+
+yargs
+    .scriptName('microgen')
+    .usage('$0 <cmd> [args]')
+    .coerce('config', arg => {
+        try {
+            return require(require('fs').realpathSync(arg));
+        } catch (e) {
+            return {};
+        }
+    })
+    .options({
+        config: {
+            alias: 'c',
+            default: './microgen.js',
+        }
+    })
+    .command(['generate', '$0'], 'generate the packages directories', {
+        target: {
+            alias: 't',
+            default: './packages',
+        }
+    }, async (argv) => {
+        return await new Generator({
+            ...argv.config,
+            rootDir: process.cwd(),
+        }).generate({
+            targetDir: argv.target,
+            write: true,
+        });
+    })
+    .command('list-packages', 'list all the packages', {
+    }, async (argv) => {
+        (await new Generator({
+            ...argv.config,
+            rootDir: process.cwd(),
+        }).describePackages()).map(p => {
+            console.log(`${p.name} (${p.type})`);
+        })
+    })
+    .alias('v', 'version')
+    .version(require('../package').version)
+    .describe('v', 'show version information')
+    .help('h')
+    .showHelpOnFail(false, "Specify --help for available options")
+    .epilog('copyright 2015')
+    .argv

@@ -54,6 +54,6 @@ clean-buildinfo:
 	@find packages/ -name tsconfig.tsbuildinfo -exec rm -rf {} +
 
 fixture-gen:
-	@cd packages/$(p) && yarn --silent gen __fixtures__/$(f).js ../../generated/$(f)
+	@cd packages/$(p) && yarn --silent gen -c __fixtures__/$(f).js -t ../../generated/$(f)
 
 .PHONY: all install install-root install-packages test build publish clean-buildinfo clean-modules clean-lib clean-coverage clean package-build package-install package-test

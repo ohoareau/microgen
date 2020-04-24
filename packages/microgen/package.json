@@ -2,6 +2,23 @@
   "name": "@ohoareau/microgen",
   "version": "0.8.3",
   "license": "MIT",
+  "author": {
+    "email": "oha+oss@greenberets.io",
+    "name": "Olivier Hoareau",
+    "url": "https://github.com/ohoareau"
+  },
+  "bugs": {
+    "email": "oha+oss@greenberets.io",
+    "url": "https://github.com/ohoareau/microgen/issues"
+  },
+  "contributors": [
+    {
+      "email": "oha+oss@greenberets.io",
+      "name": "Olivier Hoareau"
+    }
+  ],
+  "description": "MicroGen",
+  "homepage": "https://github.com/ohoareau/microgen/wiki",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "directories": {
@@ -25,7 +42,9 @@
   "dependencies": {
     "ejs": "^3.0.2",
     "fs-extra": "^8.1.0",
-    "stringify-object": "^3.3.0"
+    "stringify-object": "^3.3.0",
+    "yargs": "^15.3.1",
+    "yargonaut": "^1.1.4"
   },
   "devDependencies": {
     "aws-sdk": "^2.663.0"

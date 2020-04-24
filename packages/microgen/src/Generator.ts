@@ -39,6 +39,7 @@ export class Generator implements IGenerator {
             generator: 'microgen',
             license: 'MIT',
             date: new Date().toISOString(),
+            rootDir: this.rootDir,
             ...vars,
         };
         this.packages = packages;
@@ -82,6 +83,14 @@ export class Generator implements IGenerator {
         if (!this.packageEventHooks[packageType][eventType]) this.packageEventHooks[packageType][eventType] = [];
         this.packageEventHooks[packageType][eventType].push(hook);
     }
+    async describePackages(): Promise<any[]> {
+        return (await this.prepare()).map((p: any) => {
+            return {
+                name: p.getName ? p.getName() : p.name,
+                type: p.getPackageType ? p.getPackageType() : p.packageType,
+            };
+        });
+    }
     protected applyPackageEventHooks(p: IPackage, eventType: string, data: any = {}): void {
         let hooks = <Function[]>[];
         const packageType = p.getName ? p.getName() : (p['name'] ? p['name'] : undefined);
@@ -123,7 +132,7 @@ export class Generator implements IGenerator {
             ([name, {type, ...c}]: [string, any]) => {
                 if (!type) throw new Error(`No type specified for package '${name}'`);
                 if (!this.packagers[type]) throw new Error(`Unsupported package type '${type}'`);
-                const p = this.packagers[type]({...c, name, vars: {...this.vars, ...(c.vars || {})}});
+                const p = this.packagers[type]({...c, packageType: type, name, vars: {...this.vars, ...(c.vars || {})}});
                 this.applyPackageEventHooks(p, 'created');
                 return p;
             }
