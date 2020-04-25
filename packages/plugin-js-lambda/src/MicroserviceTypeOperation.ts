@@ -6,11 +6,12 @@ export type MicroserviceTypeOperationConfig = {
     name: string,
     type: string|undefined,
     middlewares: string[],
-    backend: string|{name: string, method?: string, args?: string[]},
+    backend: string|{name: string, method?: string, args?: string[], [key: string]: any},
     vars: {[key: string]: any},
     prefetch: string[],
     hooks: {[key: string]: any[]},
     handler: boolean,
+    wrap?: any,
 };
 
 export default class MicroserviceTypeOperation {

@@ -35,7 +35,20 @@ export default class MicroserviceType {
         this.microservice = microservice;
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
-        this.rawOperations = operations;
+        this.rawOperations = Object.entries(operations).reduce((acc, [k, v]) => {
+            const c = {...v};
+            if (c.wrap) {
+                if ('string' === typeof c.wrap) {
+                    c.backend = {name: 'raw', value: c.wrap};
+                } else if (Array.isArray(c.wrap)) {
+                    c.backend = {name: 'this', method: c.wrap[0], args: c.wrap.slice(1)};
+                } else {
+                    throw new Error(`Unknown wrap format for microservice '${microservice.name}' type '${name}' and operation '${k}': ${c.wrap}`);
+                }
+            }
+            acc[k] = c;
+            return acc;
+        }, {});
         this.functions = functions;
         this.model = new SchemaParser().parse({name: this.name, attributes, operations});
         this.backends = (<any>backends).reduce((acc, b) => {
@@ -220,6 +233,8 @@ export default class MicroserviceType {
                 return value ? `${async ? 'await ' : ''}${value}` : '{}';
             case 'none':
                 return value ? `${async ? 'await ' : ''}${value}` : '{}';
+            case 'raw':
+                return value || '{}';
             default:
                 return `${async ? 'await ' : ''}${prefix}${name}.${method}(${args.join(', ')})`;
         }
