@@ -35,7 +35,7 @@ export default class MicroserviceType {
         this.microservice = microservice;
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
-        this.rawOperations = Object.entries(operations).reduce((acc, [k, v]) => {
+        operations = Object.entries(operations).reduce((acc, [k, v]) => {
             const c = {...v};
             if (c.wrap) {
                 if ('string' === typeof c.wrap) {
@@ -49,6 +49,7 @@ export default class MicroserviceType {
             acc[k] = c;
             return acc;
         }, {});
+        this.rawOperations = operations;
         this.functions = functions;
         this.model = new SchemaParser().parse({name: this.name, attributes, operations});
         this.backends = (<any>backends).reduce((acc, b) => {
