@@ -5,6 +5,9 @@
     "outDir": "./lib",
     "composite": true
   },
+  "references": [
+    { "path": "../microgen" }
+  ],
   "include": [
     "./src"
   ]

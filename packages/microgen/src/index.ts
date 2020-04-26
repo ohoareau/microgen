@@ -1,7 +1,8 @@
-export * from './Generator';
+export * from './MicroGen';
 export * from './IGenerator';
-export * from './Generator';
+export * from './MicroGen';
 export * from './IPackage';
 export * from './IPlugin';
 export * from './AbstractPackage';
-export {default as default} from './Generator';
+export * from './Cli';
+export {default as default} from './MicroGen';

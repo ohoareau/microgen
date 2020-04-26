@@ -33,12 +33,36 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     protected getTemplateRoot(): string {
         return '_no-template-root_';
     }
+    protected async buildFiles(vars: any, cfg: any): Promise<any> {
+        const files = Object.entries(await this.buildFilesFromTemplates(vars, cfg)).reduce((acc, [k, v]) => {
+            acc[k] = ({renderFile}) => renderFile(cfg)(true === v ? `${k}.ejs` : v, vars);
+            return acc;
+        }, {});
+        return Object.assign(files, await this.buildDynamicFiles(vars, cfg));
+    }
     // noinspection JSUnusedLocalSymbols
-    protected buildFiles(vars: any, cfg: any): any {
+    protected buildFilesFromTemplates(vars: any, cfg: any): any {
+        return {};
+    }
+    // noinspection JSUnusedLocalSymbols
+    protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {};
     }
     protected buildVars(vars: any): any {
-        return {deployable: false, name: this.name, ...this.vars, ...vars};
+        const v = Object.assign(
+            {},
+            {deployable: false, name: this.name},
+            this.buildDefaultVars(vars),
+            {...this.vars, ...vars},
+        );
+        !!v.author && ('object' === typeof v.author) && (v.author = v.author.name);
+        !!v.author && ('object' === typeof v.author) && (v.author_email = v.author.email);
+
+        return v;
+    }
+    // noinspection JSUnusedLocalSymbols
+    protected buildDefaultVars(vars: any): any {
+        return {};
     }
     // noinspection JSUnusedLocalSymbols
     protected buildSources(vars: any, cfg: any): any[] {
@@ -47,7 +71,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
         const pluginCfg = {templatePath: this.getTemplateRoot()};
         vars = this.buildVars(vars);
-        const files = this.buildFiles(vars, pluginCfg);
+        const files = await this.buildFiles(vars, pluginCfg);
         Object.assign(files, (Object.entries(this.files).reduce((acc, [k, v]) => {
             acc[k] = 'string' === typeof v ? (() => v) : (({renderFile}) => renderFile(pluginCfg)((v as any).template, v));
             return acc;

@@ -1,13 +1,6 @@
 import IPackage from './IPackage';
 import IPlugin, {PluginConfig} from './IPlugin';
 
-export type GeneratorConfig = {
-    rootDir: string,
-    vars?: any,
-    plugins?: (PluginConfig|string)[],
-    packages?: {[key: string]: any},
-};
-
 export interface IGenerator {
     getRootDir(): string;
     registerPlugin(plugin: IPlugin);

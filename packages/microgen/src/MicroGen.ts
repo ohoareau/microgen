@@ -1,31 +1,21 @@
-import ejs from 'ejs';
 import IPackage from './IPackage';
-import stringifyObject from 'stringify-object';
+import IGenerator from './IGenerator';
 import IPlugin, {PluginConfig} from './IPlugin';
-import IGenerator, {GeneratorConfig} from './IGenerator';
+import {render, renderFile, jsStringify, copy, writeFile} from './utils';
+import FilesPlugin from './plugins/files';
 
 const fs = require('fs');
-const fse = require('fs-extra');
-const path = require('path');
 
-const jsStringify = (o, inline = false, indentSize = 4) => stringifyObject(o, {indent: ''.padEnd(indentSize), singleQuotes: true, inlineCharacterLimit: 'number' !== typeof inline ? undefined : inline});
-const indent = (t, offset = 4) => (t || '').split(/\n/g).map(x => `${x ? ''.padEnd(offset) : ''}${x}`).join("\n");
-const render = (string, vars = {}, options = {}) => ejs.render(string, {indent, jsStringify, ...vars}, options);
-const renderFile = ({templatePath}) => (path, vars = {}) => {
-    const filename = `${templatePath}/${path}`;
-    return render(fs.readFileSync(filename, 'utf8'), vars, {filename});
-};
-const copy = (source, target) => {
-    fse.copySync(source, target);
-    return true;
-};
-const writeFile = (target, content) => {
-    fs.mkdirSync(path.dirname(target), {recursive: true});
-    fs.writeFileSync(target, content);
-    return true;
+export type GeneratorConfig = {
+    rootDir: string,
+    vars?: any,
+    plugins?: (PluginConfig|string)[],
+    packages?: {[key: string]: any},
 };
 
-export class Generator implements IGenerator {
+export type MicroGenConfig = GeneratorConfig & {}
+
+export class MicroGen implements IGenerator {
     public readonly plugins: IPlugin[] = [];
     public readonly packagers: {[key: string]: (config: any) => IPackage} = {};
     public readonly packages: {[key: string]: any} = {};
@@ -33,14 +23,16 @@ export class Generator implements IGenerator {
     public readonly defaultPackagerName: string = 'js_lambda';
     public readonly rootDir: string
     protected readonly packageEventHooks = {};
-    constructor({rootDir, plugins = [], packages = {}, vars = {}}: GeneratorConfig) {
+    constructor({rootDir, plugins = [], packages = {}, vars = {}}: MicroGenConfig) {
         this.rootDir = rootDir;
         this.vars = {
             generator: 'microgen',
             license: 'MIT',
             date: new Date().toISOString(),
             rootDir: this.rootDir,
+            defaultPackageType: 'files',
             ...vars,
+            verbose: vars.verbose || process.env.MICROGEN_VERBOSE || 0,
         };
         this.packages = packages;
         const localPlugin = `${rootDir}/.microgen`;
@@ -51,6 +43,7 @@ export class Generator implements IGenerator {
             // nothing to do, local plugin does not exist.
         }
         this.loadPlugins(plugins);
+        this.registerPlugin(new FilesPlugin());
     }
     protected loadPlugins(plugins: any[]): void {
         plugins.forEach(p => {
@@ -130,7 +123,10 @@ export class Generator implements IGenerator {
     private async prepare(): Promise<IPackage[]> {
         return Object.entries(this.packages).map(
             ([name, {type, ...c}]: [string, any]) => {
-                if (!type) throw new Error(`No type specified for package '${name}'`);
+                if (!type) {
+                    if (!this.vars.defaultPackageType) throw new Error(`No type specified for package '${name}'`);
+                    type = this.vars.defaultPackageType;
+                }
                 if (!this.packagers[type]) throw new Error(`Unsupported package type '${type}'`);
                 const p = this.packagers[type]({...c, packageType: type, name, vars: {...this.vars, ...(c.vars || {})}});
                 this.applyPackageEventHooks(p, 'created');
@@ -140,6 +136,7 @@ export class Generator implements IGenerator {
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
         const packages = await this.prepare();
+        vars.verbose = vars.verbose || process.env.MICROGEN_VERBOSE || 0;
         const {write = false, targetDir} = vars;
         const result = (await Promise.all(packages.map(async p => {
             const n = (<any>p).getName ? (<any>p).getName() : p['name'];
@@ -171,6 +168,9 @@ export class Generator implements IGenerator {
         });
         return result;
     }
+    init(): void {
+        console.log('@todo');
+    }
     createPackageHelpers(name, vars) {
         return {
             render,
@@ -181,4 +181,4 @@ export class Generator implements IGenerator {
     }
 }
 
-export default Generator
+export default MicroGen

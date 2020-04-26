@@ -1,5 +1,6 @@
-import {IGenerator, IPlugin} from '@ohoareau/microgen';
+import IPlugin from '../../IPlugin';
 import Package from './Package';
+import IGenerator from '../../IGenerator';
 
 export default class Plugin implements IPlugin {
     register(generator: IGenerator): void {

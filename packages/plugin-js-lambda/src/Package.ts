@@ -47,6 +47,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
         this.events[event].push(listener);
         return this;
     }
+    // noinspection JSUnusedGlobalSymbols
     registerExternalEventListener(event, listener) {
         this.externalEvents[event] = this.externalEvents[event] || [];
         this.externalEvents[event].push(listener);
@@ -55,6 +56,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
     getEventListeners(event) {
         return this.events[event] || [];
     }
+    // noinspection JSUnusedGlobalSymbols
     getExternalEventListeners(event) {
         return this.externalEvents[event] || [];
     }
@@ -81,7 +83,18 @@ export default class Package extends AbstractPackage<PackageConfig> {
         };
         return vars;
     }
-    protected async buildFiles(vars: any, cfg: any): Promise<any> {
+    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+    protected buildFilesFromTemplates(vars: any, cfg: any): any {
+        return {
+            ['LICENSE.md']: true,
+            ['README.md']: true,
+            ['.gitignore']: true,
+            ['Makefile']: true,
+            ['package-excludes.lst']: true,
+        };
+    }
+    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+    protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         const files = (await Promise.all(Object.values(this.handlers).map(async h => h.generate(vars)))).reduce((acc, f) => ({...acc, ...f}), {
             ['package.json']: () => JSON.stringify({
                 name: vars.name,
@@ -94,10 +107,6 @@ export default class Package extends AbstractPackage<PackageConfig> {
                 author: vars.author,
                 private: true,
             }, null, 4),
-            ['LICENSE.md']: ({renderFile}) => renderFile(cfg)('LICENSE.md.ejs', vars),
-            ['README.md']: ({renderFile}) => renderFile(cfg)('README.md.ejs', vars),
-            ['.gitignore']: ({renderFile}) => renderFile(cfg)('.gitignore.ejs', vars),
-            ['Makefile']: ({renderFile}) => renderFile(cfg)('Makefile.ejs', vars),
         });
         const objects: any = (<any[]>[]).concat(
             Object.values(this.microservices),
@@ -113,7 +122,6 @@ export default class Package extends AbstractPackage<PackageConfig> {
         if (this.externalEvents && !!Object.keys(this.externalEvents).length) {
             files['models/externalEvents.js'] = ({jsStringify}) => `module.exports = ${jsStringify(this.externalEvents, 100)};`
         }
-        files['package-excludes.lst'] = ({renderFile}) => renderFile(cfg)('package-excludes.lst.ejs');
 
         return files;
     }
