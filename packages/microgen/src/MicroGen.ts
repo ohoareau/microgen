@@ -1,8 +1,8 @@
 import IPackage from './IPackage';
 import IGenerator from './IGenerator';
+import FilesPlugin from './plugins/files';
 import IPlugin, {PluginConfig} from './IPlugin';
 import {render, renderFile, jsStringify, copy, writeFile} from './utils';
-import FilesPlugin from './plugins/files';
 
 const fs = require('fs');
 
@@ -169,7 +169,14 @@ export class MicroGen implements IGenerator {
         return result;
     }
     init(): void {
-        console.log('@todo');
+        writeFile(
+            `${this.rootDir}/microgen.js`,
+            renderFile({templatePath: `${__dirname}/../templates`})('microgen.js.ejs', {config: jsStringify({
+                plugins: [],
+                vars: {},
+                packages: {},
+            })})
+        );
     }
     createPackageHelpers(name, vars) {
         return {
