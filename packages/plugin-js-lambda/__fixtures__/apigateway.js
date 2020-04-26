@@ -19,9 +19,9 @@ module.exports = {
                             'GET /user': 'user_user_getCurrent',
                             'POST /user': 'user_user_create',
                             'GET /users/:id': 'user_user_get',
-                            'PUT /users/:id': 'user_user_update',
+                            'PUT /users/:id': {handler: 'user_user_update', code: 204},
                             'DELETE /users/:id': 'user_user_delete',
-                            'POST /some-non/standard/:route/:with/id': 'user_user_mySpecificMethod',
+                            'POST /non-standard/:route/name': 'user_user_mySpecificMethod',
                         }
                     }
                 },

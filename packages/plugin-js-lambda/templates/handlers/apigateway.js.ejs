@@ -1,5 +1,5 @@
-const r = (handlerName, forcedParams = {}) => async (event = {}, context = {}) => {
-    let response = {statusCode: 200, body: '{}'};
+const r = (statusCode, handlerName, forcedParams = {}) => async (event = {}, context = {}) => {
+    let response = {statusCode, body: '{}'};
     try {
 <% if (('undefined' !== typeof jwt) && jwt) { -%>
         event.headers && event.headers.Authorization && (event.user = require('jsonwebtoken').verify(
@@ -11,8 +11,8 @@ const r = (handlerName, forcedParams = {}) => async (event = {}, context = {}) =
             user: event.user || undefined,
             params: {
                 ...JSON.parse(event.body || '{}'),
-                ...(event.queryStringParameters || {}),
-                ...(event.pathParameters || {}),
+                ...(event['queryStringParameters'] || {}),
+                ...(event['pathParameters'] || {}),
                 ...forcedParams,
             },
         }, {...context}));
@@ -36,6 +36,7 @@ const r = (handlerName, forcedParams = {}) => async (event = {}, context = {}) =
     return response;
 };
 
+// noinspection JSUnusedLocalSymbols
 <%- pre_init %>
 const <%- fnName -%> = async () => { throw Object.assign(new Error('Not Found'), {code: 404}); };
 <%- post_init %>
@@ -45,7 +46,8 @@ module.exports = {
         let h;
         switch (`${event.httpMethod} ${event.resource}`) {
 <% Object.entries(routes).forEach(([k, v]) => { -%>
-            case '<%- k -%>': <%- ''.padStart(len - k.length, ' ') %>h = r('<%- 'string' === typeof v ? v : v.handler -%>'<%- 'string' === typeof v ? '' : (v.config ? `, ${JSON.stringify(v.config)}` : '') %>); break;
+<% var m = k.split(' ').shift().toUpperCase() -%>
+            case '<%- k -%>': <%- ''.padStart(len - k.length, ' ') %>h = r(<%- (('string' === typeof v) || !v.code) ? (m === 'GET' ? 200 : (m === 'POST' ? 201 : (m === 'DELETE' ? 204 : (m === 'PUT' ? 200 : 200)))) : v.code -%>, '<%- 'string' === typeof v ? v : v.handler -%>'<%- 'string' === typeof v ? '' : (v.config ? `, ${JSON.stringify(v.config)}` : '') %>); break;
 <% }) -%>
             default: h = hn; break;
         }
