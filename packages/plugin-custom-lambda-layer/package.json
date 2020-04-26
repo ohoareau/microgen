@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-custom-lambda-layer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +24,7 @@
     "@ohoareau/microgen": "^0.8.0"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.8.6",
+    "@ohoareau/microgen": "^0.8.7",
     "aws-sdk": "^2.663.0"
   }
 }
