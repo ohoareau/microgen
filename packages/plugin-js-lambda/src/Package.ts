@@ -66,8 +66,8 @@ export default class Package extends AbstractPackage<PackageConfig> {
     protected buildVars(vars: any): any {
         const staticVars = require('../vars.json');
         vars = {...staticVars, ...super.buildVars(vars)};
-        vars.author_email = vars.author ? vars.author.email : 'Confidential';
-        vars.author = vars.author ? `${vars.author.name} <${vars.author.email}>` : 'Confidential';
+        vars.author_email = (vars.author && 'object' === typeof vars.author) ? vars.author.email : 'Confidential';
+        vars.author = (vars.author && 'object' === typeof vars.author) ? `${vars.author.name} <${vars.author.email}>` : (vars.author || 'Confidential');
         vars.scripts = {
             ...staticVars.scripts,
             ...(vars.deployable ? {deploy: 'deploy-package'} : {}),

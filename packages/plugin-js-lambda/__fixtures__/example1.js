@@ -3,10 +3,7 @@ module.exports = {
         '@js-lambda',
     ],
     vars: {
-        author: {
-            name: 'Olivier Hoareau',
-            email: 'oha@greenberets.io',
-        },
+        author: 'Olivier Hoareau <oha+oss@greenberets.io>',
     },
     packages: {
         p0: {

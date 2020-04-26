@@ -49,16 +49,12 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         return {};
     }
     protected buildVars(vars: any): any {
-        const v = Object.assign(
+        return Object.assign(
             {},
             {deployable: false, name: this.name},
             this.buildDefaultVars(vars),
             {...this.vars, ...vars},
         );
-        !!v.author && ('object' === typeof v.author) && (v.author = v.author.name);
-        !!v.author && ('object' === typeof v.author) && (v.author_email = v.author.email);
-
-        return v;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildDefaultVars(vars: any): any {
