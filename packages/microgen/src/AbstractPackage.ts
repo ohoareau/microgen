@@ -48,13 +48,28 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {};
     }
+    protected getDefaultCommonVars(): any {
+        return {
+            deployable: false,
+            name: this.name,
+            version: '1.0.0',
+            description: 'Package',
+            dependencies: {},
+        }
+    }
+    protected buildDefaultAutomaticVars(vars: any): any {
+        return {
+            author_email: vars.author_email || (vars.author && 'object' === typeof vars.author) ? vars.author.email : 'Confidential',
+            author_name: vars.author_name || (vars.author && 'object' === typeof vars.author) ? vars.author.name : (vars.author || 'Confidential'),
+            author_full: vars.author_full || (vars.author && 'object' === typeof vars.author) ? `${vars.author.name} <${vars.author.email}>` : (vars.author || 'Confidential'),
+        };
+    }
     protected buildVars(vars: any): any {
-        return Object.assign(
-            {},
-            {deployable: false, name: this.name},
-            this.buildDefaultVars(vars),
-            {...this.vars, ...vars},
-        );
+        const vv = Object.assign({}, this.getDefaultCommonVars(), vars);
+        Object.assign(vv, this.buildDefaultAutomaticVars(vv));
+        Object.assign(vv, this.buildDefaultVars(vv));
+        Object.assign(vv, this.vars);
+        return Object.assign(vv, vars);
     }
     // noinspection JSUnusedLocalSymbols
     protected buildDefaultVars(vars: any): any {

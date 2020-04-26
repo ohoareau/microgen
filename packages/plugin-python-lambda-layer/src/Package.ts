@@ -7,13 +7,9 @@ export default class Package extends AbstractPackage {
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildDefaultVars(vars: any): any {
         return {
-            version: '1.0.0',
-            author: 'Confidential',
-            author_email: 'Confidential',
             description: 'Python AWS Lambda Layer',
             url: 'https://github.com',
             pypi_repo: 'pypi',
-            dependencies: {},
         };
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols

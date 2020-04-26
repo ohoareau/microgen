@@ -3,7 +3,10 @@ module.exports = {
         '@js-lambda',
     ],
     vars: {
-        author: 'Olivier Hoareau <oha+oss@greenberets.io>',
+        author: {
+            name: 'Olivier Hoareau',
+            email: 'oha+oss@greenberets.io',
+        },
         locked: {
             'api/abcd/def.js': true,
         }
