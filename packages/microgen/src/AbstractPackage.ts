@@ -59,9 +59,9 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     }
     protected buildDefaultAutomaticVars(vars: any): any {
         return {
-            author_email: vars.author_email || (vars.author && 'object' === typeof vars.author) ? vars.author.email : 'Confidential',
-            author_name: vars.author_name || (vars.author && 'object' === typeof vars.author) ? vars.author.name : (vars.author || 'Confidential'),
-            author_full: vars.author_full || (vars.author && 'object' === typeof vars.author) ? `${vars.author.name} <${vars.author.email}>` : (vars.author || 'Confidential'),
+            author_email: vars.author_email || ((vars.author && 'object' === typeof vars.author) ? vars.author.email : 'Confidential'),
+            author_name: vars.author_name || ((vars.author && 'object' === typeof vars.author) ? vars.author.name : (vars.author || 'Confidential')),
+            author_full: vars.author_full || ((vars.author && 'object' === typeof vars.author) ? `${vars.author.name} <${vars.author.email}>` : (vars.author || 'Confidential')),
         };
     }
     protected buildVars(vars: any): any {
