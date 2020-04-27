@@ -16,8 +16,8 @@ module.exports = {
                     type: 'apigateway',
                     vars: {
                         routes: {
-                            'GET /user': 'user_user_getCurrent',
-                            'POST /user': 'user_user_create',
+                            'GET /user': '<private>user_user_getCurrent',
+                            'POST /user': '<private>user_user_create',
                             'GET /users/:id': 'user_user_get',
                             'PUT /users/:id': {handler: 'user_user_update', code: 204},
                             'DELETE /users/:id': 'user_user_delete',

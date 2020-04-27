@@ -1,5 +1,46 @@
-const r = (statusCode, handlerName, forcedParams = {}) => async (event = {}, context = {}) => {
-    let response = {statusCode, body: '{}'};
+<% var parseRoute = (k, v) => {
+    v = {private: false, config: {}, options: {}, handler: 'unknown', method: k.split(' ').shift().toUpperCase(), ...('string' === typeof v ? {handler: v} : v)};
+    if (!v.code || ((v.code < 200) || (v.code >= 600))) {
+        switch (v.method) {
+            case 'GET': v.code = 200; break;
+            case 'POST': v.code = 201; break;
+            case 'DELETE': v.code = 204; break;
+            case 'PUT': v.code = 200; break;
+            default: v.code = 200; break;
+        }
+    }
+    if ('<private>' === v.handler.slice(0, '<private>'.length)) {
+        v.handler = v.handler.slice('<private>'.length);
+        v.private = true;
+    }
+    if (false !== v.private) v.options.private = v.private;
+    delete v.private;
+    if (0 === Object.keys(v.config).length) delete v.config;
+    if (0 === Object.keys(v.options).length) delete v.options;
+    return v;
+} -%>
+// noinspection JSUnusedLocalSymbols
+<%- pre_init %>
+const <%- fnName -%> = async () => { throw Object.assign(new Error('Not Found'), {code: 404}); };
+<%- post_init %>
+<% var len = Object.keys(routes).reduce((acc, r) => r.length > acc ? r.length : acc, 0); -%>
+module.exports = {
+    handler: async (event = {}, context = {}) => {
+        let h;
+        switch (`${event.httpMethod} ${event.resource}`) {
+<% Object.entries(routes).forEach(([k, v]) => { -%>
+<% var r = parseRoute(k, v) -%>
+            case '<%- k -%>': <%- ''.padStart(len - k.length, ' ') %>h = r(<%- r.code -%>, '<%- r.handler -%>'<% if (r.options || r.config) { %>, <%- JSON.stringify(r.options) -%><% if (r.config) { %>, <%- JSON.stringify(r.config) -%><% } %><% } %>); break;
+<% }) -%>
+            default: h = hn; break;
+        }
+        return h(event, context);
+    },
+};
+
+// helpers
+const r = (code, name, options = {}, forcedParams = {}) => async (event = {}, context = {}) => {
+    let response = {statusCode: code, body: '{}'};
     try {
 <% if (('undefined' !== typeof jwt) && jwt) { -%>
         event.headers && event.headers.Authorization && (event.user = require('jsonwebtoken').verify(
@@ -7,7 +48,12 @@ const r = (statusCode, handlerName, forcedParams = {}) => async (event = {}, con
             String(process.env.JWT_SECRET || 'the-very-secret-secret')
         ));
 <% } -%>
-        response.body = JSON.stringify(await require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/<%- 'undefined' !== typeof prefix ? `${prefix}_` : '' -%>${handlerName}`).handler({
+        if (options.private && !event.user) {
+            const e = new Error('Unauthorized'); e.code = 401;
+            // noinspection ExceptionCaughtLocallyJS
+            throw e;
+        }
+        response.body = JSON.stringify(await require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/<%- 'undefined' !== typeof prefix ? `${prefix}_` : '' -%>${name}`).handler({
             user: event.user || undefined,
             params: {
                 ...JSON.parse(event.body || '{}'),
@@ -34,23 +80,4 @@ const r = (statusCode, handlerName, forcedParams = {}) => async (event = {}, con
 <% } -%>
     }
     return response;
-};
-
-// noinspection JSUnusedLocalSymbols
-<%- pre_init %>
-const <%- fnName -%> = async () => { throw Object.assign(new Error('Not Found'), {code: 404}); };
-<%- post_init %>
-<% var len = Object.keys(routes).reduce((acc, r) => r.length > acc ? r.length : acc, 0); -%>
-module.exports = {
-    handler: async (event = {}, context = {}) => {
-        let h;
-        switch (`${event.httpMethod} ${event.resource}`) {
-<% Object.entries(routes).forEach(([k, v]) => { -%>
-<% var m = k.split(' ').shift().toUpperCase() -%>
-            case '<%- k -%>': <%- ''.padStart(len - k.length, ' ') %>h = r(<%- (('string' === typeof v) || !v.code) ? (m === 'GET' ? 200 : (m === 'POST' ? 201 : (m === 'DELETE' ? 204 : (m === 'PUT' ? 200 : 200)))) : v.code -%>, '<%- 'string' === typeof v ? v : v.handler -%>'<%- 'string' === typeof v ? '' : (v.config ? `, ${JSON.stringify(v.config)}` : '') %>); break;
-<% }) -%>
-            default: h = hn; break;
-        }
-        return h(event, context);
-    },
 };
