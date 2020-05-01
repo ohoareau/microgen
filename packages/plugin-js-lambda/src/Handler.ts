@@ -4,7 +4,8 @@ import stringifyObject from 'stringify-object';
 export type HandlerConfig = {
     name: string,
     type: string,
-    middlewares: string[],
+    middlewares?: string[],
+    errorMiddlewares?: string[],
     params: {[key: string]: any},
     test?: TestFileConfig,
     vars: {[key: string]: any},
@@ -16,16 +17,18 @@ export default class Handler {
     public readonly name: string;
     public readonly type: string;
     public readonly middlewares: string[];
+    public readonly errorMiddlewares: string[];
     public readonly params: {[key: string]: any};
     public readonly vars: {[key: string]: any};
     public readonly test: TestFile|undefined;
     public readonly directory: string;
     public readonly custom: boolean;
-    constructor({name, type, middlewares = [], params = {}, directory, custom = false, vars = {}, test = undefined}: HandlerConfig) {
+    constructor({name, type, middlewares = [], errorMiddlewares = [], params = {}, directory, custom = false, vars = {}, test = undefined}: HandlerConfig) {
         this.name = name;
         this.type = type;
         this.params = {o: name, ...params};
         this.middlewares = middlewares;
+        this.errorMiddlewares = errorMiddlewares;
         this.vars = vars;
         this.directory = directory;
         this.custom = !!custom;
@@ -52,22 +55,58 @@ export default class Handler {
         const cfg = {templatePath: `${__dirname}/../templates`};
         if (this.custom) return {};
         const fnName = vars.fnName || `fn`;
-        const realMiddlewares = this.middlewares.map((m, i) => `m${i + 1}`);
         const offsetDir = this.directory ? this.directory.split('/').map(() => '..').join('/') : '.';
-        const pre_init = [
-            `const cf = ${stringifyObject(this.params, {indent: '', inlineCharacterLimit: 1024, singleQuotes: true})};`,
-            ...this.middlewares.map((m, i) => {
-                if ('@' === m.substr(0, 1)) {
-                    return `const m${i + 1} = require('@ohoareau/microlib/lib/middlewares/${m.substr(1)}').default(cf);`
-                }
-                return `const m${i + 1} = require('${offsetDir}/middlewares/${m}')(cf);`
-            }),
-        ].join("\n");
+        const globalCfg: any = {hasMiddlewares: false, hasErrorMiddlewares: false, middlewares: [], errorMiddlewares: []};
+        const pre_init = ({cnf: needCnf = undefined, middlewares = [], errorMiddlewares = [], config = {}, middlewaresConfigs = {}, errorMiddlewaresConfigs = {}} = {}) => {
+            globalCfg.middlewares = [...this.middlewares, ...middlewares];
+            globalCfg.errorMiddlewares = [...this.errorMiddlewares, ...errorMiddlewares];
+            globalCfg.hasMiddlewares = !!globalCfg.middlewares.length;
+            globalCfg.hasErrorMiddlewares = !!globalCfg.errorMiddlewares.length;
+            const cnf = {...this.params, ...config};
+            const cfrms = {};
+            const cfems = {};
+            needCnf = ((true === needCnf) || globalCfg.hasMiddlewares || globalCfg.hasErrorMiddlewares) as any;
+            const x = [
+                needCnf && `const cnf = ${stringifyObject(cnf, {indent: '', inlineCharacterLimit: 1024, singleQuotes: true})};`,
+                ...globalCfg.middlewares.map((m, i) => {
+                    if (middlewaresConfigs[m] && Object.keys(middlewaresConfigs[m]).length) {
+                        cfrms[m] = middlewaresConfigs[m];
+                        return `const rc${i + 1} = ${this.prepareMiddlewareCf(m, middlewaresConfigs)};`
+                    }
+                    return undefined;
+                }),
+                ...globalCfg.errorMiddlewares.map((m, i) => {
+                    if (errorMiddlewaresConfigs[m] && Object.keys(errorMiddlewaresConfigs[m]).length) {
+                        cfems[m] = errorMiddlewaresConfigs[m];
+                        return `const ec${i + 1} = ${this.prepareMiddlewareCf(m, errorMiddlewaresConfigs)};`
+                    }
+                    return undefined;
+                }),
+                ...globalCfg.middlewares.map((m, i) => {
+                    if ('@' === m.substr(0, 1)) {
+                        return `const rm${i + 1} = require('@ohoareau/microlib/lib/middlewares/${m.substr(1)}').default(${cfrms[m] ? `rc${i + 1}` : 'cnf'});`
+                    } else if (':' === m.substr(0, 1)) {
+                        return undefined;
+                    }
+                    return `const rm${i + 1} = require('${offsetDir}/middlewares/${m}')(${cfrms[m] ? `rc${i + 1}` : 'cnf'});`
+                }),
+                ...globalCfg.errorMiddlewares.map((m, i) => {
+                    if ('@' === m.substr(0, 1)) {
+                        return `const em${i + 1} = require('@ohoareau/microlib/lib/error-middlewares/${m.substr(1)}').default(${cfems[m] ? `ec${i + 1}` : 'cnf'});`
+                    } else if (':' === m.substr(0, 1)) {
+                        return undefined;
+                    }
+                    return `const em${i + 1} = require('${offsetDir}/error-middlewares/${m}')(${cfems[m] ? `ec${i + 1}` : 'cnf'});`
+                }),
+            ].filter(x => !!x).join("\n");
+            return x ? `${x}\n` : '';
+        };
         const options = {};
         !!this.vars.paramsKey && (options['params'] = true);
         !!this.vars.rootDir && (options['rootDir'] = ('string' === typeof options['rootDir']) ? options['rootDir'] : `\`\${__dirname}${offsetDir !== '.' ? `/${offsetDir}` : ''}\``);
-        const post_init = [
-            `const hn = require('@ohoareau/microlib/lib/utils').fn2hn(${fnName}, [${realMiddlewares.join(', ')}]${!!Object.keys(options).length ? `, ${this.stringifyForOptions(options)}` : ''});`,
+        const config = !!Object.keys(options).length ? `, ${this.stringifyForOptions(options)}` : '';
+        const post_init = ({fn = true} = {}) => [
+            `module.exports = {handler: require('@ohoareau/microlib').default(${globalCfg.hasMiddlewares ? `[${globalCfg.middlewares.map((m, i) => ':' === m.slice(0, 1) ? m.slice(1) : `rm${i + 1}`).join(', ')}]` : ((globalCfg.hasErrorMiddlewares || fn || config) ? '[]' : '')}${globalCfg.hasErrorMiddlewares ? `, [${globalCfg.errorMiddlewares.map((m, i) => ':' === m.slice(0, 1) ? m.slice(1) : `em${i + 1}`).join(', ')}]` : ((fn || config) ? ', []' : '')}${fn ? `, ${fnName}` : (config ? ', () => {}' : '')}${config})};`,
         ].join("\n");
         vars = {
             ...this.vars,
@@ -93,5 +132,10 @@ export default class Handler {
             }
             return originalResult;
         }});
+    }
+    prepareMiddlewareCf(n, ms): string {
+        if (!ms || !ms[n]) return 'cnf';
+        if (!Object.keys(ms[n]).length) return 'cnf';
+        return `{...cnf, ...${stringifyObject(ms[n], {indent: '', inlineCharacterLimit: 100, singleQuotes: true})}}`;
     }
 }

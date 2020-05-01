@@ -1,16 +1,15 @@
-<%- pre_init %>
-const <%- fnName -%> = async () => ({});
-<%- post_init %>
 <% var len = operations.reduce((acc, o) => o.length > acc ? o.length : acc, 0); -%>
-module.exports = {
-    handler: async (event, context) => {
-        let h;
-        switch ((event || {}).handler) {
+const controller = async (req, res) => {
+    let h;
+    switch (req.handler) {
 <% operations.forEach(operation => { -%>
-            case '<%- operation -%>': <%- ''.padStart(len - operation.length, ' ') %>h = require('.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/<%- 'undefined' !== typeof prefix ? `${prefix}_` : '' -%><%- operation -%>').handler; break;
+        case '<%- operation -%>': <%- ''.padStart(len - operation.length, ' ') %>h = require('.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/<%- 'undefined' !== typeof prefix ? `${prefix}_` : '' -%><%- operation -%>').handler; break;
 <% }) -%>
-            default: h = hn; break;
-        }
-        return h(event, context);
-    },
+        default: <%- ''.padStart(len - 'default'.length + 7, ' ') %>h = async () => ({}); break;
+    }
+    // noinspection JSCheckFunctionSignatures
+    Object.assign(res, await h({...req.event, bodyOnly: false}, req.context));
 };
+
+<%- pre_init({middlewares: [':controller']}) %>
+<%- post_init({fn: false}) %>
