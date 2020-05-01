@@ -37,9 +37,6 @@ const context = ({event, context, req}) => {
 
 module.exports = {
     handler: new ApolloServer({typeDefs, resolvers, context}).createHandler({
-        cors: {
-            origin: true,
-            credentials: true,
-        },
+        cors: {origin: true, credentials: true},
     }),
 };

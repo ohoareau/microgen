@@ -1,11 +1,12 @@
 <% var parseRoute = (k, v) => {
-    v = {private: false, config: {}, options: {}, handler: 'unknown', method: k.split(' ').shift().toUpperCase(), ...('string' === typeof v ? {handler: v} : v)};
+    v = {route: k, private: false, config: {}, options: {}, handler: 'unknown', method: k.split(' ').shift().toUpperCase(), ...('string' === typeof v ? {handler: v} : v)};
     if (!v.code || ((v.code < 200) || (v.code >= 600))) {
         switch (v.method) {
             case 'GET': v.code = 200; break;
             case 'POST': v.code = 201; break;
             case 'DELETE': v.code = 204; break;
             case 'PUT': v.code = 200; break;
+            case 'OPTIONS': v.code = 204; break;
             default: v.code = 200; break;
         }
     }
@@ -19,65 +20,35 @@
     if (0 === Object.keys(v.options).length) delete v.options;
     return v;
 } -%>
-// noinspection JSUnusedLocalSymbols
-<%- pre_init %>
-const <%- fnName -%> = async () => { throw Object.assign(new Error('Not Found'), {code: 404}); };
-<%- post_init %>
 <% var len = Object.keys(routes).reduce((acc, r) => r.length > acc ? r.length : acc, 0); -%>
-module.exports = {
-    handler: async (event = {}, context = {}) => {
-        let h;
-        switch (`${event.httpMethod} ${event.resource}`) {
-<% Object.entries(routes).forEach(([k, v]) => { -%>
-<% var r = parseRoute(k, v) -%>
-            case '<%- k -%>': <%- ''.padStart(len - k.length, ' ') %>h = r(<%- r.code -%>, '<%- r.handler -%>'<% if (r.options || r.config) { %>, <%- JSON.stringify(r.options) -%><% if (r.config) { %>, <%- JSON.stringify(r.config) -%><% } %><% } %>); break;
+const fnm = async (a, b) => {
+    switch (`${a.method} ${a.path}`) {
+<% var sortedRoutes = Object.entries(routes).map(([k, v]) => parseRoute(k, v)) -%>
+<% sortedRoutes.sort((a, b) => a.route > b.route ? 1 : (a.route < b.route ? -1 : 0)) -%>
+<% sortedRoutes.forEach(r => { -%>
+        case '<%- r.route -%>': <%- ''.padStart(len - r.route.length, ' ') %>return r(a, b, <%- r.code -%>, '<%- r.handler -%>'<% if (r.options || r.config) { %>, <%- JSON.stringify(r.options) -%><% if (r.config) { %>, <%- JSON.stringify(r.config) -%><% } %><% } %>);
 <% }) -%>
-            default: h = hn; break;
-        }
-        return h(event, context);
-    },
+        default: <%- ''.padStart(len - 'default'.length + 7, ' ') %>return r(a, b, 404, undefined);
+    }
 };
 
-// helpers
-const r = (code, name, options = {}, forcedParams = {}) => async (event = {}, context = {}) => {
-    let response = {statusCode: code, body: '{}'};
-    try {
-<% if (('undefined' !== typeof jwt) && jwt) { -%>
-        event.headers && event.headers.Authorization && (event.user = require('jsonwebtoken').verify(
-            event.headers.Authorization.split(' ')[1],
-            String(process.env.JWT_SECRET || 'the-very-secret-secret')
-        ));
-<% } -%>
-        if (options.private && !event.user) {
-            const e = new Error('Unauthorized'); e.code = 401;
-            // noinspection ExceptionCaughtLocallyJS
-            throw e;
-        }
-        response.body = JSON.stringify(await require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/<%- 'undefined' !== typeof prefix ? `${prefix}_` : '' -%>${name}`).handler({
-            user: event.user || undefined,
-            params: {
-                ...JSON.parse(event.body || '{}'),
-                ...(event['queryStringParameters'] || {}),
-                ...(event['pathParameters'] || {}),
-                ...forcedParams,
-            },
-        }, {...context}));
-    } catch (e) {
-<% var errorConfig = Object.entries(((('undefined' !== typeof errors) && errors) ? errors : undefined) || {}) -%>
-<% if (errorConfig.length) { -%>
-        response.statusCode = ('number' === typeof e.code) ? e.code : 500;
-        response.body = JSON.stringify(e.serialize ? e.serialize(): e.message);
-        switch (response.statusCode) {
-<% var len2 = errorConfig.reduce((acc, r) => `${r[0]}`.length > acc ? `${r[0]}`.length : acc, 0); -%>
-<% errorConfig.sort((a, b) => a[0] < b[0] ? -1 : (a[0] > b[0] ? 1 : 0)) -%>
-<% errorConfig.forEach(([k, v]) => { -%>
-            case <%- k -%>: <%- ''.padStart(len2 - `${k}`.length, ' ') %>response = {statusCode: <%- JSON.stringify(v.code) -%>, body: <%- JSON.stringify(v.message) -%>}; break;
-<% }) -%>
-        }
-<% } else { -%>
-        response.statusCode = ('number' === typeof e.code) ? e.code : 500;
-        response.body = JSON.stringify(e.serialize ? e.serialize(): e.message);
-<% } -%>
-    }
-    return response;
+<% var middlewares = ['@apigateway'] -%>
+<% var errorMiddlewares = ['@generic'] -%>
+<% var middlewaresConfigs = {} -%>
+<% var errorMiddlewaresConfigs = {} -%>
+<% var errorConfig = ((('undefined' !== typeof errors) && errors) ? errors : undefined) || {} -%>
+<% Object.keys(errorConfig).length && (errorMiddlewaresConfigs['@generic'] = {mapping: errorConfig}) -%>
+<% 'undefined' !== typeof jwt && jwt && middlewares.push('@jwt') -%>
+<% 'undefined' !== typeof cors && cors && middlewares.push('@cors') -%>
+<% middlewares.push(':fnm') -%>
+<%- pre_init({middlewares, errorMiddlewares, middlewaresConfigs, errorMiddlewaresConfigs}) %>
+
+<%- post_init({fn: false}) %>
+
+const r = async (a, b, c, n, o = {}, p = {}) => {
+    if (!n) { const e = new Error('Not Found'); e.code = c; throw e; }
+    return Object.assign(b, await require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/<%- 'undefined' !== typeof prefix ? `${prefix}_` : '' -%>${n}`).handler(
+        {...a, bodyOnly: false, params: {...(a.params || {}), ...p}, private: o.private},
+        {...a.context}
+    ));
 };

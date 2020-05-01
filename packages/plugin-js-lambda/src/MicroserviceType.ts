@@ -140,7 +140,7 @@ export default class MicroserviceType {
         return {
             variables: {
                 model: {code: undefined},
-                ...(!!Object.values(methods).find(m => !!(<any>m)['neededUtils'].length) ? {helpers: {code: `require('@ohoareau/microlib/lib/utils').createOperationHelpers`}} : {}),
+                ...(!!Object.values(methods).find(m => !!(<any>m)['neededUtils'].length) ? {helpers: {code: `require('@ohoareau/microlib').helpers(model, __dirname)`}} : {}),
                 ...this.buildBackendsVariables(),
             },
             methods: {...functions, ...methods},
@@ -200,7 +200,7 @@ export default class MicroserviceType {
         const neededUtils = [...(needHook ? ['hook'] : []), ...Object.keys(localRequirements)];
         neededUtils.sort();
         const lines = [
-            !!neededUtils.length && `    const {${neededUtils.join(', ')}} = service.helpers('${this.name}_${name}', model, __dirname);`,
+            !!neededUtils.length && `    const {${neededUtils.join(', ')}} = service.helpers('${name}');`,
             ...befores,
             (!backendDef && !batchMode && !afters.length) && `    return undefined;`,
             (!!backendDef && !batchMode && !afters.length) && `    return ${this.buildBackendCall({prefix: 'service.', ...backendDef})};`,
@@ -370,8 +370,8 @@ export default class MicroserviceType {
             return `    ${conditionCode || ''}await snsPublish(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'});`
         }
         if ('@delete-references' === type) {
-            requirements['deleteReferences'] = true;
-            return `    ${conditionCode || ''}await deleteReferences(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['idField']});`
+            requirements['deleteRefs'] = true;
+            return `    ${conditionCode || ''}await deleteRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['idField']});`
         }
         if ('@validate' === type) {
             requirements['validate'] = true;
@@ -393,13 +393,33 @@ export default class MicroserviceType {
             requirements['prefetch'] = true;
             return `    ${conditionCode || ''}await prefetch(query);`;
         }
+        if ('@transform' === type) {
+            requirements['transform'] = true;
+            return `    ${conditionCode || ''}await transform(query);`;
+        }
+        if ('@auto-transitions' === type) {
+            requirements['autoTransitions'] = true;
+            switch (options['position']) {
+                case 'before': return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await autoTransitions(query)`, 'query', returnValue)});` : `${this.buildHookStatement(`await autoTransitions(query)`, 'query', returnValue)};`}`;
+                case 'after':  return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await autoTransitions(result, query)`, 'result', returnValue)});` : `${this.buildHookStatement(`await autoTransitions(result, query)`, 'result', returnValue)};`}`;
+                default: return undefined;
+            }
+        }
+        if ('@mutate' === type) {
+            requirements['mutate'] = true;
+            switch (options['position']) {
+                case 'before': return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await mutate(query, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'query', returnValue)});` : `${this.buildHookStatement(`await mutate(query, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'query', returnValue)};`}`;
+                case 'after':  return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await mutate(result, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'result', returnValue)});` : `${this.buildHookStatement(`await mutate(result, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'result', returnValue)};`}`;
+                default: return undefined;
+            }
+        }
         if ('@populate' === type) {
             requirements['populate'] = true;
             return `    ${conditionCode || ''}await populate(query${!!config['prefix'] ? `, '${config['prefix']}'` : ''});`;
         }
         if ('@update-references' === type) {
-            requirements['updateReferences'] = true;
-            return `    ${conditionCode || ''}await updateReferences(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['idField']});`
+            requirements['updateRefs'] = true;
+            return `    ${conditionCode || ''}await updateRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['idField']});`
         }
         if (!rawOpts && '@operation' === type) {
             requirements['call'] = true;

@@ -1,4 +1,5 @@
-<%- pre_init %>
-const <%- fnName -%> = <%- (service.substr(0, 1) === '@') ? `require('@ohoareau/microlib/lib/services/${service.substr(1)}').default` : `require('../services/${service}')` -%><%- (('undefined' !== typeof configureService) && !!configureService) ? `(${('string' === typeof configureService) ? configureService : 'cf'})` : '' %>.<%- method -%>;
-<%- post_init %>
-module.exports = {handler: hn};
+<% var needConfigure = ('undefined' !== typeof configureService) && !!configureService -%>
+<% var hasCustomConfigure = !!needConfigure && ('string' === typeof configureService) -%>
+<%- pre_init({cnf: needConfigure && !hasCustomConfigure}) -%>
+const <%- fnName -%> = <%- (service.substr(0, 1) === '@') ? `require('@ohoareau/microlib/lib/services/${service.substr(1)}').default` : `require('../services/${service}')` -%><%- needConfigure ? `(${hasCustomConfigure ? configureService : 'cnf'})` : '' %>.<%- method -%>;
+<%- post_init() %>
