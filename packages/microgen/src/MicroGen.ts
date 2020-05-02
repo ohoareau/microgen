@@ -3,27 +3,34 @@ import IGenerator from './IGenerator';
 import FilesPlugin from './plugins/files';
 import IPlugin, {PluginConfig} from './IPlugin';
 import {render, renderFile, jsStringify, copy, writeFile} from './utils';
+import {PackageGroup} from "./PackageGroup";
 
 const fs = require('fs');
+
+export type GroupConfig = {
+    name?: string,
+    in?: string,
+    dir?: string,
+};
 
 export type GeneratorConfig = {
     rootDir: string,
     vars?: any,
     plugins?: (PluginConfig|string)[],
-    packages?: {[key: string]: any},
+    groups?: {[key: string]: GroupConfig},
+    [key: string]: any,
 };
 
 export type MicroGenConfig = GeneratorConfig & {}
 
 export class MicroGen implements IGenerator {
     public readonly plugins: IPlugin[] = [];
+    public readonly groups: {[key: string]: PackageGroup} = {};
     public readonly packagers: {[key: string]: (config: any) => IPackage} = {};
-    public readonly packages: {[key: string]: any} = {};
     public readonly vars: {[key: string]: any} = {};
-    public readonly defaultPackagerName: string = 'js_lambda';
     public readonly rootDir: string
     protected readonly packageEventHooks = {};
-    constructor({rootDir, plugins = [], packages = {}, vars = {}}: MicroGenConfig) {
+    constructor({rootDir, plugins = [], groups = {}, vars = {}, ...extra}: MicroGenConfig) {
         this.rootDir = rootDir;
         this.vars = {
             generator: 'microgen',
@@ -34,7 +41,15 @@ export class MicroGen implements IGenerator {
             ...vars,
             verbose: vars.verbose || process.env.MICROGEN_VERBOSE || 0,
         };
-        this.packages = packages;
+        groups = groups || {};
+        if (!Object.keys(groups).length) {
+            groups['packages'] = {in: 'packages', dir: '.'};
+        }
+        this.groups = Object.entries(groups).reduce((acc, [k, v]) => {
+            const {in: key = k, dir = k} = v;
+            acc[k] = new PackageGroup(this, {name: k, packages: extra[key] || {}, dir});
+            return acc;
+        }, {});
         const localPlugin = `${rootDir}/.microgen`;
         try {
             const localPluginPath = fs.realpathSync(localPlugin);
@@ -77,12 +92,17 @@ export class MicroGen implements IGenerator {
         this.packageEventHooks[packageType][eventType].push(hook);
     }
     async describePackages(): Promise<any[]> {
-        return (await this.prepare()).map((p: any) => {
-            return {
-                name: p.getName ? p.getName() : p.name,
-                type: p.getPackageType ? p.getPackageType() : p.packageType,
-            };
-        });
+        return (await this.prepare()).reduce((acc, [g, x]) => {
+            return acc.concat(x.map((p: any) => {
+                const name = p.getName ? p.getName() : p.name;
+                return {
+                    name,
+                    type: p.getPackageType ? p.getPackageType() : p.packageType,
+                    group: g.getName(),
+                    dir: g.getDir() === '.' ? name : `${g.getDir()}/${name}`,
+                };
+            }));
+        }, <any[]>[]);
     }
     protected applyPackageEventHooks(p: IPackage, eventType: string, data: any = {}): void {
         let hooks = <Function[]>[];
@@ -120,53 +140,59 @@ export class MicroGen implements IGenerator {
 
         return new pluginClass({...(plugin.config || {}), loadedFrom: path});
     }
-    private async prepare(): Promise<IPackage[]> {
-        return Object.entries(this.packages).map(
-            ([name, {type, ...c}]: [string, any]) => {
-                if (!type) {
-                    if (!this.vars.defaultPackageType) throw new Error(`No type specified for package '${name}'`);
-                    type = this.vars.defaultPackageType;
+    private async prepare(): Promise<[PackageGroup, IPackage[]][]> {
+        return Object.values(this.groups).reduce((acc, g) => {
+            acc.push([g, (<PackageGroup>g).getPackages().map(
+                ({name, type, ...c}: any) => {
+                    if (!type) {
+                        if (!this.vars.defaultPackageType) throw new Error(`No type specified for package '${name}'`);
+                        type = this.vars.defaultPackageType;
+                    }
+                    if (!this.packagers[type]) throw new Error(`Unsupported package type '${type}'`);
+                    const p = this.packagers[type]({...c, packageType: type, name, vars: {...this.vars, ...(c.vars || {})}});
+                    this.applyPackageEventHooks(p, 'created');
+                    return p;
                 }
-                if (!this.packagers[type]) throw new Error(`Unsupported package type '${type}'`);
-                const p = this.packagers[type]({...c, packageType: type, name, vars: {...this.vars, ...(c.vars || {})}});
-                this.applyPackageEventHooks(p, 'created');
-                return p;
-            }
-        );
+            )]);
+            return acc;
+        }, <[PackageGroup, IPackage[]][]>[]);
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
-        const packages = await this.prepare();
-        vars.verbose = vars.verbose || process.env.MICROGEN_VERBOSE || 0;
-        const {write = false, targetDir} = vars;
-        const result = (await Promise.all(packages.map(async p => {
-            const n = (<any>p).getName ? (<any>p).getName() : p['name'];
-            this.applyPackageEventHooks(p, 'before_generate');
-            const generateResult = await p.generate(vars);
-            this.applyPackageEventHooks(p, 'after_generate', generateResult);
-            return [n, generateResult];
-        })))
-            .reduce(
-                (acc, [p, f]) =>
-                    Object.entries(f).reduce((acc2, [k, v]) => {
-                        acc2[`${p}/${k}`] = [p, v];
-                        return acc2;
-                    }, acc)
-                ,
-                {}
-            )
-        ;
-        const entries = Object.entries(result);
-        entries.sort(([k1], [k2]) => k1 < k2 ? -1 : (k1 === k2 ? 0 : 1));
-        entries.forEach(([k, x]) => {
-            const [p, v] = <any>x;
-            const filePath = `${targetDir}/${k}`;
-            if (!this.vars || !this.vars.locked || !this.vars.locked[k]) {
-                if (vars.verbose >= 1) console.log(k);
-                result[k] = (<any>v)(this.createPackageHelpers(p, vars));
-                if (write && (true !== result[k])) writeFile(filePath, result[k]);
-            }
-        });
-        return result;
+        return (await this.prepare()).reduce(async (acc, [g, packages]) => {
+            const result = await acc;
+            vars.verbose = vars.verbose || process.env.MICROGEN_VERBOSE || 0;
+            const {write = false, targetDir} = vars;
+            const rr = (await Promise.all(packages.map(async p => {
+                const n = (<any>p).getName ? (<any>p).getName() : p['name'];
+                this.applyPackageEventHooks(p, 'before_generate');
+                const generateResult = await p.generate(vars);
+                this.applyPackageEventHooks(p, 'after_generate', generateResult);
+                return [n, generateResult];
+            })))
+                .reduce(
+                    (acc2, [p, f]) =>
+                        Object.entries(f).reduce((acc3, [k, v]) => {
+                            acc3[`${p}/${k}`] = [p, v];
+                            return acc3;
+                        }, acc2)
+                    ,
+                    {}
+                )
+            ;
+            const entries = Object.entries(rr);
+            entries.sort(([k1], [k2]) => k1 < k2 ? -1 : (k1 === k2 ? 0 : 1));
+            entries.forEach(([k, x]) => {
+                const [p, v] = <any>x;
+                const filePath = `${this.computeTargetDir(targetDir, g.getDir())}/${k}`;
+                if (!this.vars || !this.vars.locked || !this.vars.locked[k]) {
+                    if (vars.verbose >= 1) console.log(g.getName(), k);
+                    rr[k] = (<any>v)(this.createPackageHelpers(p, vars, g));
+                    if (write && (true !== rr[k])) writeFile(filePath, rr[k]);
+                }
+            });
+            Object.assign(result, rr);
+            return result;
+        }, Promise.resolve({}));
     }
     init(): void {
         writeFile(
@@ -178,13 +204,17 @@ export class MicroGen implements IGenerator {
             })})
         );
     }
-    createPackageHelpers(name, vars) {
+    createPackageHelpers(name, vars, g: PackageGroup) {
         return {
             render,
             renderFile,
             jsStringify,
-            copy: (source, target) => copy(source, `${vars.targetDir}/${name}/${target}`),
+            copy: (source, target) => copy(source, `${this.computeTargetDir(vars.targetDir, g.getDir())}/${name}/${target}`),
         };
+    }
+    private computeTargetDir(a: string, b: string): string {
+        if ('.' === b) return a;
+        return `${a}/${b}`;
     }
 }
 
