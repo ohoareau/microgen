@@ -7,6 +7,9 @@ module.exports = {
             name: 'Olivier Hoareau',
             email: 'oha+oss@greenberets.io',
         },
+        dependencies: {
+            dynamoose: "^2.1.2",
+        }
     },
     packages: {
         api: {
@@ -15,6 +18,7 @@ module.exports = {
                 handler: {
                     type: 'apigateway',
                     vars: {
+                        healthz: true,
                         routes: {
                             'GET /user': '<private>user_user_getCurrent',
                             'POST /user': '<private>user_user_create',
@@ -28,6 +32,7 @@ module.exports = {
                 handlerWithCustomError: {
                     type: 'apigateway',
                     vars: {
+                        healthz: true,
                         jwt: true,
                         errors: {
                             404: {code: 403, message: 'You are not allowed to access this resource.'},

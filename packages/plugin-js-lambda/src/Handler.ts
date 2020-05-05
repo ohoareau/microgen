@@ -35,11 +35,21 @@ export default class Handler {
         this.test = this.enrichTest(test);
     }
     enrichTest(test: TestFileConfig|undefined): TestFile|undefined {
+        const pushGroupTest = (a, b, c) => {
+            a[b] = a[b] || {};
+            a[b].tests = a[b].tests || [];
+            a[b].tests.push(c);
+        };
+
         const addedGroups: {[key: string]: any} = {};
         if (0 <= this.middlewares.indexOf('@warmup')) {
-            addedGroups.warmup = {
-                tests: [{name: 'warmup call', type: 'handler-call', config: {event: {warm: true}, expected: {status: 'success', code: 1000, message: 'warmed'}}}],
-            };
+            pushGroupTest(addedGroups, 'warmup', {name: 'warmup call', type: 'handler-call', config: {event: {warm: true}, expected: {status: 'success', code: 1000, message: 'warmed'}}});
+        }
+        if ((0 <= this.middlewares.indexOf('@apigateway') || ('apigateway' === this.type)) && (!this.vars.errors)) {
+            pushGroupTest(addedGroups, 'apigateway', {name: 'malformed event', type: 'handler-call', config: {event: {}, expectedBody: JSON.stringify({errorType: 'not-found', message: 'Resource Not Found', code: 404, data: {}, errorInfo: {}})}});
+        }
+        if ((0 <= this.middlewares.indexOf('@apigateway') || ('apigateway' === this.type)) && (true === this.vars.healthz)) {
+            pushGroupTest(addedGroups, 'apigateway', {name: 'healthz', type: 'handler-call', config: {event: {httpMethod: 'GET', resource: '/healthz'}, expectedBody: JSON.stringify({status: 'ok', code: 1001, message: 'healthy'})}});
         }
         if (!!Object.keys(addedGroups).length) {
             if (!test) test = <{[key: string]: any}>{};
@@ -58,7 +68,7 @@ export default class Handler {
         const offsetDir = this.directory ? this.directory.split('/').map(() => '..').join('/') : '.';
         const globalCfg: any = {hasMiddlewares: false, hasErrorMiddlewares: false, middlewares: [], errorMiddlewares: []};
         const pre_init = ({cnf: needCnf = undefined, middlewares = [], errorMiddlewares = [], config = {}, middlewaresConfigs = {}, errorMiddlewaresConfigs = {}} = {}) => {
-            globalCfg.middlewares = [...this.middlewares, ...middlewares];
+            globalCfg.middlewares = [...middlewares, ...this.middlewares];
             globalCfg.errorMiddlewares = [...this.errorMiddlewares, ...errorMiddlewares];
             globalCfg.hasMiddlewares = !!globalCfg.middlewares.length;
             globalCfg.hasErrorMiddlewares = !!globalCfg.errorMiddlewares.length;

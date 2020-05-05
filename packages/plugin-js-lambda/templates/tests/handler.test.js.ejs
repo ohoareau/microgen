@@ -2,10 +2,9 @@
 <% }) } -%>
 const handler = require('../<%- directory ? `${directory.split('/').map(() => '..').join('/')}/${directory}/` : '' -%><%- o -%>').handler;
 
-<% test.groups.forEach(testGroup => { %>describe('<%- testGroup.name -%>', () => {
-<% testGroup.tests.forEach(test => { %>    it('<%- test.name %>', async () => {
-<%- indent(include(`./types/${test.type}.js.ejs`, {event: {}, context: {}, ...test.config}), 8) %>
+<% test.groups.forEach(testGroup => { -%>describe('<%- testGroup.name -%>', () => {
+<% testGroup.tests.forEach(test => { -%>    it('<%- test.name %>', async () => {
+<%- indent(include(`./types/${test.type}.js.ejs`, {event: {}, context: {}, ...test.config}), 8) -%>
     });
-<% }) -%>
-});
+<% }) -%>});
 <% }) -%>
