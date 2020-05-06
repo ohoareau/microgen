@@ -1,5 +1,4 @@
-<% if (test.mocks) { test.mocks.forEach(mock => { %>jest.mock('<%- mock %>');
-<% }) } -%>
+<%- ('undefined' !== typeof test.mocks) ? include(`./_mocks.test.js.ejs`, {mocks: test.mocks}) : '' -%>
 const handler = require('../<%- directory ? `${directory.split('/').map(() => '..').join('/')}/${directory}/` : '' -%><%- o -%>').handler;
 
 <% test.groups.forEach(testGroup => { -%>describe('<%- testGroup.name -%>', () => {

@@ -54,5 +54,6 @@ const r = async (req, res, statusCode, n, o = {}, p = {}) => {
         {...req, bodyOnly: false, params: {...(req.params || {}), ...p}, private: o.private},
         {...req.context}
     );
-    return Object.assign(res, (x && (x.statusCode || x.body)) ? x : {body: x}, {statusCode});
+    const z = (x && (x.statusCode || x.body)) ? x : {body: x};
+    return Object.assign(res, {statusCode, headers: {...res.headers, ...(z.headers || {})}, body: z.body});
 };

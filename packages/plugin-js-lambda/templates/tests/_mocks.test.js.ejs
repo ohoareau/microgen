@@ -1,0 +1,12 @@
+<% var parseMock = mock => {
+    if (!mock) return undefined;
+    if ('object' === typeof mock) return {es6: false, factory: false, methods: [], ...mock};
+    return {name: undefined, path: mock, es6: false, factory: false, methods: []};
+} -%>
+<% var cleanedMocks = mocks.map(parseMock).filter(x => !!x) -%>
+<% cleanedMocks.filter(x => x.es6).forEach(mock => { %>const <%- mock.name -%> = {<% mock.methods.forEach(m => { %><%- m -%>: jest.fn(),<% }) -%>};
+<% }) -%>
+<% cleanedMocks.forEach(mock => { %>jest.mock('<%- mock.path %>'<% if (mock.es6) { %>, () => ({default: <% if (mock.factory) { %>() => <% } %><%- mock.name -%>})<% } %>);
+<% }) -%>
+<% cleanedMocks.filter(x => !!x.name && !x.es6 && !x.factory).forEach(mock => { %>const <%- mock.name %> = require('<%- mock.path %>');
+<% }) -%>

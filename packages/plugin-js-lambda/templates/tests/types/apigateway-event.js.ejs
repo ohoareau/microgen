@@ -1,0 +1,10 @@
+<% var event = {httpMethod: method, resource: path} -%>
+<% var context = {} -%>
+const r = await handler(<%- jsStringify(event) -%>, <%- jsStringify(context) -%>);
+expect(typeof r.body).toEqual('string');
+<% if ('undefined' !== typeof body) { %>expect(JSON.parse(r.body)).toEqual(<%- jsStringify(body) -%>);
+<% } -%>
+<% if ('undefined' !== typeof headers) { %>expect(r.headers).toEqual(<%- jsStringify(headers) -%>);
+<% } -%>
+<% if ('undefined' !== typeof statusCode) { %>expect(r.statusCode).toEqual(<%- statusCode -%>);
+<% } -%>

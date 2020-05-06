@@ -17,6 +17,29 @@ module.exports = {
             handlers: {
                 handler: {
                     type: 'apigateway',
+                    test: {
+                        mocks: [{name: 'mockDynamoose', path: '@ohoareau/microlib/lib/backends/dynamoose', es6: true, factory: true, methods: ['getCurrent']}],
+                        groups: {
+                            abcd: {
+                                tests: [
+                                    {
+                                        name: 'xyz',
+                                        type: 'apigateway-event',
+                                        config: {
+                                            mocks: [
+                                                {name: 'mockDynamoose', method: 'getCurrent', resolved: {id: 'abcd', email: 'test@test.com'}},
+                                            ],
+                                            method: 'GET',
+                                            path: '/user',
+                                            body: {},
+                                            statusCode: 200,
+                                            headers: {},
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    },
                     vars: {
                         healthz: true,
                         routes: {
