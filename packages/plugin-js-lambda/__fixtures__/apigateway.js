@@ -7,13 +7,16 @@ module.exports = {
             name: 'Olivier Hoareau',
             email: 'oha+oss@greenberets.io',
         },
-        dependencies: {
-            dynamoose: "^2.1.2",
-        }
     },
     packages: {
         api: {
             type: 'js-lambda',
+            vars: {
+                dependencies: {
+                    dynamoose: "^2.1.2",
+                    cors: '^2.8.5',
+                },
+            },
             handlers: {
                 handler: {
                     type: 'apigateway',
@@ -42,6 +45,8 @@ module.exports = {
                     },
                     vars: {
                         healthz: true,
+                        cors: true,
+                        jwt: true,
                         routes: {
                             'GET /user': '<private>user_user_getCurrent',
                             'POST /user': '<private>user_user_create',
