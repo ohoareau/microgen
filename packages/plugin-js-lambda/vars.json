@@ -7,7 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@ohoareau/microlib": "^0.8.8"
+    "@ohoareau/microlib": "^0.8.9"
   },
   "devDependencies": {
     "jest": "^25.1.0",

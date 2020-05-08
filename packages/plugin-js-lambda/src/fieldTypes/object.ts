@@ -1,1 +1,1 @@
-export default ({map}) => ({type: map})
+export default ({map = undefined}) => ({type: map ? map : 'object'})
