@@ -6,7 +6,7 @@ export default {
     builder: {
         target: {
             alias: 't',
-            default: './packages',
+            default: '.',
         }
     },
     handler: async argv =>
