@@ -43,7 +43,7 @@ export class MicroGen implements IGenerator {
         };
         groups = groups || {};
         if (!Object.keys(groups).length) {
-            groups['packages'] = {in: 'packages', dir: '.'};
+            groups['packages'] = {};
         }
         this.groups = Object.entries(groups).reduce((acc, [k, v]) => {
             const {in: key = k, dir = k} = v;
