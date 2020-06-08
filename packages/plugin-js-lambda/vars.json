@@ -10,7 +10,7 @@
     "@ohoareau/microlib": "^0.8.9"
   },
   "devDependencies": {
-    "jest": "^25.1.0",
+    "jest": "^26",
     "aws-sdk": "^2"
   }
 }
