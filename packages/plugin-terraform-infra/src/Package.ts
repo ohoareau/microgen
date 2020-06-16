@@ -22,4 +22,12 @@ export default class Package extends AbstractPackage {
             ['modules/.gitkeep']: () => '',
         };
     }
+    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+    protected buildDynamicFiles(vars: any, cfg: any): any {
+        return {
+            ['environments/.gitkeep']: () => '',
+            ['layers/.gitkeep']: () => '',
+            ['modules/.gitkeep']: () => '',
+        };
+    }
 }
