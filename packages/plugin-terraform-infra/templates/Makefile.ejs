@@ -1,0 +1,53 @@
+prefix ?= <%- prefix %>
+env ?= dev
+layer ?= "all"
+layers = $(shell AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) list-layers)
+
+AWS_PROFILE ?= $(prefix)-$(env)
+
+all:
+
+pre-install:
+	@true
+
+provision: init sync
+
+provision-full: init-full sync-full
+
+generate:
+	@../node_modules/.bin/tfgen ./config.json layers environments
+get:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) get $(layer)
+update:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) update $(layer)
+init:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) init $(layer)
+init-upgrade:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) init-upgrade $(layer)
+init-full:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) init-full $(layer)
+init-full-upgrade:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) init-full-upgrade $(layer)
+plan:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) plan $(layer)
+refresh:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) refresh $(layer)
+apply:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) apply $(layer)
+sync:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) sync $(layer)
+sync-full:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) sync-full $(layer)
+list-layers:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) list-layers
+output:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) output $(layer)
+output-json:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) output-json $(layer)
+outputs:
+	@mkdir -p ../outputs/$(env)
+	@$(foreach l,$(layers),echo "[$(env)] Saving outputs of layer '$(l)'..." && AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) output-json $l > ../outputs/$(env)/$(l).json;)
+destroy:
+	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) destroy $(layer)
+
+.PHONY: all pre-install provision get update init plan apply sync output output-json destroy provision-full sync-full init-full outputs list-layers
