@@ -64,7 +64,7 @@ test-<%- p.name -%>:
 generate-terraform:
 	@make -C infra/ generate
 
-generate-env-local: <% projects.forEach(p => { %> generate-env-local-<%- p.name -%><% }) -%>
+generate-env-local:<% projects.forEach(p => { %> generate-env-local-<%- p.name -%><% }) -%>
 
 <% projects.forEach(p => { -%>
 generate-env-local-<%- p.name -%>:
@@ -153,14 +153,14 @@ pr:
 		pre-install pre-install-root pre-install-<%- scm -%><% projects.forEach(p => { %> pre-install-<%- p.name -%><% }) %> \
 		install install-root install-<%- scm -%><% projects.forEach(p => { %> install-<%- p.name -%><% }) %> \
 		test test-<%- scm -%><% projects.forEach(p => { %> test-<%- p.name -%><% }) %> \
-		build <% projects.forEach(p => { %> build-<%- p.name -%><% }) %> \
+		build<% projects.forEach(p => { %> build-<%- p.name -%><% }) %> \
 		build-pre-provision build-post-provision build-pre-plan \
 		provision provision-full \
-		deploy <% projects.filter(p => !!p.deployable).forEach(p => { %> deploy-<%- p.name -%><% }) %> \
+		deploy<% projects.filter(p => !!p.deployable).forEach(p => { %> deploy-<%- p.name -%><% }) %> \
 		infra-init infra-init-full infra-update infra-plan \
 		list-layers \
-		start <% projects.filter(p => !!p.startable).forEach(p => { %> start-<%- p.name -%><% }) %> \
+		start<% projects.filter(p => !!p.startable).forEach(p => { %> start-<%- p.name -%><% }) %> \
 		output output-json outputs \
 		pr \
-		generate-env-local <% projects.forEach(p => { %> generate-env-local-<%- p.name -%><% }) %> \
+		generate-env-local<% projects.forEach(p => { %> generate-env-local-<%- p.name -%><% }) %> \
 		generate
