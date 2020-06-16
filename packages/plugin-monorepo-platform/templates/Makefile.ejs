@@ -1,0 +1,166 @@
+env ?= dev
+b ?= develop
+
+all: install
+
+generate:
+	@yarn --silent microgen
+
+pre-install: pre-install-root pre-install-<%- scm -%><% projects.forEach(p => { %> pre-install-<%- p.name -%><% }) %>
+install: install-root install-<%- scm -%><% projects.forEach(p => { %> install-<%- p.name -%><% }) %>
+
+pre-install-root: install-root
+pre-install-<%- scm -%>:
+<% if (scm === 'github') { -%>
+	@make -C .github/ pre-install
+<% } else if (scm === 'gitlab') { -%>
+	@true
+<% } else if (scm === 'git') { -%>
+	@true
+<% } else { -%>
+	@true
+<% } -%>
+<% projects.forEach(p => { -%>
+pre-install-<%- p.name -%>:
+	@make -C <%- p.name -%>/ pre-install
+<% }) -%>
+
+install-root:
+	@yarn --silent install
+install-terraform:
+	@tfenv install
+install-<%- scm -%>:
+<% if (scm === 'github') { -%>
+	@make -C .github/ install
+<% } else if (scm === 'gitlab') { -%>
+	@true
+<% } else if (scm === 'git') { -%>
+	@true
+<% } else { -%>
+	@true
+<% } -%>
+<% projects.forEach(p => { -%>
+install-<%- p.name -%>:
+	@make -C <%- p.name -%>/ install
+<% }) -%>
+
+test: test-<%- scm -%><% projects.forEach(p => { %> test-<%- p.name -%><% }) %>
+
+test-<%- scm -%>:
+<% if (scm === 'github') { -%>
+	@make -C .github/ test
+<% } else if (scm === 'gitlab') { -%>
+	@true
+<% } else if (scm === 'git') { -%>
+	@true
+<% } else { -%>
+	@true
+<% } -%>
+<% projects.forEach(p => { -%>
+test-<%- p.name -%>:
+	@make -C <%- p.name -%>/ test
+<% }) -%>
+
+generate-terraform:
+	@make -C infra/ generate
+
+generate-env-local: <% projects.forEach(p => { %> generate-env-local-<%- p.name -%><% }) -%>
+
+<% projects.forEach(p => { -%>
+generate-env-local-<%- p.name -%>:
+	@make -C <%- p.name -%>/ generate-env-local env=$(env)
+<% }) -%>
+
+build: build-pre-provision build-post-provision
+
+build-pre-plan:<% projects.filter(p => p.phase === 'pre').forEach(p => { %> build-<%- p.name -%><% }) %>
+build-pre-provision: build-pre-plan
+build-post-provision:<% projects.filter(p => p.phase !== 'pre').forEach(p => { %> build-<%- p.name -%><% }) %>
+<% projects.forEach(p => { -%>
+build-<%- p.name -%>: generate-env-local-<%- p.name %>
+	@make -C <%- p.name -%>/ build env=$(env)
+<% }) -%>
+
+provision: generate-terraform
+	@make -C infra/ provision env=$(env)
+
+provision-full: generate-terraform
+	@make -C infra/ provision-full env=$(env)
+
+infra-init: generate-terraform
+	@make -C infra/ init env=$(env)
+
+infra-init-upgrade: generate-terraform
+	@make -C infra/ init-upgrade env=$(env)
+
+infra-init-full: generate-terraform
+	@make -C infra/ init-full env=$(env)
+
+infra-init-full-upgrade: generate-terraform
+	@make -C infra/ init-full-upgrade env=$(env)
+
+infra-update: generate-terraform
+	@make -C infra/ update env=$(env)
+
+infra-plan: generate-terraform
+	@make -C infra/ plan env=$(env)
+
+infra-refresh: generate-terraform
+	@make -C infra/ refresh env=$(env)
+
+infra-destroy: generate-terraform
+	@make -C infra/ destroy env=$(env) layer=$(layer)
+
+deploy:<% projects.filter(p => !!p.deployable).forEach(p => { %> deploy-<%- p.name -%><% }) -%>
+
+<% projects.filter(p => !!p.deployable).forEach(p => { -%>
+deploy-<%- p.name -%>: generate-env-local-<%- p.name %>
+	@set -a && . <%- p.name -%>/.env.local && set +a && make -C <%- p.name -%>/ deploy env=$(env)
+<% }) -%>
+
+<% var startable = projects.filter(p => !!p.startable) -%>
+<% if (startable.length) { -%>
+start: start-<%- startable[0].name %>
+
+<% startable.forEach(p => { -%>
+start-<%- p.name -%>:
+	@make -C <%- p.name -%>/ start env=$(env)
+<% }) -%>
+<% } -%>
+output: generate-terraform
+	@make -C infra/ output env=$(env) layer=$(layer)
+
+output-json: generate-terraform
+	@make -C infra/ output-json env=$(env) layer=$(layer)
+
+outputs: generate-terraform
+	@make -C infra/ outputs env=$(env)
+
+list-layers: generate-terraform
+	@make -C infra/ list-layers env=$(env)
+
+<% projects.filter(p => !!p.refreshable).forEach(p => { -%>
+refresh-<%- p.name -%>: generate-terraform
+	@make -C <%- p.name -%>/ build env=$(env)
+	@make -C infra/ provision env=$(env) layer=<%- p.name -%>
+<% }) -%>
+
+<% if (scm === 'github') { -%>
+pr:
+	@hub pull-request -b $(b)
+<% } -%>
+.PHONY: all \
+		pre-install pre-install-root pre-install-<%- scm -%><% projects.forEach(p => { %> pre-install-<%- p.name -%><% }) %> \
+		install install-root install-<%- scm -%><% projects.forEach(p => { %> install-<%- p.name -%><% }) %> \
+		test test-<%- scm -%><% projects.forEach(p => { %> test-<%- p.name -%><% }) %> \
+		build <% projects.forEach(p => { %> build-<%- p.name -%><% }) %> \
+		build-pre-provision build-post-provision build-pre-plan \
+		provision provision-full \
+		deploy <% projects.filter(p => !!p.deployable).forEach(p => { %> deploy-<%- p.name -%><% }) %> \
+		infra-init infra-init-full infra-update infra-plan \
+		list-layers \
+		start <% projects.filter(p => !!p.startable).forEach(p => { %> start-<%- p.name -%><% }) %> \
+		output output-json outputs \
+		pr \
+		generate-env-local <% projects.forEach(p => { %> generate-env-local-<%- p.name -%><% }) %> \
+		generate
