@@ -1,4 +1,4 @@
-prefix ?= <%- prefix %>
+prefix ?= <%- project_prefix %>
 env ?= dev
 layer ?= "all"
 layers = $(shell AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) list-layers)

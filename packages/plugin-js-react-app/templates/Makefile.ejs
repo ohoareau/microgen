@@ -1,5 +1,5 @@
-prefix ?= <%- prefix %>
-bucket_prefix ?= $(prefix)-<%- project %>
+prefix ?= <%- project_prefix %>
+bucket_prefix ?= $(prefix)-<%- project_name %>
 env ?= dev
 
 AWS_PROFILE ?= $(prefix)-$(env)

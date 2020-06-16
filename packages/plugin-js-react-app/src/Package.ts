@@ -7,8 +7,8 @@ export default class Package extends AbstractPackage {
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildDefaultVars(vars: any): any {
         return {
-            prefix: 'mycompany',
-            project: 'myproject',
+            project_prefix: 'mycompany',
+            project_name: 'myproject',
         };
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
