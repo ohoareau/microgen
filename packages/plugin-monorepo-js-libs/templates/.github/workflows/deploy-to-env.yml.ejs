@@ -1,0 +1,64 @@
+name: Deploy to Env
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Add GitHub Packages Registry
+        uses: ohoareau/actions/npmrc-scope-authtoken-add@master
+        with:
+          scope: <%- npm_scope %>
+          token: ${{secrets.CUSTOM_GITHUB_TOKEN}}
+          registry: npm.pkg.github.com
+
+      - name: Set Env from current Branch
+        uses: ohoareau/actions/branch-to-env@master
+        with:
+          secrets: ${{toJson(secrets)}}
+          branch: ${{github.base_ref}}
+
+      - name: Set some env vars from forced env (dev)
+        uses: ohoareau/actions/env-vars-from-env@master
+        with:
+          secrets: ${{toJson(secrets)}}
+          env: dev
+
+      - name: Install
+        run: make install
+
+      - name: Test
+        run: make test
+        env:
+          CI: true
+
+      - name: Add AWS Account Profile (default)
+        uses: ohoareau/actions/aws-account-profile-add@master
+        with:
+          name: default
+          aki: ${{secrets.AWS_DEPLOY_ACCOUNT_ACCESS_KEY_ID}}
+          sak: ${{secrets.AWS_DEPLOY_ACCOUNT_SECRET_ACCESS_KEY}}
+
+      - name: Add AWS Role Profile
+        uses: ohoareau/actions/aws-role-profile-add@master
+        with:
+          name: <%- project_prefix -%>-<%- project_name -%>-dev
+          source: default
+          role: ${{env.AWS_DEPLOY_ACCOUNT_ROLE_ARN}}
+
+      - name: Deploy
+        run: make deploy env=${{env.env}}
+

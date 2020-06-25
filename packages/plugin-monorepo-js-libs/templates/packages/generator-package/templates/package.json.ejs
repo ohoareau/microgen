@@ -1,0 +1,57 @@
+<%% var scripts = {
+  "build": "tsc",
+  "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
+}; -%>
+<%% var deps = {}; -%>
+<%% var peerDeps = {}; -%>
+<%% var devDeps = {
+  "@babel/preset-env": "^7.9.5",
+  "@babel/preset-typescript": "^7.9.0",
+  "babel-loader": "^8.1.0",
+  "source-map-loader": "^0.2.4",
+}; -%>
+<%% react && Object.assign(scripts, {
+  "story": "start-storybook -c ../../.storybook",
+}); -%>
+<%% react && Object.assign(peerDeps, {
+  "react": "^16.13.1",
+  "react-dom": "^16.13.1",
+}); -%>
+<%% react && Object.assign(deps, {
+}); -%>
+<%% react && Object.assign(devDeps, {
+  "@babel/preset-react": "^7.9.4",
+  "@material-ui/core": "^4.9.10",
+  "@storybook/addon-actions": "^5.3.19",
+  "@storybook/addon-info": "^5.3.19",
+  "@storybook/addon-knobs": "^5.3.19",
+  "@storybook/addon-storysource": "^5.3.19",
+  "@storybook/addon-viewport": "^5.3.19",
+  "@storybook/preset-typescript": "^3.0.0",
+  "@storybook/react": "^5.3.19",
+  "@types/react": "^16.9.34",
+  "react": "^16.13.1",
+  "react-dom": "^16.13.1",
+}); -%>
+{
+  "name": "@<%- npm_scope -%>/<%%- packageName -%>",
+  "version": "0.0.0",
+  "description": "<%%- packageDescription -%>",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "private"
+  },
+  "scripts": <%%- JSON.stringify(scripts, null, 4) %>,
+  "dependencies": <%%- JSON.stringify(deps, null, 4) %>,
+  "peerDependencies": <%%- JSON.stringify(peerDeps, null, 4) %>,
+  "devDependencies": <%%- JSON.stringify(devDeps, null, 4) %>
+}
