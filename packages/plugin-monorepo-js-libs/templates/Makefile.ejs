@@ -48,9 +48,6 @@ package-generate-svg-components:
 package-build-storybook:
 	@cd packages/$(p) && yarn --silent build-storybook
 
-package-clear-test:
-	@cd packages/$(p) && yarn --silent jest --clearCache
-
 publish:
 	@yarn --silent lerna publish
 
