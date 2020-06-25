@@ -3,6 +3,6 @@ import {IGenerator, IPlugin} from '@ohoareau/microgen';
 
 export default class Plugin implements IPlugin {
     register(generator: IGenerator): void {
-        generator.registerPackager('js-libs', cfg => new Package(cfg));
+        generator.registerPackager('monorepo-js-libs', cfg => new Package(cfg));
     }
 }
