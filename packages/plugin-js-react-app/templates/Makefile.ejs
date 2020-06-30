@@ -2,7 +2,7 @@ prefix ?= <%- project_prefix %>
 bucket_prefix ?= $(prefix)-<%- project_name %>
 env ?= dev
 
-AWS_PROFILE ?= $(prefix)-$(env)
+AWS_PROFILE ?= <% 'undefined' !== (typeof aws_profile_prefix) ? aws_profile_prefix : '$(prefix)' -%>-$(env)
 bucket ?= $(env)-$(bucket_prefix)-<%- name %>
 cloudfront ?= $(AWS_CLOUDFRONT_DISTRIBUTION_ID_<%- name.toUpperCase() %>)
 

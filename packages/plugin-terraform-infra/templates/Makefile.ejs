@@ -3,7 +3,7 @@ env ?= dev
 layer ?= "all"
 layers = $(shell AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) list-layers)
 
-AWS_PROFILE ?= $(prefix)-$(env)
+AWS_PROFILE ?= <% 'undefined' !== (typeof aws_profile_prefix) ? aws_profile_prefix : '$(prefix)' -%>-$(env)
 
 all:
 
