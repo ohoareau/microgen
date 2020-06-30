@@ -1,0 +1,45 @@
+import resolve from '@rollup/plugin-node-resolve';
+import babel from 'rollup-plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+import {terser} from 'rollup-plugin-terser';
+import postcss from 'rollup-plugin-postcss';
+import replace from '@rollup/plugin-replace';
+import image from '@rollup/plugin-image';
+
+const target = `${__dirname}/build`;
+const all = !!process.env.ROLLUP_ALL_FILES;
+const isDev = !!process.env.ROLLUP_DEV;
+const namePrefix = `${target}/${process.env.npm_package_name.replace(/^@/, '').replace('/', '-')}`;
+
+export default {
+    input: 'index.jsx',
+    output: [
+        all && { file: `${namePrefix}.js`, format: 'cjs'},
+        { file: `${namePrefix}.min.js`, format: 'iife', plugins: isDev ? [] : [terser()], globals: {react: 'React', 'react-dom': 'ReactDOM'}},
+        all && { file: `${namePrefix}.esm.js`, format: 'esm'},
+    ].filter(x => !!x),
+    plugins: [
+        replace({
+            'process.env.NODE_ENV': JSON.stringify( isDev ? 'development' : 'production' )
+        }),
+        resolve(),
+        postcss({
+            extract: true,
+            minimize: true,
+            plugins: [],
+        }),
+        babel({
+            presets: ["@babel/preset-env", "@babel/preset-react"],
+            include: ['index.jsx'],
+        }),
+        commonjs({
+            namedExports: {
+                'react-is': ['isValidElementType', 'isContextConsumer', 'ForwardRef', 'Memo'],
+                'redux-logger': ['createLogger'],
+                'prop-types': ['elementType'],
+            },
+        }),
+        image(),
+    ],
+    external: ['react', 'react-dom'],
+}

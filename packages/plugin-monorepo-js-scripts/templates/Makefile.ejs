@@ -1,0 +1,47 @@
+export ROLLUP_ALL_FILES
+
+all: install
+
+install: install-root install-packages build
+
+install-root:
+	@yarn --silent install
+
+install-packages:
+	@yarn --silent lerna bootstrap
+
+build:
+	@yarn --silent lerna run build --stream
+
+test:
+	@true
+
+package-install:
+	@yarn --silent lerna bootstrap --scope @<%- npm_scope -%>/$(p)
+
+package-build:
+	@cd packages/$(p) && yarn --silent build
+
+clean: clean-lib clean-modules clean-coverage clean-buildinfo
+
+clean-modules:
+	@rm -rf node_modules/
+	@find packages/ -name node_modules -type d -exec rm -rf {} +
+
+clean-lib:
+	@find packages/ -name lib -type d -exec rm -rf {} +
+
+clean-coverage:
+	@rm -rf coverage/
+	@find packages/ -name coverage -type d -exec rm -rf {} +
+
+clean-buildinfo:
+	@find packages/ -name tsconfig.tsbuildinfo -exec rm -rf {} +
+
+
+.PHONY: all \
+		install install-root install-packages \
+		test \
+		build \
+		clean-buildinfo clean-modules clean-lib clean-coverage clean \
+		package-build package-install
