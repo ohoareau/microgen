@@ -1,0 +1,42 @@
+prefix ?= <%- project_prefix %>
+bucket_prefix ?= $(prefix)-<%- project_name %>
+env ?= dev
+
+AWS_PROFILE ?= <% 'undefined' !== (typeof aws_profile_prefix) ? aws_profile_prefix : '$(prefix)' -%>-$(env)
+bucket ?= $(env)-$(bucket_prefix)-<%- name %>
+cloudfront ?= $(AWS_CLOUDFRONT_DISTRIBUTION_ID_<%- name.toUpperCase() %>)
+
+all: install
+
+pre-install:
+	@true
+
+install:
+	@yarn install --silent
+
+test:
+	@CI=true yarn test --all --color --detectOpenHandles
+
+test-dev:
+	@yarn test --all --color --detectOpenHandles
+
+build:
+	@yarn --silent build
+
+generate-env-local:
+	@../node_modules/.bin/env STATICS_ > ./.env.local
+	@../node_modules/.bin/generate-vars-from-terraform-outputs $(env) ./terraform-to-vars.json >> ./.env.local
+
+start:
+	@yarn start
+
+deploy: deploy-code invalidate-cache
+
+deploy-code:
+	@AWS_PROFILE=$(AWS_PROFILE) aws s3 sync build/ s3://$(bucket) --delete
+
+invalidate-cache:
+	@AWS_PROFILE=$(AWS_PROFILE) aws cloudfront create-invalidation --distribution-id $(cloudfront) --paths '/*'
+
+
+.PHONY: all pre-install install test test-dev build deploy deploy-code invalidate-cache start generate-env-local
