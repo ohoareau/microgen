@@ -1,0 +1,39 @@
+module.exports = {
+  extends: [
+    'airbnb-base',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:import/typescript',
+    'plugin:@typescript-eslint/recommended'
+  ],
+  plugins: ['@typescript-eslint'],
+  root: true,
+  globals: {},
+  rules: {
+    'arrow-parens': ['error', 'always'],
+    'import/prefer-default-export': 0,
+    'max-len': ['error', {
+      'code':  150,
+      'ignoreComments':  true,
+      'ignoreTrailingComments':  true,
+      'ignoreUrls': true,
+      'ignoreStrings': true,
+      'ignoreTemplateLiterals': true
+    }],
+    'no-console': 'error',
+    'no-unused-vars': 'error',
+    '@typescript-eslint/no-unused-vars': 'error',
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+    '@typescript-eslint/no-explicit-any': [
+      'error',
+      {
+        'ignoreRestArgs': true
+      }
+    ],
+    // Server specific
+    "import/extensions": ["error", "never"],
+  },
+  parser: '@typescript-eslint/parser',
+  env: {},
+  overrides: []
+}
