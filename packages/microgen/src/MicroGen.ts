@@ -2,8 +2,10 @@ import IPackage from './IPackage';
 import IGenerator from './IGenerator';
 import FilesPlugin from './plugins/files';
 import IPlugin, {PluginConfig} from './IPlugin';
-import {render, renderFile, jsStringify, copy, writeFile} from './utils';
-import {PackageGroup} from "./PackageGroup";
+import {renderFile, jsStringify, copy, writeFile} from './utils';
+import {PackageGroup} from './PackageGroup';
+import ITemplate, {isTemplate} from './ITemplate';
+import Template from './Template';
 
 const fs = require('fs');
 
@@ -186,7 +188,12 @@ export class MicroGen implements IGenerator {
                 const filePath = `${this.computeTargetDir(targetDir, g.getDir())}/${k}`;
                 if (!this.vars || !this.vars.locked || !this.vars.locked[k]) {
                     if (vars.verbose >= 1) console.log(g.getName(), k);
-                    rr[k] = (<any>v)(this.createPackageHelpers(p, vars, g));
+                    const t: ITemplate = isTemplate(v) ? v : new Template(v);
+                    const fileCopy = (source, target) => copy(
+                        source,
+                        `${this.computeTargetDir(targetDir, g.getDir())}/${p}/${target}`
+                    )
+                    rr[k] = t.render({copy: fileCopy});
                     if (write && (true !== rr[k])) writeFile(filePath, rr[k]);
                 }
             });
@@ -203,14 +210,6 @@ export class MicroGen implements IGenerator {
                 packages: {},
             })})
         );
-    }
-    createPackageHelpers(name, vars, g: PackageGroup) {
-        return {
-            render,
-            renderFile,
-            jsStringify,
-            copy: (source, target) => copy(source, `${this.computeTargetDir(vars.targetDir, g.getDir())}/${name}/${target}`),
-        };
     }
     private computeTargetDir(a: string, b: string): string {
         if ('.' === b) return a;
