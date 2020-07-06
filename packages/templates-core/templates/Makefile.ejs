@@ -1,0 +1,14 @@
+<% if (globalVars.length) { -%>
+<% globalVars.forEach(globalVar => { -%>
+<%- globalVar.name -%> <%- globalVar.type -%> <%- globalVar.value %>
+<% }) %>
+<% } -%>
+<% if (targetGroups.length) { -%>
+<% targetGroups.forEach(targetGroup => { -%>
+<% targetGroup.targets.forEach(target => { -%>
+<%- target.name -%>:<% if (target.dependencies.length) { -%> <%- target.dependencies.join(' ') -%><% } %>
+<% target.steps.forEach(s => { %>	<%- s %>
+<% }) %><% }) %>
+<% }) -%>
+.PHONY:<% targetGroups.forEach((g, i) => { %><%- i === 0 ? ' ' : '		' %><%- g.targets.map(t => t.name).join(' ') -%><%- (i === (targetGroups.length - 1)) ? '' : ` \\
+` %><% }) %><% } -%>

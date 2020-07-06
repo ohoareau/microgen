@@ -1,4 +1,5 @@
 import IPackage from './IPackage';
+import StaticFileTemplate from './StaticFileTemplate';
 
 export type BasePackageConfig = {
     name: string,
@@ -84,7 +85,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         vars = this.buildVars(vars);
         const files = await this.buildFiles(vars, pluginCfg);
         Object.assign(files, (Object.entries(this.files).reduce((acc, [k, v]) => {
-            acc[k] = 'string' === typeof v ? (() => v) : (({renderFile}) => renderFile(pluginCfg)((v as any).template, v));
+            acc[k] = 'string' === typeof v ? (() => v) : (('function' === typeof v) ? v : (({renderFile}) => renderFile(pluginCfg)((v as any).template, v)));
             return acc;
         }, {})));
         if (vars.write) {
@@ -95,7 +96,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
                 return Promise.all(fs.readdirSync(`${root}/${dir}`, {}).map(async f => {
                     f = `${f}`;
                     if ('.' === f || '..' === f) return;
-                    files[f] = ({copy}) => copy(`${root}/${dir}/${f}`, f);
+                    files[f] = new StaticFileTemplate(`${root}/${dir}/${f}`, f);
                 }));
             }));
         }
