@@ -36,7 +36,7 @@ const context = ({event, context, req}) => {
 };
 
 module.exports = {
-    handler: new ApolloServer({typeDefs, resolvers, context}).createHandler({
+    handler: require('@ohoareau/aws-apigw-vx').vx(new ApolloServer({typeDefs, resolvers, context}).createHandler({
         cors: {origin: true, credentials: true},
-    }),
+    })),
 };
