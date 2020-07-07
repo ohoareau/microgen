@@ -42,10 +42,10 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'REACT_APP'})
             .addPredefinedTarget('start', 'yarn-start')
-            .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
+            .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
-            .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
+            .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true, coverage: false})
         ;
     }
 }
