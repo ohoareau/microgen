@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {MakefileTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -16,7 +16,6 @@ export default class Package extends AbstractPackage {
         return {
             ['LICENSE.md']: true,
             ['README.md']: true,
-            ['.gitignore']: true,
         };
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
@@ -25,8 +24,19 @@ export default class Package extends AbstractPackage {
             ['environments/.gitkeep']: () => '',
             ['layers/.gitkeep']: () => '',
             ['modules/.gitkeep']: () => '',
+            ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
         };
+    }
+    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
+        return new GitIgnoreTemplate(vars.gitignore || {})
+            .addIgnore('*.log')
+            .addIgnore('.env*')
+            .addIgnore('.DS_Store')
+            .addIgnore('.idea/')
+            .addIgnore('.terraform/')
+            .addIgnore('*.tfplan')
+        ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         return new MakefileTemplate(vars.makefile || {})

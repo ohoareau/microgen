@@ -1,0 +1,12 @@
+# General
+/a
+/b
+/c/d
+
+# g1
+/e
+/f
+
+# g2
+/g/*
+/h/i/jkl/*.m

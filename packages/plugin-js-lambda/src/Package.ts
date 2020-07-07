@@ -1,7 +1,7 @@
 import Handler, {HandlerConfig} from './Handler';
 import Microservice, {MicroserviceConfig} from './Microservice';
 import {AbstractPackage, BasePackageConfig} from '@ohoareau/microgen';
-import {MakefileTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
@@ -87,7 +87,6 @@ export default class Package extends AbstractPackage<PackageConfig> {
         return {
             ['LICENSE.md']: true,
             ['README.md']: true,
-            ['.gitignore']: true,
             ['package-excludes.lst']: true,
         };
     }
@@ -105,6 +104,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
                 author: (vars.author && ('object' === typeof vars.author)) ? vars.author : {name: vars.author_name, email: vars.author_email},
                 private: true,
             }, null, 4),
+            ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
         });
         const objects: any = (<any[]>[]).concat(
@@ -123,6 +123,13 @@ export default class Package extends AbstractPackage<PackageConfig> {
         }
 
         return files;
+    }
+    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
+        return new GitIgnoreTemplate(vars.gitignore || {})
+            .addIgnore('/coverage/')
+            .addIgnore('/node_modules/')
+            .addIgnore('/.idea/')
+        ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         const t = new MakefileTemplate(vars.makefile || {})

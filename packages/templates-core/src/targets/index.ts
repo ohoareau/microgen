@@ -37,3 +37,7 @@ export * from './CleanLibTarget';
 export * from './CleanCoverageTarget';
 export * from './CleanTsBuildInfoTarget';
 export * from './OutputsTarget';
+export * from './PipInstallBuildUtilsTarget';
+export * from './VirtualenvActivateTarget';
+export * from './VirtualenvDeactivateTarget';
+export * from './VirtualenvCreateTarget';

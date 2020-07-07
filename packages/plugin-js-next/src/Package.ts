@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {MakefileTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -17,13 +17,40 @@ export default class Package extends AbstractPackage {
         return {
             ['LICENSE.md']: true,
             ['README.md']: true,
-            ['.gitignore']: true,
         };
     }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {
+            ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
         };
+    }
+    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
+        return new GitIgnoreTemplate(vars.gitignore || {})
+            .addComment('See https://help.github.com/articles/ignoring-files/ for more about ignoring files.')
+            .addGroup('dependencies', [
+                '/node_modules', '/.pnp', '.pnp.js',
+            ])
+            .addGroup('testing', [
+                '/coverage',
+            ])
+            .addGroup('next.js', [
+                '/.next/',
+                '/out/',
+            ])
+            .addGroup('production', [
+                '/build',
+            ])
+            .addGroup('misc', [
+                '.DS_Store',
+            ])
+            .addGroup('debug', [
+                'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*',
+            ])
+            .addGroup('local env files', [
+                '.env.local', '.env.development.local', '.env.test.local', '.env.production.local', '*.pem',
+            ])
+        ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         return new MakefileTemplate(vars.makefile || {})

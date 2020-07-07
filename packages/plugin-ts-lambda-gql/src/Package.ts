@@ -1,4 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
+import {GitIgnoreTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -37,10 +38,56 @@ export default class Package extends AbstractPackage {
         return {
             ['.eslintignore']: true,
             ['.eslintrc.js']: true,
-            ['.gitignore']: true,
             ['LICENSE.md']: true,
-            ['Makefile']: true,
             ['tsconfig.json']: true,
         };
+    }
+    protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
+        return {
+            ['.gitignore']: this.buildGitIgnore(vars),
+            ['Makefile']: this.buildMakefile(vars),
+        };
+    }
+    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
+        return new GitIgnoreTemplate(vars.gitignore || {})
+            .addComment('See https://help.github.com/articles/ignoring-files/ for more about ignoring files.')
+            .addGroup('dependencies', [
+                '/node_modules', '/.pnp', '.pnp.js',
+            ])
+            .addGroup('testing', [
+                '/coverage',
+            ])
+            .addGroup('production', [
+                '/build',
+            ])
+            .addGroup('misc', [
+                '.DS_Store',
+                '.env.local', '.env.development.local', '.env.test.local', '.env.production.local',
+                'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*', '/dist'
+            ])
+            ;
+    }
+    protected buildMakefile(vars: any): MakefileTemplate {
+        return new MakefileTemplate(vars.makefile || {})
+            .addGlobalVar('prefix', vars.project_prefix)
+            .addGlobalVar('bucket_prefix', `$(prefix)-${vars.project_name}`)
+            .addGlobalVar('env', 'dev')
+            .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
+            .addGlobalVar('bucket', `$(env)-$(bucket_prefix)-${vars.name}`)
+            .addGlobalVar('cloudfront', `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()})`)
+            .setDefaultTarget('install')
+            .addTarget('pre-install')
+            .addPredefinedTarget('install', 'yarn-install')
+            .addPredefinedTarget('build', 'yarn-build')
+            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'build/'})
+            .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
+            .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS'})
+            .addPredefinedTarget('start', 'yarn-start')
+            .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
+            .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
+            .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
+            .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
+            ;
     }
 }

@@ -1,0 +1,7 @@
+<% if (groups.length) { -%>
+<% groups.forEach(group => { -%>
+<% if ((group.name !== '@' && group.name !== 'General') || (groups.length > 1)) { %># <%- group.name === '@' ? 'General' : group.name %>
+<% } -%>
+<% group.ignores.forEach(ignore => { -%><%- ignore.path %>
+<% }) %>
+<% }) -%><% } -%>
