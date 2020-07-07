@@ -77,9 +77,6 @@ export default class Package extends AbstractPackage {
             .addGroup('dotenv environment variable files', [
                 '.env*',
             ])
-            .addGroup('gatsby files', [
-                '.cache/', 'public',
-            ])
             .addGroup('Mac files', [
                 '.DS_Store',
             ])
