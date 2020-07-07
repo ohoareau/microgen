@@ -60,7 +60,7 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('generate-env-local', vars.projects.map(p => `generate-env-local-${p.name}`))
             .addMetaTarget('pre-install', ['pre-install-root', ...vars.projects.map(p => `pre-install-${p.name}`)])
             .addMetaTarget('install', ['install-root', ...vars.projects.map(p => `install-${p.name}`)])
-            .addMetaTarget('start', vars.projects.filter(p => !!p.startable).map(p => `start-${p.name}`))
+            .addTarget('start', [vars.startCmd || `npx -n ${vars.projects.filter(p => !!p.startable).map(p => p.name)} ${vars.projects.filter(p => !!p.startable).map(p => `"make start-${p.name}"`).join(' ')}`])
             .setDefaultTarget('install')
         ;
         vars.projects.forEach(p => {
