@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-js-gatsby",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,6 +24,6 @@
     "@ohoareau/microgen": "^0.10.0"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.10.0"
+    "@ohoareau/microgen": "^0.11.0"
   }
 }
