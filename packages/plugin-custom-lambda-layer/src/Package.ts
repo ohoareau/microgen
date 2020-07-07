@@ -1,4 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
+import {MakefileTemplate} from "@ohoareau/microgen-templates-core";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -10,7 +11,27 @@ export default class Package extends AbstractPackage {
             ['LICENSE']: true,
             ['README.md']: true,
             ['.gitignore']: true,
-            ['Makefile']: true,
         };
+    }
+    protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
+        return {
+            ['Makefile']: this.buildMakefile(vars),
+        }
+    }
+    protected buildMakefile(vars: any): MakefileTemplate {
+        const t = new MakefileTemplate()
+            .addGlobalVar('env', 'dev')
+            .setDefaultTarget('install')
+            .addTarget('pre-install')
+            .addTarget('install-test')
+            .addTarget('test')
+            .addTarget('test-cov')
+            .addTarget('test-ci')
+            .addShellTarget('install', './bin/install')
+            .addShellTarget('clean', './bin/clean')
+            .addShellTarget('build', './bin/build', ['clean'])
+        ;
+        vars.deployable && t.addTarget('deploy');
+        return t;
     }
 }

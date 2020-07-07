@@ -23,6 +23,9 @@
   "peerDependencies": {
     "@ohoareau/microgen": "^0.8.0"
   },
+  "dependencies": {
+    "@ohoareau/microgen-templates-core": "^0.1.0"
+  },
   "devDependencies": {
     "@ohoareau/microgen": "^0.11.0",
     "aws-sdk": "^2.663.0"

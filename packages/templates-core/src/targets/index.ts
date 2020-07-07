@@ -19,6 +19,7 @@ export * from './YarnInstallTarget';
 export * from './YarnTestJestTarget';
 export * from './YarnBuildTarget';
 export * from './YarnServeTarget';
+export * from './YarnLintTarget';
 export * from './YarnStartTarget';
 export * from './YarnLernaBootstrapTarget';
 export * from './YarnLernaRunBuildTarget';

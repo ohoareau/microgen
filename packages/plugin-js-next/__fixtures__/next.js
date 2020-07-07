@@ -12,8 +12,8 @@ module.exports = {
         app: {
             type: 'js-next',
             vars: {
-                prefix: 'myothercompany',
-                project: 'someproject',
+                project_prefix: 'myothercompany',
+                project_name: 'someproject',
                 name: 'web-app',
             },
         }

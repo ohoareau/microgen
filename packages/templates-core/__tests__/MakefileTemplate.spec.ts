@@ -231,4 +231,22 @@ describe('render', () => {
             'sample-infra.mk'
         );
     })
+    it('sample custom lambda layer', () => {
+        expectRenderSameAsFile(
+            new MakefileTemplate()
+                .addGlobalVar('env', 'dev')
+                .setDefaultTarget('install')
+                .addTarget('pre-install')
+                .addTarget('install-test')
+                .addTarget('test')
+                .addTarget('test-cov')
+                .addTarget('test-ci')
+                .addShellTarget('install', './bin/install')
+                .addShellTarget('clean', './bin/clean')
+                .addShellTarget('build', './bin/build', ['clean'])
+                .addTarget('deploy')
+            ,
+            'sample-custom-lambda-layer.mk'
+        );
+    })
 })

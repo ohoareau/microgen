@@ -36,6 +36,9 @@ export class MakefileTemplate extends AbstractFileTemplate {
     addTarget(name, steps: string[] = [], dependencies: string[] = [], options: any = {}): this {
         return this.addPredefinedTarget(name, 'generic', options, steps, dependencies);
     }
+    addShellTarget(name, script, dependencies: string[] = [], options: any = {}): this {
+        return this.addTarget(name, [`sh ${script}`], dependencies, options);
+    }
     addMetaTarget(name, dependencies: string[] = [], options: any = {}): this {
         return this.addTarget(name, [], dependencies, options);
     }

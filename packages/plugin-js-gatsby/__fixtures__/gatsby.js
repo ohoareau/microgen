@@ -12,8 +12,8 @@ module.exports = {
         front: {
             type: 'js-gatsby',
             vars: {
-                prefix: 'myothercompany',
-                project: 'someproject',
+                project_prefix: 'myothercompany',
+                project_name: 'someproject',
                 name: 'front',
             },
         }

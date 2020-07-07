@@ -12,8 +12,8 @@ module.exports = {
         app: {
             type: 'js-react-app',
             vars: {
-                prefix: 'myothercompany',
-                project: 'someproject',
+                project_prefix: 'myothercompany',
+                project_name: 'someproject',
                 name: 'app',
             },
         }
