@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-custom-lambda-layer",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +24,7 @@
     "@ohoareau/microgen": "^0.8.0"
   },
   "dependencies": {
-    "@ohoareau/microgen-templates-core": "^0.1.0"
+    "@ohoareau/microgen-templates-core": "^0.1.1"
   },
   "devDependencies": {
     "@ohoareau/microgen": "^0.11.0",
