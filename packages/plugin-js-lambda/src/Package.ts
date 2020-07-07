@@ -135,7 +135,8 @@ export default class Package extends AbstractPackage<PackageConfig> {
             .addMetaTarget('clean', ['clean-modules', 'clean-coverage'])
             .addPredefinedTarget('clean-modules', 'clean-node-modules')
             .addPredefinedTarget('clean-coverage', 'clean-coverage')
-            .addPredefinedTarget('test', 'yarn-test-jest', {local: true, coverage: false})
+            .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
+            .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
         ;
