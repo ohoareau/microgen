@@ -19,7 +19,7 @@ export default class Package extends AbstractPackage {
         }
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const t = new MakefileTemplate()
+        const t = new MakefileTemplate(vars.makefile || {})
             .addGlobalVar('env', 'dev')
             .setDefaultTarget('install')
             .addTarget('pre-install')

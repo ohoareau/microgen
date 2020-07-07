@@ -21,7 +21,7 @@
     "gen": "../../packages/microgen/bin/microgen"
   },
   "peerDependencies": {
-    "@ohoareau/microgen": "^0.10.0"
+    "@ohoareau/microgen": "^0.11.0"
   },
   "devDependencies": {
     "@ohoareau/microgen": "^0.11.0"

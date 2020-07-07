@@ -21,8 +21,11 @@
     "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
     "gen": "../../packages/microgen/bin/microgen"
   },
+  "dependencies": {
+    "@ohoareau/microgen-templates-core": "^0.1.2"
+  },
   "peerDependencies": {
-    "@ohoareau/microgen": "^0.10.0"
+    "@ohoareau/microgen": "^0.11.0"
   },
   "devDependencies": {
     "@ohoareau/microgen": "^0.11.0",

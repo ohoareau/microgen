@@ -1,6 +1,7 @@
 import Handler, {HandlerConfig} from './Handler';
 import Microservice, {MicroserviceConfig} from './Microservice';
 import {AbstractPackage, BasePackageConfig} from '@ohoareau/microgen';
+import {MakefileTemplate} from "@ohoareau/microgen-templates-core";
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
@@ -87,7 +88,6 @@ export default class Package extends AbstractPackage<PackageConfig> {
             ['LICENSE.md']: true,
             ['README.md']: true,
             ['.gitignore']: true,
-            ['Makefile']: true,
             ['package-excludes.lst']: true,
         };
     }
@@ -105,6 +105,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
                 author: (vars.author && ('object' === typeof vars.author)) ? vars.author : {name: vars.author_name, email: vars.author_email},
                 private: true,
             }, null, 4),
+            ['Makefile']: this.buildMakefile(vars),
         });
         const objects: any = (<any[]>[]).concat(
             Object.values(this.microservices),
@@ -122,5 +123,23 @@ export default class Package extends AbstractPackage<PackageConfig> {
         }
 
         return files;
+    }
+    protected buildMakefile(vars: any): MakefileTemplate {
+        const t = new MakefileTemplate(vars.makefile || {})
+            .addGlobalVar('env', 'dev')
+            .setDefaultTarget('install')
+            .addTarget('pre-install')
+            .addPredefinedTarget('install', 'yarn-install')
+            .addPredefinedTarget('build', 'yarn-build')
+            .addPredefinedTarget('generate-env-local', 'generate-env-local')
+            .addMetaTarget('clean', ['clean-modules', 'clean-coverage'])
+            .addPredefinedTarget('clean-modules', 'clean-node-modules')
+            .addPredefinedTarget('clean-coverage', 'clean-coverage')
+            .addPredefinedTarget('test', 'yarn-test-jest', {local: true, coverage: false})
+            .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
+            .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
+        ;
+        vars.deployable && t.addPredefinedTarget('deploy', 'yarn-deploy');
+        return t;
     }
 }

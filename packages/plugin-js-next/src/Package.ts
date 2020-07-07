@@ -26,7 +26,7 @@ export default class Package extends AbstractPackage {
         };
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate()
+        return new MakefileTemplate(vars.makefile || {})
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('bucket_prefix', `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
@@ -46,6 +46,6 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('serve', 'yarn-serve')
             .addPredefinedTarget('test', 'yarn-test-jest', {coverage: true})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
-            ;
+        ;
     }
 }

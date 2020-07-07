@@ -44,6 +44,6 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('start', 'yarn-start')
             .addPredefinedTarget('test', 'yarn-test-jest', {coverage: true})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
-            ;
+        ;
     }
 }
