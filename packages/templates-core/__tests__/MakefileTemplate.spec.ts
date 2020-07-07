@@ -9,6 +9,21 @@ describe('render', () => {
     it('no targets', () => {
         expectRenderSameAsFile(new MakefileTemplate(), 'no-targets.mk');
     })
+    it('no targets but custom config', () => {
+        expectRenderSameAsFile(new MakefileTemplate({
+            targets: {
+                target1: {deps: ['target1-sub-a', 'target1-sub-b']},
+                ['target1-sub-a']: {steps: ['echo "Hello from Target1SubA!"']},
+                ['target1-sub-b']: {steps: ['echo "Hello from"', 'echo "Target1SubB!"']},
+                ['build-custom']: {type: 'yarn-build'},
+            },
+            globals: {
+                var1: {defaultValue: '12'},
+                var2: {value: '13'}
+            },
+            defaultTarget: 'target1',
+        }), 'no-targets-but-custom-config.mk');
+    })
     it('one target named all', () => {
         expectRenderSameAsFile(
             new MakefileTemplate()
@@ -38,6 +53,27 @@ describe('render', () => {
                 .addTarget('build-b', ['@true'])
             ,
             'grouped-targets.mk'
+        );
+    })
+    it('grouped targets with overriden target', () => {
+        expectRenderSameAsFile(
+            new MakefileTemplate({
+                targets: {
+                    ['build-b']: {steps: ['echo "Overriden!"']},
+                },
+                globals: {
+                    var2: {value: '14'},
+                },
+            })
+                .addGlobalVar('var2', undefined, '13')
+                .addTarget('all', ['@true'])
+                .addTarget('build', ['@true'])
+                .addPredefinedTarget('install-dummy', 'yarn-lerna-bootstrap', {scope: '@dummy'})
+                .addTarget('build-c', ['@true'])
+                .addTarget('build-a', ['@true'])
+                .addTarget('build-b', ['@true'])
+            ,
+            'grouped-targets-with-overriden-target.mk'
         );
     })
     it('sample packages', () => {

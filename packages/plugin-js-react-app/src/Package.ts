@@ -26,7 +26,7 @@ export default class Package extends AbstractPackage {
         };
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate()
+        return new MakefileTemplate(vars.makefile || {})
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('bucket_prefix', `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
