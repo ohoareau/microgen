@@ -29,8 +29,11 @@ const resolvers = {
 };
 
 const context = ({event, context, req}) => {
-    if (!!event && !!event.headers && !!event.headers.Authorization) {
-        event.user = require('jsonwebtoken').verify((event.headers.Authorization || '').split(' ')[1], jwtSecret);
+    if (!!event && !!event.headers) {
+        const authHeader = event.headers.Authorization || event.headers.authorization;
+        if (!!authHeader) {
+            event.user = require('jsonwebtoken').verify((authHeader || '').split(' ')[1], jwtSecret);
+        }
     }
     return {event, context};
 };
