@@ -98,7 +98,7 @@ export default class Package extends AbstractPackage {
         const scm = vars.scm || 'git';
         const t = new MakefileTemplate(vars.makefile || {})
             .addGlobalVar('env', 'dev')
-            .addGlobalVar('b', 'develop')
+            .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'develop')
             .addPredefinedTarget('generate', 'yarn-microgen')
             .addPredefinedTarget('install-root', 'yarn-install')
             .addPredefinedTarget('install-terraform', 'tfenv-install')
@@ -113,6 +113,7 @@ export default class Package extends AbstractPackage {
             .addSubTarget('provision-full', 'infra', 'provision-full', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-init', 'infra', 'init', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-plan', 'infra', 'plan', {env: '$(env)'}, ['generate-terraform'])
+            .addSubTarget('infra-apply', 'infra', 'apply', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-refresh', 'infra', 'refresh', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-update', 'infra', 'update', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('list-layers', 'infra', 'list-layers', {env: '$(env)'}, ['generate-terraform'])
