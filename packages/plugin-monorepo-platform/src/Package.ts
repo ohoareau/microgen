@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -15,17 +15,15 @@ export default class Package extends AbstractPackage {
         };
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildFilesFromTemplates(vars: any, cfg: any): any {
-        return {
-            ['LICENSE.md']: true,
-        };
-    }
-    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildDynamicFiles(vars: any, cfg: any): any {
         return {
+            ['LICENSE.md']: this.buildLicense(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
         };
+    }
+    protected buildLicense(vars: any): LicenseTemplate {
+        return new LicenseTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})

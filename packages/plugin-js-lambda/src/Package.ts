@@ -1,7 +1,7 @@
 import Handler, {HandlerConfig} from './Handler';
 import Microservice, {MicroserviceConfig} from './Microservice';
 import {AbstractPackage, BasePackageConfig} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate, PackageExcludesTemplate} from "@ohoareau/microgen-templates-core";
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
@@ -83,14 +83,6 @@ export default class Package extends AbstractPackage<PackageConfig> {
         return vars;
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildFilesFromTemplates(vars: any, cfg: any): any {
-        return {
-            ['LICENSE.md']: true,
-            ['README.md']: true,
-            ['package-excludes.lst']: true,
-        };
-    }
-    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         const files = (await Promise.all(Object.values(this.handlers).map(async h => h.generate(vars)))).reduce((acc, f) => ({...acc, ...f}), {
             ['package.json']: () => JSON.stringify({
@@ -104,6 +96,9 @@ export default class Package extends AbstractPackage<PackageConfig> {
                 author: (vars.author && ('object' === typeof vars.author)) ? vars.author : {name: vars.author_name, email: vars.author_email},
                 private: true,
             }, null, 4),
+            ['LICENSE.md']: this.buildLicense(vars),
+            ['README.md']: this.buildReadme(vars),
+            ['package-excludes.lst']: this.buildPackageExcludes(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
         });
@@ -123,6 +118,15 @@ export default class Package extends AbstractPackage<PackageConfig> {
         }
 
         return files;
+    }
+    protected buildLicense(vars: any): LicenseTemplate {
+        return new LicenseTemplate(vars);
+    }
+    protected buildReadme(vars: any): ReadmeTemplate {
+        return new ReadmeTemplate(vars);
+    }
+    protected buildPackageExcludes(vars: any): PackageExcludesTemplate {
+        return new PackageExcludesTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})

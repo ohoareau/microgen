@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates-core";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -19,17 +19,25 @@ export default class Package extends AbstractPackage {
             ['packages/.gitkeep']: true,
             ['.nvmrc']: true,
             ['lerna.json']: true,
-            ['LICENSE.md']: true,
             ['Makefile']: true,
             ['package.json']: true,
-            ['README.md']: true,
             ['rollup.config.js']: true,
         };
     }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {
+            ['LICENSE.md']: this.buildLicense(vars),
+            ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
         };
+    }
+    protected buildLicense(vars: any): LicenseTemplate {
+        return new LicenseTemplate(vars);
+    }
+    protected buildReadme(vars: any): ReadmeTemplate {
+        return new ReadmeTemplate(vars)
+            .addFragmentFromTemplate(`${__dirname}/../templates/README.md.ejs`)
+            ;
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})

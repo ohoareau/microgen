@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, ReadmeTemplate, PackageExcludesTemplate} from "@ohoareau/microgen-templates-core";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -17,19 +17,28 @@ export default class Package extends AbstractPackage {
     protected buildFilesFromTemplates(vars: any, cfg: any): any {
         return {
             ['requirements.txt']: true,
-            ['LICENSE']: true,
-            ['README.md']: true,
             ['setup.py']: true,
             ['Makefile']: true,
             ['tests/__init__.py']: true,
-            ['package-excludes.lst']: true,
         };
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildDynamicFiles(vars: any, cfg: any): any {
         return {
+            ['LICENSE']: this.buildLicense(vars),
+            ['README.md']: this.buildReadme(vars),
+            ['package-excludes.lst']: this.buildPackageExcludes(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
         };
+    }
+    protected buildLicense(vars: any): LicenseTemplate {
+        return new LicenseTemplate(vars);
+    }
+    protected buildReadme(vars: any): ReadmeTemplate {
+        return new ReadmeTemplate(vars);
+    }
+    protected buildPackageExcludes(vars: any): PackageExcludesTemplate {
+        return new PackageExcludesTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})

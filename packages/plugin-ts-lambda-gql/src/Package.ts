@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -38,15 +38,18 @@ export default class Package extends AbstractPackage {
         return {
             ['.eslintignore']: true,
             ['.eslintrc.js']: true,
-            ['LICENSE.md']: true,
             ['tsconfig.json']: true,
         };
     }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {
+            ['LICENSE.md']: this.buildLicense(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
         };
+    }
+    protected buildLicense(vars: any): LicenseTemplate {
+        return new LicenseTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})
