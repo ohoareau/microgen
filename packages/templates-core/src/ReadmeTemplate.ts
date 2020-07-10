@@ -30,7 +30,7 @@ export class ReadmeTemplate extends AbstractFileTemplate {
             this.customConsumed = true;
         }
         return {
-            project_name: this.customConfig.project_name || this.customConfig.name || 'myproject',
+            name: this.customConfig.name || this.customConfig.project_name || 'myproject',
             fragments: this.fragments,
         }
     }
