@@ -1,3 +1,5 @@
+export * from './DockerBuildTarget';
+export * from './DockerPushTarget';
 export * from './TfgenTarget';
 export * from './TfenvInstallTarget';
 export * from './TflayerApplyTarget';

@@ -22,8 +22,12 @@ export class GenericTarget {
         return Object.entries(opts).reduce((acc, [k, v]) => {
             if (undefined === v) return acc;
             const x = (k.length > 1) ? '--' : '-';
-            const value = true === v ? '' : String(v);
-            return `${acc || ''}${acc ? ' ' : ''}${x}${k}${value ? ' ' : ''}${value || ''}`;
+            const vv = Array.isArray(v) ? v : [v];
+            if (0 === vv.length) return acc;
+            return vv.reduce((acc2, vvv) => {
+                const value = true === vvv ? '' : String(vvv);
+                return `${acc2 || ''}${acc2 ? ' ' : ''}${x}${k}${value ? ' ' : ''}${value || ''}`;
+            }, acc);
         }, '');
     }
     buildCliArgs(args: any, options: any): string {
@@ -32,10 +36,11 @@ export class GenericTarget {
             return `${acc || ''}${acc ? ' ' : ''}${v}`;
         }, '');
     }
-    buildCli(command: string, args: (string|undefined)[], opts: any, options: any): string {
+    buildCli(command: string, args: (string|undefined)[], opts: any, options: any, preOpts: any = {}): string {
         const a = this.buildCliArgs(args, options)
         const o = this.buildCliOptions(opts, options)
-        return `${command}${a ? ' ' : ''}${a || ''}${o ? ' ' : ''}${o || ''}`;
+        const po = this.buildCliOptions(preOpts, options)
+        return `${command}${po ? ' ' : ''}${po || ''}${a ? ' ' : ''}${a || ''}${o ? ' ' : ''}${o || ''}`;
     }
     convertSteps(steps: string[], options: any): string[] {
         options.dir && (steps = steps.map(s => `cd ${options.dir} && ${s}`));

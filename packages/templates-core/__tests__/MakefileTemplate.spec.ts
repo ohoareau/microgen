@@ -234,6 +234,37 @@ describe('render', () => {
             'sample-front.mk'
         );
     })
+    it('sample front with publish image', () => {
+        expectRenderSameAsFile(
+            new MakefileTemplate()
+                .addGlobalVar('prefix', 'myprefix')
+                .addGlobalVar('bucket_prefix', '$(prefix)-myproject')
+                .addGlobalVar('env', 'dev')
+                .addGlobalVar('AWS_PROFILE', '$(prefix)-$(env)')
+                .addGlobalVar('bucket', '$(env)-$(bucket_prefix)-front')
+                .addGlobalVar('cloudfront', '$(AWS_CLOUDFRONT_DISTRIBUTION_ID_FRONT)')
+                .setDefaultTarget('install')
+                .addTarget('pre-install')
+                .addPredefinedTarget('install', 'yarn-install')
+                .addPredefinedTarget('build', 'yarn-build')
+                .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'public/'})
+                .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
+                .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
+                .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'GATSBY'})
+                .addPredefinedTarget('start', 'yarn-start')
+                .addPredefinedTarget('serve', 'yarn-serve')
+                .addPredefinedTarget('test', 'yarn-test-jest', {coverage: true})
+                .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
+                .addPredefinedTarget('build-publish-image', 'docker-build', {tag: 'mytag', path: '.', buildArgs: {arg1: 'value1', arg2: 'value2'}})
+                .addPredefinedTarget('deploy-publish-image', 'docker-push', {tag: 'mytag'})
+                .addPredefinedTarget('build-code', 'yarn-build')
+                .addMetaTarget('build', ['build-code', 'build-publish-image'])
+                .addMetaTarget('deploy', ['deploy-publish-image'])
+                .addMetaTarget('deploy-raw', ['deploy-code', 'invalidate-cache'])
+            ,
+            'sample-front-with-publish-image.mk'
+        );
+    })
     it('sample infra', () => {
         expectRenderSameAsFile(
             new MakefileTemplate()
