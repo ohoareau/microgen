@@ -93,7 +93,7 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate()
+        const t = new MakefileTemplate()
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
@@ -115,5 +115,16 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true, coverage: false})
         ;
+        if (vars.publish_image) {
+            t
+                .addPredefinedTarget('build-publish-image', 'docker-build', {tag: vars.publish_image.tag, dir: vars.publish_image.dir || '.', buildArgs: vars.publish_image.buildArgs || {}})
+                .addPredefinedTarget('deploy-publish-image', 'docker-push', {tag: vars.publish_image.tag})
+                .addPredefinedTarget('build-code', 'yarn-build')
+                .addMetaTarget('build', ['build-code', 'build-publish-image'])
+                .addMetaTarget('deploy', ['deploy-publish-image'])
+                .addMetaTarget('deploy-raw', ['deploy-code', 'invalidate-cache'])
+            ;
+        }
+        return t;
     }
 }
