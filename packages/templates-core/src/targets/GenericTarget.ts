@@ -36,11 +36,14 @@ export class GenericTarget {
             return `${acc || ''}${acc ? ' ' : ''}${v}`;
         }, '');
     }
-    buildCli(command: string, args: (string|undefined)[], opts: any, options: any, preOpts: any = {}): string {
+    buildCli(command: string, args: (string|undefined)[], opts: any, options: any, preOpts: any = {}, preCmds: string[] = [], postCmds: string[] = []): string {
         const a = this.buildCliArgs(args, options)
         const o = this.buildCliOptions(opts, options)
         const po = this.buildCliOptions(preOpts, options)
-        return `${command}${po ? ' ' : ''}${po || ''}${a ? ' ' : ''}${a || ''}${o ? ' ' : ''}${o || ''}`;
+        const x = `${command}${po ? ' ' : ''}${po || ''}${a ? ' ' : ''}${a || ''}${o ? ' ' : ''}${o || ''}`;
+        const pre = `${preCmds.join(' && ')}${preCmds.length ? ' && ' : ''}`;
+        const post = `${postCmds.length ? ' && ' : ''}${postCmds.join(' && ')}`;
+        return `${pre || ''}${(pre || post) ? '(' : ''}${x}${(pre || post) ? ')' : ''}${post || ''}`;
     }
     convertSteps(steps: string[], options: any): string[] {
         options.dir && (steps = steps.map(s => `cd ${options.dir} && ${s}`));

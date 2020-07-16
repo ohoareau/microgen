@@ -17,7 +17,7 @@ deploy: deploy-publish-image
 deploy-code:
 	@AWS_PROFILE=$(AWS_PROFILE) aws s3 sync public/ s3://$(bucket) --delete
 deploy-publish-image:
-	@docker push mytag
+	@(aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 012345678912.dkr.ecr.eu-west-3.amazonaws.com) && (docker push 012345678912.dkr.ecr.eu-west-3.amazonaws.com/abcd:latest)
 deploy-raw: deploy-code invalidate-cache
 
 generate-env-local:

@@ -256,7 +256,7 @@ describe('render', () => {
                 .addPredefinedTarget('test', 'yarn-test-jest', {coverage: true})
                 .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
                 .addPredefinedTarget('build-publish-image', 'docker-build', {tag: 'mytag', path: '.', buildArgs: {arg1: 'value1', arg2: 'value2'}})
-                .addPredefinedTarget('deploy-publish-image', 'docker-push', {tag: 'mytag'})
+                .addPredefinedTarget('deploy-publish-image', 'docker-push', {awsEcrLogin: true, tag: '012345678912.dkr.ecr.eu-west-3.amazonaws.com/abcd:latest'})
                 .addPredefinedTarget('build-code', 'yarn-build')
                 .addMetaTarget('build', ['build-code', 'build-publish-image'])
                 .addMetaTarget('deploy', ['deploy-publish-image'])
