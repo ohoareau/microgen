@@ -15,7 +15,9 @@ export abstract class AbstractDockerTarget extends GenericTarget {
     getPreCommands(options: any): string[] {
         const pres = <string[]>[];
         if (options.awsEcrLogin) {
-            const {region, domain} = parseEcr(options.tag);
+            let {region, domain} = parseEcr(options.tag);
+            options.region && (region = options.region);
+            options.domain && (domain = options.domain);
             pres.push(`(aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${domain})`);
         }
         return pres;
