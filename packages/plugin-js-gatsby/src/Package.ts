@@ -118,7 +118,7 @@ export default class Package extends AbstractPackage {
         if (vars.publish_image) {
             t
                 .addPredefinedTarget('build-publish-image', 'docker-build', {tag: vars.publish_image.tag, path: vars.publish_image.dir || '.', buildArgs: vars.publish_image.buildArgs || {}})
-                .addPredefinedTarget('deploy-publish-image', 'docker-push', {awsEcrLogin: Boolean(vars.publish_image.awsEcrLogin), tag: vars.publish_image.tag})
+                .addPredefinedTarget('deploy-publish-image', 'docker-push', {...vars.publish_image})
                 .addPredefinedTarget('build-code', 'yarn-build')
                 .addMetaTarget('build', ['build-code', 'build-publish-image'])
                 .addMetaTarget('deploy', ['deploy-publish-image'])
