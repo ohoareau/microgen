@@ -81,7 +81,8 @@ export default class Package extends AbstractPackage {
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         const scm = vars.scm || 'git';
-        const t = new MakefileTemplate(vars.makefile || {})
+        const m = vars.makefile || {};
+        const t = new MakefileTemplate(m)
             .addTarget('new', ['yarn --silent yo ./packages/generator-package 2>/dev/null'])
             .addPredefinedTarget('package-build-storybook', 'yarn-build-storybook', {dir: 'packages/$(p)'})
             .addPredefinedTarget('package-generate-svg-components', 'yarn-generate-svg-components', {dir: 'packages/$(p)'})
@@ -106,7 +107,7 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('clean', ['clean-lib', 'clean-modules', 'clean-coverage', 'clean-buildinfo'])
             .setDefaultTarget('install')
         ;
-        if (vars.makefile.deployable_storybooks) {
+        if (m.deployable_storybooks) {
             t
                 .addPredefinedTarget('deploy-storybooks', 'yarn-deploy-storybooks')
                 .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
@@ -120,7 +121,7 @@ export default class Package extends AbstractPackage {
                 .addMetaTarget('deploy', ['deploy-storybooks', 'invalidate-cache'])
             ;
         }
-        if (vars.makefile.microgen) {
+        if (m.microgen) {
             t
                 .addPredefinedTarget('generate', 'yarn-microgen')
             ;
