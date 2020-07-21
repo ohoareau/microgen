@@ -45,6 +45,12 @@ export class MicroGen implements IGenerator {
         };
         groups = groups || {};
         if (!Object.keys(groups).length) {
+            if (extra.root) {
+                groups['root'] = {dir: '.'};
+                if (!extra.root['.']) {
+                    extra.root = {'.': extra.root};
+                }
+            }
             groups['packages'] = {};
         }
         this.groups = Object.entries(groups).reduce((acc, [k, v]) => {
