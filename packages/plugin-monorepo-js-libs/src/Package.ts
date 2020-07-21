@@ -17,7 +17,7 @@ export default class Package extends AbstractPackage {
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildFilesFromTemplates(vars: any, cfg: any): any {
-        return {
+        const files = {
             ['.nvmrc']: true,
             ['CODE_OF_CONDUCT.md']: true,
             ['CONTRIBUTING.md']: true,
@@ -41,9 +41,12 @@ export default class Package extends AbstractPackage {
             ['packages/generator-package/README.md']: true,
             ['packages/generator-package/tsconfig.json']: true,
             ['.storybook/main.js']: true,
-            ['.github/workflows/deploy-to-env.yml']: true,
-            ['.github/workflows/push-to-feature-branch.yml']: true,
         };
+        if (vars.scm && vars.scm === 'github') {
+            files['.github/workflows/deploy-to-env.yml'] = true;
+            files['.github/workflows/push-to-feature-branch.yml'] = true;
+        }
+        return files;
     }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {
