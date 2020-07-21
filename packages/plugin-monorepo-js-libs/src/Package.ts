@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates-core";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -23,7 +23,6 @@ export default class Package extends AbstractPackage {
             ['CONTRIBUTING.md']: true,
             ['jest.config.js']: true,
             ['lerna.json']: true,
-            ['Makefile']: true,
             ['tsconfig.json']: true,
             ['tslint.json']: true,
             ['packages/generator-package/__tests__/index.spec.ts']: true,
@@ -53,6 +52,7 @@ export default class Package extends AbstractPackage {
             ['LICENSE.md']: this.buildLicense(vars),
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
+            ['Makefile']: this.buildMakefile(vars),
         };
     }
     protected buildLicense(vars: any): LicenseTemplate {
@@ -78,5 +78,59 @@ export default class Package extends AbstractPackage {
             .addIgnore('.DS_Store')
             .addIgnore('public/')
         ;
+    }
+    protected buildMakefile(vars: any): MakefileTemplate {
+        const scm = vars.scm || 'git';
+        const t = new MakefileTemplate(vars.makefile || {})
+            .addTarget('new', ['yarn --silent yo ./packages/generator-package 2>/dev/null'])
+            .addPredefinedTarget('package-build-storybook', 'yarn-build-storybook', {dir: 'packages/$(p)'})
+            .addPredefinedTarget('package-generate-svg-components', 'yarn-generate-svg-components', {dir: 'packages/$(p)'})
+            .addPredefinedTarget('package-storybook', 'yarn-story', {dir: 'packages/$(p)'})
+            .addPredefinedTarget('install-root', 'yarn-install')
+            .addPredefinedTarget('install-packages', 'yarn-lerna-bootstrap')
+            .addPredefinedTarget('build', 'yarn-lerna-run-build')
+            .addPredefinedTarget('package-build', 'yarn-build', {dir: 'packages/$(p)'})
+            .addPredefinedTarget('package-test', 'yarn-test-jest', {dir: 'packages/$(p)', local: true, coverage: true}, [], ['package-build'])
+            .addPredefinedTarget('test-only', 'yarn-test-jest', {local: true, parallel: false, coverage: true})
+            .addPredefinedTarget('test-local', 'yarn-test-jest', {local: true, coverage: true})
+            .addPredefinedTarget('package-clear-test', 'yarn-jest-clear-cache', {dir: 'packages/$(p)'})
+            .addPredefinedTarget('package-install', 'yarn-lerna-bootstrap', {scope: `@${vars.npm_scope}/$(p)`})
+            .addPredefinedTarget('changed', 'yarn-lerna-changed')
+            .addPredefinedTarget('publish', 'yarn-lerna-publish')
+            .addPredefinedTarget('clean-buildinfo', 'clean-ts-build-info', {on: 'packages'})
+            .addPredefinedTarget('clean-coverage', 'clean-coverage', {on: 'packages'})
+            .addPredefinedTarget('clean-lib', 'clean-lib', {on: 'packages'})
+            .addPredefinedTarget('clean-modules', 'clean-node-modules', {on: 'packages'})
+            .addMetaTarget('test', ['build', 'test-only'])
+            .addMetaTarget('install', ['install-root', 'install-packages', 'build'])
+            .addMetaTarget('clean', ['clean-lib', 'clean-modules', 'clean-coverage', 'clean-buildinfo'])
+            .setDefaultTarget('install')
+        ;
+        if (vars.makefile.deployable_storybooks) {
+            t
+                .addPredefinedTarget('deploy-storybooks', 'yarn-deploy-storybooks')
+                .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
+
+                .addGlobalVar('prefix', vars.project_prefix)
+                .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
+                .addGlobalVar('env', 'dev')
+                .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
+                .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-storybook`)
+                .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_STORYBOOK)`)
+                .addMetaTarget('deploy', ['deploy-storybooks', 'invalidate-cache'])
+            ;
+        }
+        if (vars.makefile.microgen) {
+            t
+                .addPredefinedTarget('generate', 'yarn-microgen')
+            ;
+        }
+        if ('github' === scm) {
+            t
+                .addTarget('pr', ['hub pull-request -b $(b)'])
+                .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'master')
+            ;
+        }
+        return t;
     }
 }
