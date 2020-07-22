@@ -380,4 +380,16 @@ describe('render', () => {
             'sample-python-package.mk'
         );
     })
+    it('sample with exports', () => {
+        expectRenderSameAsFile(
+            new MakefileTemplate()
+                .addGlobalVar('prefix', 'myprefix')
+                .addExportedVar('a')
+                .addExportedVar('B_C')
+                .addTarget('install', ['echo "Hello world!"'])
+                .setDefaultTarget('install')
+            ,
+            'sample-with-exports.mk'
+        );
+    })
 })

@@ -33,18 +33,24 @@ export type GlobalVarConfig = {
     value?: any,
 };
 
+export type ExportedVarConfig = {
+    name: string,
+};
+
 export type MakefileTemplateConfig = {
     targets?: {[name: string]: Omit<ShellTargetConfig, 'name'> | Omit<MetaTargetConfig, 'name'> | Omit<SubTargetConfig, 'name'> | Omit<PredefinedTargetConfig, 'name'>},
     globals?: {[name: string]: Omit<GlobalVarConfig, 'name'>},
+    exports?: {[name: string]: Omit<ExportedVarConfig, 'name'>},
     defaultTarget?: string,
 };
 
 export class MakefileTemplate extends AbstractFileTemplate {
     private targets: any[] = [];
     private globalVars: any[] = [];
+    private exportedVars: any[] = [];
     private customConfig: MakefileTemplateConfig ;
     private customConsumed: boolean;
-    constructor(config: MakefileTemplateConfig = {targets: {}, globals: {}}) {
+    constructor(config: MakefileTemplateConfig = {targets: {}, globals: {}, exports: {}}) {
         super();
         this.customConsumed = false;
         this.customConfig = config;
@@ -77,6 +83,9 @@ export class MakefileTemplate extends AbstractFileTemplate {
     addGlobalVarFromConfig(config: GlobalVarConfig): this {
         return this.addGlobalVar(config.name, config.defaultValue, config.value);
     }
+    addExportedVarFromConfig(config: ExportedVarConfig): this {
+        return this.addExportedVar(config.name);
+    }
     getVars() {
         if (!this.customConsumed) {
             Object.entries(this.customConfig.targets || {}).forEach(([name, targetConfig]) => {
@@ -84,6 +93,9 @@ export class MakefileTemplate extends AbstractFileTemplate {
             });
             Object.entries(this.customConfig.globals || {}).forEach(([name, globalVarConfig]) => {
                 this.addGlobalVarFromConfig({name, ...globalVarConfig});
+            });
+            Object.entries(this.customConfig.exports || {}).forEach(([name, exportedVarConfig]) => {
+                this.addExportedVarFromConfig({name, ...exportedVarConfig});
             });
             this.customConsumed = true;
         }
@@ -102,9 +114,11 @@ export class MakefileTemplate extends AbstractFileTemplate {
             g.targets.sort(nameSorter);
         });
         const globalVars = Object.values(this.globalVars.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name, type: g.defaultValue ? '?=' : '=', value: g.value || g.defaultValue}));
+        const exportedVars = Object.values(this.exportedVars.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name}));
         return {
             globalVars,
             targetGroups,
+            exportedVars,
         }
     }
     addTarget(name, steps: string[] = [], dependencies: string[] = [], options: any = {}): this {
@@ -121,6 +135,10 @@ export class MakefileTemplate extends AbstractFileTemplate {
     }
     addGlobalVar(name: string, defaultValue: any = undefined, value: any = undefined): this {
         this.globalVars.push({name, defaultValue, value});
+        return this;
+    }
+    addExportedVar(name: string): this {
+        this.exportedVars.push({name});
         return this;
     }
     addPredefinedTarget(name: string, type?: string, options: any = {}, extraSteps: string[] = [], extraDependencies: string[] = []): this {

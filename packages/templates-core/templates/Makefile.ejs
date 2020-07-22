@@ -3,6 +3,11 @@
 <%- globalVar.name -%> <%- globalVar.type -%> <%- globalVar.value %>
 <% }) %>
 <% } -%>
+<% if (exportedVars.length) { -%>
+<% exportedVars.forEach(exportedVar => { -%>
+export <%- exportedVar.name %>
+<% }) %>
+<% } -%>
 <% if (targetGroups.length) { -%>
 <% targetGroups.forEach(targetGroup => { -%>
 <% targetGroup.targets.forEach(target => { -%>
