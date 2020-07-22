@@ -1,6 +1,18 @@
 import {AbstractPackage} from '@ohoareau/microgen';
 import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates-core";
 
+export type environment = {
+};
+
+export type layer = {
+};
+
+export type model = {
+    config?: any,
+    environments: environment[],
+    layers: layer[],
+};
+
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
@@ -13,10 +25,12 @@ export default class Package extends AbstractPackage {
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildDynamicFiles(vars: any, cfg: any): any {
+        const model = this.buildModel(vars, cfg);
         return {
-            ['environments/.gitkeep']: () => '',
-            ['layers/.gitkeep']: () => '',
-            ['modules/.gitkeep']: () => '',
+            ...this.buildConfigFileIfNeeded(model, vars),
+            ...this.buildEnvironmentsFiles(model, vars),
+            ...this.buildLayersFiles(model, vars),
+            ...this.buildModulesFiles(model, vars),
             ['LICENSE.md']: this.buildLicense(vars),
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
@@ -68,5 +82,43 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('provision', ['init', 'sync'])
             .addMetaTarget('provision-full', ['init-full', 'sync-full'])
         ;
+    }
+    protected buildEnvironmentsFiles(model: model, vars: any): {[name: string]: any} {
+        return {
+            ['environments/.gitkeep']: () => '',
+        };
+    }
+    protected buildLayersFiles(model: model, vars: any): {[name: string]: any} {
+        return {
+            ['layers/.gitkeep']: () => '',
+        };
+    }
+    protected buildModulesFiles(model: model, vars: any): {[name: string]: any} {
+        return {
+            ['modules/.gitkeep']: () => '',
+        };
+    }
+    protected buildConfigFileIfNeeded(model: model, vars: any): {[name: string]: any} {
+        return model.config ? {
+            ['config.json']: JSON.stringify(model.config, null, 4),
+        } : {};
+    }
+    protected buildModel(vars: any, cfg: any): model {
+        const config = {
+            common: {},
+            layers: {},
+            environments: {},
+        };
+        if (vars.environments) {
+            config.environments = Object.entries(vars.environments).reduce((acc, [k, v]) => Object.assign(acc, {[k]: (<any>v).vars || {}}), {});
+        }
+        if (vars.layers) {
+            config.layers = Object.entries(vars.layers).reduce((acc, [k, v]) => Object.assign(acc, {[k]: v || {}}), {});
+        }
+        return {
+            environments: Object.entries(vars.environments || {}).reduce((acc, [k, v]) => [...acc, {name: k, ...<any>v}], <environment[]>[]),
+            layers: Object.entries(vars.layers || {}).reduce((acc, [k, v]) => [...acc, {name: k, ...<any>v}], <layer[]>[]),
+            config: (0 < Object.keys(config.environments).length) ? config : undefined,
+        };
     }
 }
