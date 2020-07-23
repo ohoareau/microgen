@@ -1,22 +1,8 @@
 #### AWS Profiles (for your IAM user)
-
-    $ AWS_PROFILE=xxxxxxxx-dev aws s3 ls
+<% project_envs.forEach(e => { %>
+    $ AWS_PROFILE=<%- project_prefix -%>-<%- e.name -%> aws s3 ls
     2020-06-03 19:21:42 xxxx
     2020-06-03 18:37:03 yyyy
 
-
-    $ AWS_PROFILE=xxxxxxxx-test aws s3 ls
-    2020-06-03 19:21:42 xxxx
-    2020-06-03 18:37:03 yyyy
-
-
-    $ AWS_PROFILE=xxxxxxxx-preprod aws s3 ls
-    2020-06-03 19:21:42 xxxx
-    2020-06-03 18:37:03 yyyy
-
-
-    $ AWS_PROFILE=xxxxxxxx-prod aws s3 ls
-    2020-06-03 18:48:01 zzzz
-
-
+<% }) %>
 if not installed, see [AWS Profiles installation procedure](#install-aws-profiles).

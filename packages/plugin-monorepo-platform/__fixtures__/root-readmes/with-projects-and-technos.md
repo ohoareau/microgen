@@ -178,7 +178,8 @@ if not installed, see [AWS CLI installation procedure](#install-aws-cli).
 
 
     $ AWS_PROFILE=xxxxxxxx-prod aws s3 ls
-    2020-06-03 18:48:01 zzzz
+    2020-06-03 19:21:42 xxxx
+    2020-06-03 18:37:03 yyyy
 
 
 if not installed, see [AWS Profiles installation procedure](#install-aws-profiles).
@@ -482,5 +483,8 @@ To set your profiles, follow these steps:
 ##### Acceptance test
 
     AWS_PROFILE=xxxxxxxx-dev aws s3 ls
+    AWS_PROFILE=xxxxxxxx-test aws s3 ls
+    AWS_PROFILE=xxxxxxxx-preprod aws s3 ls
+    AWS_PROFILE=xxxxxxxx-prod aws s3 ls
 
 ... should display a non empty list of s3 buckets for DEV environment.

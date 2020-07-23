@@ -15,12 +15,19 @@ export type technology = {
 
 export type RootReadmeTemplateConfig = ReadmeTemplateConfig & {
     projects?: project[],
+    project_prefix?: string,
+    project_envs?: any[],
     technologies?: technology[],
 };
 
 export class RootReadmeTemplate extends ReadmeTemplate {
     constructor(config: RootReadmeTemplateConfig = {}) {
-        super({...config, ...buildProjectsVars(config)});
+        super({project_prefix: 'xxxxxxxx', project_envs: [
+                {name: 'dev', awsAccount: 'XXXXXXXXXXXX'},
+                {name: 'test', awsAccount: 'XXXXXXXXXXXX'},
+                {name: 'preprod', awsAccount: 'XXXXXXXXXXXX'},
+                {name: 'prod', awsAccount: 'YYYYYYYYYYYY'},
+            ], ...config, ...buildProjectsVars(config)});
         this
             .addNamedFragmentsFromTemplateDir(
                 `${__dirname}/../templates/readme`,
