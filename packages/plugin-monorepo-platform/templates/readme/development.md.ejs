@@ -1,0 +1,80 @@
+<% var sortedProjects = ('undefined' === typeof projects ? [] : projects) -%>
+<% sortedProjects.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1)) -%>
+## Development (local)
+
+### Install dependencies
+
+#### All dependencies
+
+    make
+
+#### Project specific dependencies
+
+    make install-root
+<% ('undefined' === typeof projects ? [] : projects).forEach(p => { %>    make install-<%- p.name %>
+<% }) %>
+
+### Execute tests
+
+#### All tests
+
+    make test
+
+#### Project specific tests
+
+<% ('undefined' === typeof projects ? [] : projects).forEach(p => { %>    make test-<%- p.name %>
+<% }) %>
+
+### Start local server (hot-reloaded)
+
+#### Default local server (front only)
+
+    make start
+
+#### Project specific local service
+
+<% ('undefined' === typeof projects ? [] : projects).filter(p => p.startable).forEach(p => { %>    make start-<%- p.name %>
+<% }) %>
+
+### Build production-ready directory
+
+#### All builds
+
+By default if no ` env=<env>` is provided on the command line, the default value is considered to be `env=dev`:
+
+    make build
+
+...or to specify a target env explicitly:
+
+    make build env=dev
+    make build env=test
+    make build env=preprod
+    make build env=prod
+
+#### Project specific build
+
+<% ('undefined' === typeof projects ? [] : projects).forEach(p => { %>    make build-<%- p.name -%> env=<env>
+<% }) %>
+
+### Deploy to an environment
+
+As a pre-requisite, you need to have build the production-ready version of the website targeted for the specified `env` (`dev|test|preprod|prod`)
+
+    make
+    make test
+    make build env=<env>
+
+where `<env>` must be one of the values: `dev`, `test`, `preprod`, `prod`.
+
+The first time you want to deploy from your local environment, you need to initialize terraform locally:
+
+    make infra-init env=<env>
+
+After having built the production-ready static files, you can then execute:
+
+    make provision env=<env>
+    make deploy env=<env>
+
+The `provision` command will synchronize the infrastructure resources (on AWS) with the ones described in the Terraform configuration (*.tf files located in the `./infra/environments/<env>/` directory).
+
+The `deploy` command will send and synchronize remote s3 bucket (containing static files served by the CloudFront CDN) with your local `./<deployable-project>/public/` or `./<deployable-project>/build/` directory, and then trigger a cache invalidation on the CloudFront distribution.

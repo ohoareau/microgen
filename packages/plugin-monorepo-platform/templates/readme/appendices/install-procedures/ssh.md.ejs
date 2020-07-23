@@ -1,0 +1,16 @@
+#### Install SSH
+
+An SSH client should already being installed on your system. If not, please add an ssh client using the official installation method for your operating system.
+Then, ensure the following is displaying the SSH client version:
+
+    $ ssh -V
+    OpenSSH_8.1p1, LibreSSL 2.7.3
+
+You need to have a personal ssh key in order to access th GitHub restricted projects of your organization.
+If not yet set on your local environment and on your GitHub account, please [follow instructions for your operating system](https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account)
+
+##### Acceptance test
+
+    $ ssh git@github.com
+
+... should display a GitHub ssh server greeting with your username.

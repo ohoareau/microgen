@@ -1,0 +1,20 @@
+# <%- name.toUpperCase() %>
+<% if (('undefined' !== typeof project_name) && ('undefined' !== typeof project_description)) { %>`<%- project_name %>` is the codename of the <%- project_description %>.
+<% } %>
+## Introduction
+
+This repository is a mono-repository that contains all the code for the platform.
+
+<% var sortedProjects = ('undefined' === typeof projects ? [] : projects) -%>
+<% sortedProjects.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1)) -%>
+<% if (sortedProjects.length > 0) { %>This mono-repo is composed of several technical sub-projects:
+
+<% ('undefined' === typeof projects ? [] : projects).forEach(p => { %>* `<%- p.name -%>` (<%- p.description -%>)
+<% }) -%><% } -%>
+<% var sortedTechnologies = ('undefined' === typeof technologies ? [] : technologies) -%>
+<% sortedTechnologies.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1)) -%>
+<% if (sortedTechnologies.length > 0) { %>
+The noticeable technologies used in this repository are (not exhaustive):
+
+<% sortedTechnologies.forEach(t => { %>* [<%- t.name -%>](<%- t.link -%>)
+<% }) %><% } -%>

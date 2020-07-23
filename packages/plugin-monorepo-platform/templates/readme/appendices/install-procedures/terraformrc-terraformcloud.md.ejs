@@ -1,0 +1,24 @@
+#### Install Terraformrc
+
+* if not yet provided to you, request an access to app.terraform.io to the Team Tech Lead
+* browse to https://app.terraform.io
+* log in with your account
+* go to upper right corner, click on your avatar
+* click User Settings link
+* go to Tokens menu item in the left
+* if not yet created, create a new personal Token and pick it up (so-called `the token`)
+
+Then add the following content to your `~/.terraformrc` file (create it if not exist):
+
+    credentials "app.terraform.io" {
+        token = "the token"
+    }
+
+if needed, here is the [Official Terraform Credentials documentation](https://www.terraform.io/docs/commands/cli-config.html#credentials-1)
+
+##### Acceptance test
+
+    $ cat ~/.terraformrc
+    credentials "app.terraform.io" {
+        token = "XXXXXXXXXX..."
+    }

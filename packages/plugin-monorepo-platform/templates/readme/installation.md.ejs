@@ -1,0 +1,7 @@
+## Installation
+
+<% if ('undefined' !== typeof project_git_url) { %>    git clone <%- project_git_url %>
+    cd <%- project_name %>
+<% } -%>
+    make pre-install
+    make

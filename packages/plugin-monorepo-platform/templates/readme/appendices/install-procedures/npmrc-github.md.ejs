@@ -1,0 +1,14 @@
+#### Install NPMRC
+
+Ensure first to have create a GitHub Personal Token, with scope package read/write enabled, and pick it up.
+
+Then, add the following content to your `~/.npmrc` file (create it if not exist):
+
+    //npm.pkg.github.com/:_authToken=<your-personal-github-token-with-packages-read-write-scope-enabled>
+<% if ('undefined' !== typeof npm_scope) { %>    @<%- npm_scope -%>:registry=https://npm.pkg.github.com<% } %>
+
+##### Acceptance test
+
+    $ npm whoami --registry https://npm.pkg.github.com
+
+... should display your personal GitHub username.

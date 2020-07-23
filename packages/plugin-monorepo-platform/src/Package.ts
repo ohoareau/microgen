@@ -1,5 +1,6 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates-core";
+import RootReadmeTemplate from "./RootReadmeTemplate";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -16,14 +17,20 @@ export default class Package extends AbstractPackage {
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildDynamicFiles(vars: any, cfg: any): any {
-        return {
+        const files = {
             ['LICENSE.md']: this.buildLicense(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
         };
+        vars.readme && (files['README.md'] = this.buildReadme(vars));
+        return files;
     }
     protected buildLicense(vars: any): LicenseTemplate {
         return new LicenseTemplate(vars);
+    }
+    protected buildReadme(vars: any): ReadmeTemplate {
+        return new RootReadmeTemplate(vars)
+        ;
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})
