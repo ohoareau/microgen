@@ -31,6 +31,7 @@ The noticeable technologies used in this repository are (not exhaustive):
 9. ?
 10. ?
 
+
 ## Pre-requisites
 
 Ensure you have the following installed on your local environment, with a versions >= to those displayed:
@@ -43,6 +44,7 @@ Whereas you are free to choose the Operating System you want to work on this pro
 * `Linux` (apt-based)
 
 We do not recommend Windows as an Operating System for working on this project.
+
 ### Terminal/Console
 
 Whereas a Terminal/Console is required to work on this project, you can choose whatever professional Terminal/Console program you want. Here is a short list of proposed ones:
@@ -51,6 +53,7 @@ Whereas a Terminal/Console is required to work on this project, you can choose w
 * [Linux console](https://en.wikipedia.org/wiki/Linux_console) (Linux only)
 
 We do not recommend Windows-based Terminal/Console for working on this project.
+
 ### IDE (Integrated Development Environment)
 
 Whereas an IDE is required to work on this project, you can choose whatever professional IDE to work with Javascript you want. Here is a short list of proposed ones:
@@ -59,6 +62,7 @@ Whereas an IDE is required to work on this project, you can choose whatever prof
 * Commercial: [JetBrains WebStorm](https://www.jetbrains.com/fr-fr/webstorm/)
 
 We do not recommend Text-only Editor (Sublime-Text, TextEdit, vi, vim, emacs, ...) for working on this project.
+
 ### Required CLI Tools & Settings
 
 #### make
@@ -146,7 +150,7 @@ if not installed, see [Terraform installation procedure](#install-terraform).
 
     $ cat ~/.terraformrc
     credentials "app.terraform.io" {
-        token = "XXXXXXXXXX..."
+      token = "XXXXXXXXXX..."
     }
 
 if not installed, see [Terraformrc installation procedure](#install-terraformrc).
@@ -178,6 +182,7 @@ if not installed, see [AWS CLI installation procedure](#install-aws-cli).
 
 
 if not installed, see [AWS Profiles installation procedure](#install-aws-profiles).
+
 
 ## Installation
 
@@ -271,6 +276,7 @@ The `provision` command will synchronize the infrastructure resources (on AWS) w
 
 The `deploy` command will send and synchronize remote s3 bucket (containing static files served by the CloudFront CDN) with your local `./<deployable-project>/public/` or `./<deployable-project>/build/` directory, and then trigger a cache invalidation on the CloudFront distribution.
 
+
 ## Appendices
 
 ### Optional Installation Procedures
@@ -281,7 +287,7 @@ The `deploy` command will send and synchronize remote s3 bucket (containing stat
 
 ##### Acceptance test
 
-    $ make -v
+    make -v
 
 ... should display the version of Make.
 #### Install Git
@@ -290,7 +296,7 @@ The `deploy` command will send and synchronize remote s3 bucket (containing stat
 
 ##### Acceptance test
 
-    $ git --version
+    git --version
 
 ... should display the version of Git.
 #### Install Hub
@@ -299,11 +305,11 @@ The `deploy` command will send and synchronize remote s3 bucket (containing stat
 
 To be able to use `hub` as a transparent wrapper of `git`, add the following to your `~/.bash_profile` / `~/.zshrc file` or equivalent:
 
-    $ eval "$(hub alias -s)"
+    eval "$(hub alias -s)"
 
 ##### Acceptance test
 
-    $ git -v
+    git -v
 
 ... should display the version of `Git + Hub`.
 #### Install SSH
@@ -319,7 +325,7 @@ If not yet set on your local environment and on your GitHub account, please [fol
 
 ##### Acceptance test
 
-    $ ssh git@github.com
+    ssh git@github.com
 
 ... should display a GitHub ssh server greeting with your username.
 #### Install NVM
@@ -328,31 +334,31 @@ If not yet set on your local environment and on your GitHub account, please [fol
 
 ##### Acceptance test
 
-    $ nvm --version
+    nvm --version
 
 ... should display `0.35.3` or a higher version.
 #### Install Node
 
 You have to install NVM first. Then:
 
-    $ nvm install
-    $ nvm use
+    nvm install
+    nvm use
 
 ##### Acceptance test
 
-    $ node -v
+    node -v
 
 ... should display `v14.3.0` or a higher version.
 #### Install NPM
 
 You have to install NVM and NODE first. Then:
 
-    $ nvm install
-    $ nvm use
+    nvm install
+    nvm use
 
 ##### Acceptance test
 
-    $ npm -v
+    npm -v
 
 ... should display `6.14.5` or a higher version.
 #### Install NPMRC
@@ -366,7 +372,7 @@ Then, add the following content to your `~/.npmrc` file (create it if not exist)
 
 ##### Acceptance test
 
-    $ npm whoami --registry https://npm.pkg.github.com
+    npm whoami --registry https://npm.pkg.github.com
 
 ... should display your personal GitHub username.
 #### Install tfenv
@@ -375,20 +381,20 @@ Then, add the following content to your `~/.npmrc` file (create it if not exist)
 
 ##### Acceptance test
 
-    $ tfenv -v
+    tfenv -v
 
 ... should display `1.0.2` or a higher version.
 #### Install Terraform
 
 You have to install tfenv first. Then:
 
-    $ tfven install
+    tfven install
 
 It will install the Terraform version specified in the `./.terraform-version` file.
 
 ##### Acceptance test
 
-    $ terraform -v
+    terraform -v
 
 ... should display `0.12.26` or a higher version.
 #### Install Yarn
@@ -397,7 +403,7 @@ It will install the Terraform version specified in the `./.terraform-version` fi
 
 ##### Acceptance test
 
-    $ yarn -v
+    yarn -v
 
 ... should display `1.22.4` or a higher version.
 #### Install Terraformrc
@@ -413,7 +419,7 @@ It will install the Terraform version specified in the `./.terraform-version` fi
 Then add the following content to your `~/.terraformrc` file (create it if not exist):
 
     credentials "app.terraform.io" {
-        token = "the token"
+      token = "the token"
     }
 
 if needed, here is the [Official Terraform Credentials documentation](https://www.terraform.io/docs/commands/cli-config.html#credentials-1)
@@ -422,7 +428,7 @@ if needed, here is the [Official Terraform Credentials documentation](https://ww
 
     $ cat ~/.terraformrc
     credentials "app.terraform.io" {
-        token = "XXXXXXXXXX..."
+      token = "XXXXXXXXXX..."
     }
 
 #### Install AWS CLI
@@ -431,7 +437,7 @@ if needed, here is the [Official Terraform Credentials documentation](https://ww
 
 ##### Acceptance test
 
-    $ aws --version
+    aws --version
 
 ... should display `2.0.10` or a higher version.
 #### Install AWS Profiles
