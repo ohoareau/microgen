@@ -11,7 +11,7 @@ To set your profiles, follow these steps:
 * ensure you have a personal IAM user and proper credentials that were provided to you (a so-called `Access Key Id` and `Secret Access Key`). These are your personal API credentials that you must not share with others. If not, please contact the Team Tech Lead.
 * ensure you have the following content to your `~/.aws/config` file (or create it with that content):
 
-<% project_envs.forEach(e => { %>
+<% sortedProjectEnvs.forEach(e => { %>
     [profile <%- project_prefix -%>-<%- e.name -%>]
     role_arn=arn:aws:iam::<%- e.awsAccount -%>:role/OrganizationAccountAccessRole
     source_profile=<%- project_prefix %>
@@ -27,7 +27,7 @@ To set your profiles, follow these steps:
 
 ##### Acceptance test
 
-<% project_envs.forEach(e => { -%>
+<% sortedProjectEnvs.forEach(e => { -%>
     AWS_PROFILE=<%- project_prefix -%>-<%- e.name -%> aws s3 ls
 <% }) -%>
 

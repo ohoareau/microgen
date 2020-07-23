@@ -154,7 +154,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
         vars.deployable && t.addPredefinedTarget('deploy', 'yarn-deploy');
         return t;
     }
-    protected getTechnologies(vars: any): any {
+    protected getTechnologies(): any {
         return {
             microlib: {name: "MicroLib", link: "https://github.com/ohoareau/libs-js/tree/master/packages/microlib"},
             make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},

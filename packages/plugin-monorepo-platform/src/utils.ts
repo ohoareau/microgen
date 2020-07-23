@@ -1,4 +1,41 @@
+export const applySort = (a, b) => a > b ? 1 : (a === b ? 0 : -1);
+export const applySortBy = (a, b, k) => applySort(a[k], b[k]);
+export const applySortBys = (a, b, ks) => applySortBy(a, b, ks.find(k => !!a[k]));
+
+export const buildTechnologiesVars = (vars: any): {
+    originalTechnologies: any,
+    sortedTechnologies: any[],
+} => {
+    const originalTechnologies = vars.technologies || {};
+    const sortedTechnologies = Object.entries(originalTechnologies).reduce((acc, [id, v]) => {
+        acc.push({id, name: id, ...<any>v});
+        return acc;
+    }, <any[]>[]);
+    sortedTechnologies.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1));
+    return {
+        originalTechnologies,
+        sortedTechnologies,
+    };
+};
+export const buildProjectEnvsVars = (vars: any): {
+    originalProjectEnvs: any,
+    sortedProjectEnvs: any[],
+} => {
+    const originalProjectEnvs = vars.project_envs || {};
+    const sortedProjectEnvs = Object.entries(originalProjectEnvs).reduce((acc, [id, v]) => {
+        acc.push({id, name: id, ...<any>v});
+        return acc;
+    }, <any[]>[]);
+    sortedProjectEnvs.sort((a, b) => applySortBys( a, b, ['priority', 'name', 'id']));
+    return {
+        originalProjectEnvs,
+        sortedProjectEnvs,
+    };
+};
+
 export const buildProjectsVars = (vars: any): {
+    originalProjects: any,
+    sortedProjects: any[],
     deployableProjects: any[],
     buildableProjects: any[],
     buildablePreProjects: any[],
@@ -10,8 +47,11 @@ export const buildProjectsVars = (vars: any): {
     startableProjects: any[],
     refreshableProjects: any[],
 } => {
-    const originalProjects = vars.projects || [];
-    const sortedProjects = [...originalProjects];
+    const originalProjects = vars.projects || {};
+    const sortedProjects = Object.entries(originalProjects).reduce((acc, [id, v]) => {
+        acc.push({id, name: id, ...<any>v});
+        return acc;
+    }, <any[]>[]);
     sortedProjects.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1));
     const deployableProjects = sortedProjects.filter(p => !!p.deployable);
     const buildableProjects = sortedProjects.filter(p => (undefined === p.buildable) || !!p.buildable);
@@ -24,6 +64,8 @@ export const buildProjectsVars = (vars: any): {
     const startableProjects = sortedProjects.filter(p => !!p.startable);
     const refreshableProjects = sortedProjects.filter(p => !!p.refreshable);
     return {
+        originalProjects,
+        sortedProjects,
         deployableProjects,
         buildableProjects,
         buildablePreProjects,

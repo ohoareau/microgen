@@ -70,7 +70,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true, coverage: false})
         ;
     }
-    protected getTechnologies(vars: any): any {
+    protected getTechnologies(): any {
         return {
             create_react_app: {name: "Create React App (CRA)", link: "https://create-react-app.dev/"},
             make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},

@@ -1,33 +1,45 @@
 import {ReadmeTemplate, ReadmeTemplateConfig} from "@ohoareau/microgen-templates-core";
-import {buildProjectsVars} from "./utils";
+import {buildProjectEnvsVars, buildProjectsVars, buildTechnologiesVars} from "./utils";
 
 export type project = {
-    name: string,
+    id: string,
+    name?: string,
     description: string,
     startable?: boolean,
     deployable?: boolean,
 };
 
 export type technology = {
-    name: string,
+    id: string,
+    name?: string,
     link?: string,
 };
 
 export type RootReadmeTemplateConfig = ReadmeTemplateConfig & {
-    projects?: project[],
+    projects?: {[id: string]: Omit<project, 'id'>},
     project_prefix?: string,
-    project_envs?: any[],
-    technologies?: technology[],
+    project_envs?: any,
+    technologies?: {[id: string]: Omit<technology, 'id'>},
 };
 
 export class RootReadmeTemplate extends ReadmeTemplate {
     constructor(config: RootReadmeTemplateConfig = {}) {
-        super({project_prefix: 'xxxxxxxx', project_envs: [
-                {name: 'dev', awsAccount: 'XXXXXXXXXXXX'},
-                {name: 'test', awsAccount: 'XXXXXXXXXXXX'},
-                {name: 'preprod', awsAccount: 'XXXXXXXXXXXX'},
-                {name: 'prod', awsAccount: 'YYYYYYYYYYYY'},
-            ], ...config, ...buildProjectsVars(config)});
+        const x = {
+            project_prefix: 'xxxxxxxx',
+            project_envs: {
+                dev: {awsAccount: 'XXXXXXXXXXXX', priority: 1},
+                test: {awsAccount: 'XXXXXXXXXXXX', priority: 2},
+                preprod: {awsAccount: 'XXXXXXXXXXXX', priority: 3},
+                prod: {awsAccount: 'YYYYYYYYYYYY', priority: 4},
+            },
+            ...config,
+        }
+        super({
+            ...x,
+            ...buildProjectsVars(x),
+            ...buildTechnologiesVars(x),
+            ...buildProjectEnvsVars(x),
+        });
         this
             .addNamedFragmentsFromTemplateDir(
                 `${__dirname}/../templates/readme`,

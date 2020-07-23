@@ -1,5 +1,6 @@
 import IPackage from './IPackage';
 import StaticFileTemplate from './StaticFileTemplate';
+import {populateData} from "./utils";
 
 export type BasePackageConfig = {
     name: string,
@@ -49,12 +50,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {};
     }
-    protected async buildVarsLists(vars: any): Promise<any> {
-        return {
-            technologies: await this.getTechnologies(vars),
-        };
-    }
-    protected getTechnologies(vars: any): any {
+    protected getTechnologies(): any {
         return {};
     }
     protected getDefaultCommonVars(): any {
@@ -88,17 +84,13 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     protected buildSources(vars: any, cfg: any): any[] {
         return [];
     }
-    async build(vars: any = {}): Promise<void> {
-        const lists = await this.buildVarsLists(vars);
-        Object.entries(lists).reduce((acc, [k, x]) => {
-            const v = Object.entries(<any>x).map(([id, data]) => ({id, ...<any>data}));
-            if (!v || !(<any[]>v).length) return acc;
-            (acc[k] && Array.isArray(acc[k])) || (acc[k] = []);
-            (<any[]>v).reduce((acc2, vv) => {
-                !acc2.find(i => (i.id && vv.id) ? (i.id === vv.id) : ((i.name && vv.name) ? (i.name === vv.name) : false)) && acc2.push(vv);
-                return acc2;
-            }, acc[k]);
-        }, vars);
+    async describe(): Promise<any> {
+        return {
+            technologies: await this.getTechnologies(),
+        };
+    }
+    async hydrate(data: any): Promise<void> {
+        populateData(this.vars, data);
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
         const pluginCfg = {templatePath: this.getTemplateRoot()};

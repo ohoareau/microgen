@@ -2,7 +2,7 @@ import IPackage from './IPackage';
 import IGenerator from './IGenerator';
 import FilesPlugin from './plugins/files';
 import IPlugin, {PluginConfig} from './IPlugin';
-import {renderFile, jsStringify, copy, writeFile} from './utils';
+import {renderFile, jsStringify, copy, writeFile, populateData} from './utils';
 import {PackageGroup} from './PackageGroup';
 import ITemplate, {isTemplate} from './ITemplate';
 import Template from './Template';
@@ -45,13 +45,16 @@ export class MicroGen implements IGenerator {
         };
         groups = groups || {};
         if (!Object.keys(groups).length) {
-            if (extra.root) {
-                groups['root'] = {dir: '.'};
-                if (!extra.root['.']) {
-                    extra.root = {'.': extra.root};
-                }
-            }
             groups['packages'] = {};
+        }
+        if (extra.root) {
+            !groups['root'] && (groups['root'] = {dir: '.'});
+            if (extra.root.type) {
+                extra.root = {'.': extra.root};
+            }
+        }
+        if (extra.projects) {
+            !groups['projects'] && (groups['projects'] = {dir: '.'});
         }
         this.groups = Object.entries(groups).reduce((acc, [k, v]) => {
             const {in: key = k, dir = k} = v;
@@ -165,16 +168,32 @@ export class MicroGen implements IGenerator {
             return acc;
         }, <[PackageGroup, IPackage[]][]>[]);
     }
+    private async preGenerate(groupments: [PackageGroup, IPackage[]][], vars: any): Promise<any> {
+        const description = {};
+        await groupments.reduce(async (acc, [_, packages]) => {
+            await acc;
+            vars.verbose = vars.verbose || process.env.MICROGEN_VERBOSE || 0;
+            await packages.reduce(async (acc, p) => {
+                await acc;
+                this.applyPackageEventHooks(p, 'before_describe');
+                populateData(description, await p.describe())
+                this.applyPackageEventHooks(p, 'after_describe', description);
+            }, Promise.resolve());
+        }, Promise.resolve());
+        return description;
+    }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
-        return (await this.prepare()).reduce(async (acc, [g, packages]) => {
+        const groupments = await this.prepare();
+        const description = await this.preGenerate(groupments, vars);
+        return (groupments).reduce(async (acc, [g, packages]) => {
             const result = await acc;
             vars.verbose = vars.verbose || process.env.MICROGEN_VERBOSE || 0;
             const {write = false, targetDir} = vars;
             await packages.reduce(async (acc, p) => {
                 await acc;
-                this.applyPackageEventHooks(p, 'before_build');
-                await p.build(vars);
-                this.applyPackageEventHooks(p, 'after_build', vars);
+                this.applyPackageEventHooks(p, 'before_hydrate');
+                await p.hydrate(description);
+                this.applyPackageEventHooks(p, 'after_hydrate', description);
             }, Promise.resolve());
             const rr = (await Promise.all(packages.map(async p => {
                 const n = (<any>p).getName ? (<any>p).getName() : p['name'];

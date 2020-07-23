@@ -127,7 +127,7 @@ export default class Package extends AbstractPackage {
         }
         return t;
     }
-    protected getTechnologies(vars: any): any {
+    protected getTechnologies(): any {
         const technos = {
             gatsbyjs: {name: "GatsbyJS", link: "https://www.gatsbyjs.org/"},
             make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
@@ -148,7 +148,7 @@ export default class Package extends AbstractPackage {
             prettier: {name: "Prettier", link: "https://prettier.io/"},
             json: {name: "JSON", link: "https://www.json.org/json-fr.html"},
         };
-        vars.publish_image && (technos['docker'] = {id: 'docker', name: "Docker", link: "https://www.docker.com"});
+        this.vars.publish_image && (technos['docker'] = {name: "Docker", link: "https://www.docker.com"});
         return technos;
     }
 }

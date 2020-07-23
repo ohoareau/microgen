@@ -20,3 +20,32 @@ export const writeFile = (target, content) => {
     fs.writeFileSync(target, content);
     return true;
 };
+export const populateData = (o, d) => {
+    return Object.entries(d || {}).reduce((acc, [k, v]) => {
+        if ('undefined' === typeof acc[k]) {
+            acc[k] = v;
+        } else {
+            if (Array.isArray(v)) {
+                if (Array.isArray(acc[k])) {
+                    v.forEach(vv => acc[k].push(vv));
+                } else {
+                    acc[k] = v;
+                }
+            } else {
+                if ((null !== v) && ('object' === typeof v)) {
+                    if ((null !== acc[k]) && ('object' === typeof acc[k])) {
+                        Object.assign(acc[k], v);
+                    } else {
+                        acc[k] = v;
+                    }
+                } else {
+                    // stay inchanged
+                }
+            }
+        }
+        return acc;
+    }, o);
+};
+export const mergeData = (a, b) => {
+    return populateData({...a}, b);
+}

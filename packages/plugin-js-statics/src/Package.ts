@@ -68,7 +68,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
         ;
     }
-    protected getTechnologies(vars: any): any {
+    protected getTechnologies(): any {
         return {
             make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
             aws: {name: "Amazon Web Services (AWS)", link: "https://aws.amazon.com/"},

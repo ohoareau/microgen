@@ -5,14 +5,10 @@
 
 This repository is a mono-repository that contains all the code for the platform.
 
-<% var sortedProjects = ('undefined' === typeof projects ? [] : projects) -%>
-<% sortedProjects.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1)) -%>
-<% if (sortedProjects.length > 0) { %>This mono-repo is composed of several technical sub-projects:
+<% if (sortedProjects.length > 0) { %>This mono-repo is composed of <%- sortedProjects.length -%> technical sub-projects:
 
-<% ('undefined' === typeof projects ? [] : projects).forEach(p => { %>* `<%- p.name -%>` (<%- p.description -%>)
+<% sortedProjects.forEach(p => { %>* `<%- p.name -%>`<% if (p.description) { %> (<%- p.description -%>)<% } %>
 <% }) -%><% } -%>
-<% var sortedTechnologies = ('undefined' === typeof technologies ? [] : technologies) -%>
-<% sortedTechnologies.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1)) -%>
 <% if (sortedTechnologies.length > 0) { %>
 The noticeable technologies used in this repository are (not exhaustive):
 

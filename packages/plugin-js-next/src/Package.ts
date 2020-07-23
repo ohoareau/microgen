@@ -78,7 +78,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true, coverage: false})
         ;
     }
-    protected getTechnologies(vars: any): any {
+    protected getTechnologies(): any {
         return {
             nextjs: {name: "Next.js", link: "https://nextjs.org/"},
             make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},

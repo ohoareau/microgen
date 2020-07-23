@@ -4,7 +4,7 @@
 
 This repository is a mono-repository that contains all the code for the platform.
 
-This mono-repo is composed of several technical sub-projects:
+This mono-repo is composed of 3 technical sub-projects:
 
 * `project1` (desc of project1)
 * `project2` (desc of project2)

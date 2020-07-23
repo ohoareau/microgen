@@ -133,7 +133,7 @@ export default class Package extends AbstractPackage {
             config: (0 < Object.keys(config.environments).length) ? config : undefined,
         };
     }
-    protected getTechnologies(vars: any): any {
+    protected getTechnologies(): any {
         return {
             make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
             aws: {name: "Amazon Web Services (AWS)", link: "https://aws.amazon.com/"},

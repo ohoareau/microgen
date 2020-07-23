@@ -176,7 +176,7 @@ export default class Package extends AbstractPackage {
         ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
         return t;
     }
-    protected getTechnologies(vars: any): any {
+    protected getTechnologies(): any {
         const technos = {
             microgen: {name: "MicroGen", link: "https://github.com/ohoareau/microgen"},
             make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
@@ -191,14 +191,14 @@ export default class Package extends AbstractPackage {
             git: {name: "Git", link: "https://git-scm.com/"},
             json: {name: "JSON", link: "https://www.json.org/json-fr.html"},
         };
-        switch (vars.scm) {
+        switch (this.vars.scm) {
             case 'github':
-                technos['github'] = {id: 'github', name: "GitHub", link: "https://github.com/"};
-                technos['github_actions'] = {id: 'github_actions', name: "GitHub Actions", link: "https://github.com/features/actions"};
-                technos['github_packages'] = {id: 'github_packages', name: "GitHub Packages", link: "https://github.com/features/packages"};
+                technos['github'] = {name: "GitHub", link: "https://github.com/"};
+                technos['github_actions'] = {name: "GitHub Actions", link: "https://github.com/features/actions"};
+                technos['github_packages'] = {name: "GitHub Packages", link: "https://github.com/features/packages"};
                 break;
             case 'gitlab':
-                technos['gitlab'] = {id: 'gitlab', name: "Gitlab", link: "https://gitlab.com/"};
+                technos['gitlab'] = {name: "Gitlab", link: "https://gitlab.com/"};
                 break;
         }
         return technos;
