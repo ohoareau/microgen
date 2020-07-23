@@ -109,6 +109,9 @@ export default class Package extends AbstractPackage {
             layers: {},
             environments: {},
         };
+        if (vars.common) {
+            config.common = vars.common || {};
+        }
         if (vars.environments) {
             config.environments = Object.entries(vars.environments).reduce((acc, [k, v]) => Object.assign(acc, {[k]: (<any>v).vars || {}}), {});
         }
