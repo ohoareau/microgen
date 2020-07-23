@@ -101,6 +101,16 @@ export default class Package extends AbstractPackage {
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         const scm = vars.scm || 'git';
+        const deployableProjects = vars.projects.filter(p => !!p.deployable);
+        const buildableProjects = vars.projects.filter(p => (undefined === p.buildable) || !!p.buildable);
+        const buildablePrePlanProjects = buildableProjects.filter(p => 'pre' === p.phase);
+        const buildablePostProvisionProjects = buildableProjects.filter(p => 'pre' !== p.phase);
+        const testableProjects = vars.projects.filter(p => (undefined === p.testable) || !!p.testable);
+        const generateEnvLocalableProjects = vars.projects.filter(p => (undefined === p.buildable) || !!p.buildable);
+        const preInstallableProjects = vars.projects.filter(p => (undefined === p.preInstallable) || !!p.preInstallable);
+        const installableProjects = vars.projects.filter(p => (undefined === p.installable) || !!p.installable);
+        const startableProjects = vars.projects.filter(p => !!p.startable);
+        const refreshableProjects = vars.projects.filter(p => !!p.refreshable);
         const t = new MakefileTemplate(vars.makefile || {})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'develop')
@@ -108,12 +118,12 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('install-root', 'yarn-install')
             .addPredefinedTarget('install-terraform', 'tfenv-install')
             .addMetaTarget('pre-install-root', ['install-root'])
-            .addMetaTarget('deploy', vars.projects.filter(p => !!p.deployable).map(p => `deploy-${p.name}`))
+            .addMetaTarget('deploy', deployableProjects.map(p => `deploy-${p.name}`))
             .addMetaTarget('build', ['build-pre-provision', 'build-post-provision'])
-            .addMetaTarget('build-pre-plan', vars.projects.filter(p => 'pre' === p.phase).map(p => `build-${p.name}`))
+            .addMetaTarget('build-pre-plan', buildablePrePlanProjects.map(p => `build-${p.name}`))
             .addMetaTarget('build-pre-provision', ['build-pre-plan'])
-            .addMetaTarget('build-post-provision', vars.projects.filter(p => 'pre' !== p.phase).map(p => `build-${p.name}`))
-            .addMetaTarget('test', vars.projects.map(p => `test-${p.name}`))
+            .addMetaTarget('build-post-provision', buildablePostProvisionProjects.map(p => `build-${p.name}`))
+            .addMetaTarget('test', testableProjects.map(p => `test-${p.name}`))
             .addSubTarget('provision', 'infra', 'provision', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('provision-full', 'infra', 'provision-full', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-init', 'infra', 'init', {env: '$(env)'}, ['generate-terraform'])
@@ -130,22 +140,34 @@ export default class Package extends AbstractPackage {
             .addSubTarget('outputs', 'infra', 'outputs', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-init-upgrade', 'infra', 'init-upgrade', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('generate-terraform', 'infra', 'generate')
-            .addMetaTarget('generate-env-local', vars.projects.map(p => `generate-env-local-${p.name}`))
-            .addMetaTarget('pre-install', ['pre-install-root', ...vars.projects.map(p => `pre-install-${p.name}`)])
-            .addMetaTarget('install', ['install-root', ...vars.projects.map(p => `install-${p.name}`)])
-            .addTarget('start', [vars.startCmd || `npx concurrently -n ${vars.projects.filter(p => !!p.startable).map(p => p.name)} ${vars.projects.filter(p => !!p.startable).map(p => `"make start-${p.name}"`).join(' ')}`])
+            .addMetaTarget('generate-env-local', generateEnvLocalableProjects.map(p => `generate-env-local-${p.name}`))
+            .addMetaTarget('pre-install', ['pre-install-root', ...preInstallableProjects.map(p => `pre-install-${p.name}`)])
+            .addMetaTarget('install', ['install-root', ...installableProjects.map(p => `install-${p.name}`)])
+            .addTarget('start', [vars.startCmd || `npx concurrently -n ${startableProjects.map(p => p.name)} ${startableProjects.map(p => `"make start-${p.name}"`).join(' ')}`])
             .setDefaultTarget('install')
         ;
-        vars.projects.forEach(p => {
-            t
-                .addSubTarget(`pre-install-${p.name}`, p.name, 'pre-install')
-                .addSubTarget(`install-${p.name}`, p.name, 'install')
-                .addSubTarget(`test-${p.name}`, p.name, 'test')
-                .addSubTarget(`generate-env-local-${p.name}`, p.name, 'generate-env-local', {env: '$(env)'})
-                .addSubTarget(`build-${p.name}`, p.name, 'build', {env: '$(env)'}, [`generate-env-local-${p.name}`])
-            ;
+        preInstallableProjects.forEach(p => {
+            t.addSubTarget(`pre-install-${p.name}`, p.name, 'pre-install');
+        });
+        installableProjects.forEach(p => {
+            t.addSubTarget(`install-${p.name}`, p.name, 'install');
+        });
+        testableProjects.forEach(p => {
+            t.addSubTarget(`test-${p.name}`, p.name, 'test');
+        });
+        generateEnvLocalableProjects.forEach(p => {
+            t.addSubTarget(`generate-env-local-${p.name}`, p.name, 'generate-env-local', {env: '$(env)'});
+        });
+        buildableProjects.forEach(p => {
+            t.addSubTarget(`build-${p.name}`, p.name, 'build', {env: '$(env)'}, [`generate-env-local-${p.name}`]);
+        });
+        deployableProjects.forEach(p => {
             !!p.deployable && t.addSubTarget(`deploy-${p.name}`, p.name, 'deploy', {env: '$(env)'}, [`generate-env-local-${p.name}`], {sourceEnvLocal: true});
+        });
+        refreshableProjects.forEach(p => {
             !!p.refreshable && t.addSubTarget(`refresh-${p.name}`, 'infra', 'provision', {env: '$(env)', layer: p.name}, ['generate-terraform', `build-${p.name}`]);
+        });
+        startableProjects.forEach(p => {
             !!p.startable && t.addSubTarget(`start-${p.name}`, p.name, 'start', {env: '$(env)'});
         });
         ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
