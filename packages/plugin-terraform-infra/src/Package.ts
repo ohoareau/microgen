@@ -41,7 +41,9 @@ export default class Package extends AbstractPackage {
         return new LicenseTemplate(vars);
     }
     protected buildReadme(vars: any): ReadmeTemplate {
-        return new ReadmeTemplate(vars);
+        return new ReadmeTemplate(vars)
+            .addFragmentFromTemplate(`${__dirname}/../templates/readme/introduction.md.ejs`)
+        ;
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})
