@@ -127,4 +127,28 @@ export default class Package extends AbstractPackage {
         }
         return t;
     }
+    protected getTechnologies(vars: any): any {
+        const technos = {
+            gatsbyjs: {name: "GatsbyJS", link: "https://www.gatsbyjs.org/"},
+            make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
+            aws: {name: "Amazon Web Services (AWS)", link: "https://aws.amazon.com/"},
+            aws_cli: {name: "AWS CLI", link: "https://aws.amazon.com/fr/cli/"},
+            aws_cloudfront: {name: "AWS CloudFront", link: "https://aws.amazon.com/fr/cloudfront/"},
+            aws_s3: {name: "AWS S3", link: "https://aws.amazon.com/fr/s3/"},
+            aws_route53: {name: "AWS Route53", link: "https://aws.amazon.com/fr/route53/"},
+            nodejs: {name: "Node.js", link: "https://nodejs.org/en/"},
+            js_es6: {name: "Javascript (ES6)", link: "http://es6-features.org/"},
+            reactjs: {name: "ReactJS", link: "https://fr.reactjs.org/"},
+            yarn: {name: "Yarn", link: "https://yarnpkg.com/"},
+            nvm: {name: "NVM", link: "https://github.com/nvm-sh/nvm"},
+            npm: {name: "NPM", link: "https://www.npmjs.com/"},
+            markdown: {name: "Markdown", link: "https://guides.github.com/features/mastering-markdown/"},
+            git: {name: "Git", link: "https://git-scm.com/"},
+            jest: {name: "Jest", link: "https://jestjs.io/"},
+            prettier: {name: "Prettier", link: "https://prettier.io/"},
+            json: {name: "JSON", link: "https://www.json.org/json-fr.html"},
+        };
+        vars.publish_image && (technos['docker'] = {id: 'docker', name: "Docker", link: "https://www.docker.com"});
+        return technos;
+    }
 }

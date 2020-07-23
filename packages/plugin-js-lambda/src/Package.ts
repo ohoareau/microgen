@@ -154,4 +154,23 @@ export default class Package extends AbstractPackage<PackageConfig> {
         vars.deployable && t.addPredefinedTarget('deploy', 'yarn-deploy');
         return t;
     }
+    protected getTechnologies(vars: any): any {
+        return {
+            microlib: {name: "MicroLib", link: "https://github.com/ohoareau/libs-js/tree/master/packages/microlib"},
+            make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
+            aws: {name: "Amazon Web Services (AWS)", link: "https://aws.amazon.com/"},
+            aws_cli: {name: "AWS CLI", link: "https://aws.amazon.com/fr/cli/"},
+            aws_lambda: {name: "AWS Lambda", link: "https://aws.amazon.com/fr/lambda/"},
+            nodejs: {name: "Node.js", link: "https://nodejs.org/en/"},
+            js_es6: {name: "Javascript (ES6)", link: "http://es6-features.org/"},
+            yarn: {name: "Yarn", link: "https://yarnpkg.com/"},
+            nvm: {name: "NVM", link: "https://github.com/nvm-sh/nvm"},
+            npm: {name: "NPM", link: "https://www.npmjs.com/"},
+            markdown: {name: "Markdown", link: "https://guides.github.com/features/mastering-markdown/"},
+            git: {name: "Git", link: "https://git-scm.com/"},
+            jest: {name: "Jest", link: "https://jestjs.io/"},
+            prettier: {name: "Prettier", link: "https://prettier.io/"},
+            json: {name: "JSON", link: "https://www.json.org/json-fr.html"},
+        };
+    }
 }

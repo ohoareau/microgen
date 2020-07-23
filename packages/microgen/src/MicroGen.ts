@@ -170,6 +170,12 @@ export class MicroGen implements IGenerator {
             const result = await acc;
             vars.verbose = vars.verbose || process.env.MICROGEN_VERBOSE || 0;
             const {write = false, targetDir} = vars;
+            await packages.reduce(async (acc, p) => {
+                await acc;
+                this.applyPackageEventHooks(p, 'before_build');
+                await p.build(vars);
+                this.applyPackageEventHooks(p, 'after_build', vars);
+            }, Promise.resolve());
             const rr = (await Promise.all(packages.map(async p => {
                 const n = (<any>p).getName ? (<any>p).getName() : p['name'];
                 this.applyPackageEventHooks(p, 'before_generate');

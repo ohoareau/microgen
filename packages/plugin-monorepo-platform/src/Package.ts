@@ -176,4 +176,31 @@ export default class Package extends AbstractPackage {
         ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
         return t;
     }
+    protected getTechnologies(vars: any): any {
+        const technos = {
+            microgen: {name: "MicroGen", link: "https://github.com/ohoareau/microgen"},
+            make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
+            aws: {name: "Amazon Web Services (AWS)", link: "https://aws.amazon.com/"},
+            aws_cli: {name: "AWS CLI", link: "https://aws.amazon.com/fr/cli/"},
+            nodejs: {name: "Node.js", link: "https://nodejs.org/en/"},
+            js_es6: {name: "Javascript (ES6)", link: "http://es6-features.org/"},
+            yarn: {name: "Yarn", link: "https://yarnpkg.com/"},
+            nvm: {name: "NVM", link: "https://github.com/nvm-sh/nvm"},
+            npm: {name: "NPM", link: "https://www.npmjs.com/"},
+            markdown: {name: "Markdown", link: "https://guides.github.com/features/mastering-markdown/"},
+            git: {name: "Git", link: "https://git-scm.com/"},
+            json: {name: "JSON", link: "https://www.json.org/json-fr.html"},
+        };
+        switch (vars.scm) {
+            case 'github':
+                technos['github'] = {id: 'github', name: "GitHub", link: "https://github.com/"};
+                technos['github_actions'] = {id: 'github_actions', name: "GitHub Actions", link: "https://github.com/features/actions"};
+                technos['github_packages'] = {id: 'github_packages', name: "GitHub Packages", link: "https://github.com/features/packages"};
+                break;
+            case 'gitlab':
+                technos['gitlab'] = {id: 'gitlab', name: "Gitlab", link: "https://gitlab.com/"};
+                break;
+        }
+        return technos;
+    }
 }

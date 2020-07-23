@@ -133,4 +133,17 @@ export default class Package extends AbstractPackage {
             config: (0 < Object.keys(config.environments).length) ? config : undefined,
         };
     }
+    protected getTechnologies(vars: any): any {
+        return {
+            make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
+            aws: {name: "Amazon Web Services (AWS)", link: "https://aws.amazon.com/"},
+            aws_cli: {name: "AWS CLI", link: "https://aws.amazon.com/fr/cli/"},
+            markdown: {name: "Markdown", link: "https://guides.github.com/features/mastering-markdown/"},
+            git: {name: "Git", link: "https://git-scm.com/"},
+            json: {name: "JSON", link: "https://www.json.org/json-fr.html"},
+            terraform: {name: "Terraform", link: "https://www.terraform.io/"},
+            terraform_cloud: {name: "Terraform Cloud", link: "https://app.terraform.io/"},
+            tfenv: {name: "tfenv", link: "https://github.com/tfutils/tfenv"},
+        };
+    }
 }
