@@ -1,4 +1,4 @@
-# <%- name.toUpperCase() %>
+# <%- ('undefined' !== typeof project_name ? project_name : name).toUpperCase() %>
 <% if (('undefined' !== typeof project_name) && ('undefined' !== typeof project_description)) { %>`<%- project_name %>` is the codename of the <%- project_description %>.
 <% } %>
 ## Introduction
