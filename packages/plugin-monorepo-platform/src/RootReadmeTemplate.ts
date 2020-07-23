@@ -1,4 +1,5 @@
 import {ReadmeTemplate, ReadmeTemplateConfig} from "@ohoareau/microgen-templates-core";
+import {buildProjectsVars} from "./utils";
 
 export type project = {
     name: string,
@@ -19,7 +20,7 @@ export type RootReadmeTemplateConfig = ReadmeTemplateConfig & {
 
 export class RootReadmeTemplate extends ReadmeTemplate {
     constructor(config: RootReadmeTemplateConfig = {}) {
-        super(config);
+        super({...config, ...buildProjectsVars(config)});
         this
             .addNamedFragmentsFromTemplateDir(
                 `${__dirname}/../templates/readme`,

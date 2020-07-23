@@ -1,5 +1,3 @@
-<% var sortedProjects = ('undefined' === typeof projects ? [] : projects) -%>
-<% sortedProjects.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1)) -%>
 ## Development (local)
 
 ### Install dependencies
@@ -11,7 +9,7 @@
 #### Project specific dependencies
 
     make install-root
-<% ('undefined' === typeof projects ? [] : projects).forEach(p => { %>    make install-<%- p.name %>
+<% installableProjects.forEach(p => { %>    make install-<%- p.name %>
 <% }) %>
 
 ### Execute tests
@@ -22,7 +20,7 @@
 
 #### Project specific tests
 
-<% ('undefined' === typeof projects ? [] : projects).forEach(p => { %>    make test-<%- p.name %>
+<% testableProjects.forEach(p => { %>    make test-<%- p.name %>
 <% }) %>
 
 ### Start local server (hot-reloaded)
@@ -33,7 +31,7 @@
 
 #### Project specific local service
 
-<% ('undefined' === typeof projects ? [] : projects).filter(p => p.startable).forEach(p => { %>    make start-<%- p.name %>
+<% startableProjects.forEach(p => { %>    make start-<%- p.name %>
 <% }) %>
 
 ### Build production-ready directory
@@ -53,7 +51,7 @@ By default if no ` env=<env>` is provided on the command line, the default value
 
 #### Project specific build
 
-<% ('undefined' === typeof projects ? [] : projects).forEach(p => { %>    make build-<%- p.name -%> env=<env>
+<% buildableProjects.forEach(p => { %>    make build-<%- p.name -%> env=<env>
 <% }) %>
 
 ### Deploy to an environment

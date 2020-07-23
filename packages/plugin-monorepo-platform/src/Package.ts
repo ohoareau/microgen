@@ -1,6 +1,7 @@
 import {AbstractPackage} from '@ohoareau/microgen';
 import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates-core";
 import RootReadmeTemplate from "./RootReadmeTemplate";
+import {buildProjectsVars} from "./utils";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -101,16 +102,18 @@ export default class Package extends AbstractPackage {
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         const scm = vars.scm || 'git';
-        const deployableProjects = vars.projects.filter(p => !!p.deployable);
-        const buildableProjects = vars.projects.filter(p => (undefined === p.buildable) || !!p.buildable);
-        const buildablePrePlanProjects = buildableProjects.filter(p => 'pre' === p.phase);
-        const buildablePostProvisionProjects = buildableProjects.filter(p => 'pre' !== p.phase);
-        const testableProjects = vars.projects.filter(p => (undefined === p.testable) || !!p.testable);
-        const generateEnvLocalableProjects = vars.projects.filter(p => (undefined === p.buildable) || !!p.buildable);
-        const preInstallableProjects = vars.projects.filter(p => (undefined === p.preInstallable) || !!p.preInstallable);
-        const installableProjects = vars.projects.filter(p => (undefined === p.installable) || !!p.installable);
-        const startableProjects = vars.projects.filter(p => !!p.startable);
-        const refreshableProjects = vars.projects.filter(p => !!p.refreshable);
+        const {
+            deployableProjects,
+            buildablePostProjects,
+            buildablePreProjects,
+            buildableProjects,
+            generateEnvLocalableProjects,
+            installableProjects,
+            preInstallableProjects,
+            refreshableProjects,
+            startableProjects,
+            testableProjects,
+        } = buildProjectsVars(vars);
         const t = new MakefileTemplate(vars.makefile || {})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'develop')
@@ -120,9 +123,9 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('pre-install-root', ['install-root'])
             .addMetaTarget('deploy', deployableProjects.map(p => `deploy-${p.name}`))
             .addMetaTarget('build', ['build-pre-provision', 'build-post-provision'])
-            .addMetaTarget('build-pre-plan', buildablePrePlanProjects.map(p => `build-${p.name}`))
+            .addMetaTarget('build-pre-plan', buildablePreProjects.map(p => `build-${p.name}`))
             .addMetaTarget('build-pre-provision', ['build-pre-plan'])
-            .addMetaTarget('build-post-provision', buildablePostProvisionProjects.map(p => `build-${p.name}`))
+            .addMetaTarget('build-post-provision', buildablePostProjects.map(p => `build-${p.name}`))
             .addMetaTarget('test', testableProjects.map(p => `test-${p.name}`))
             .addSubTarget('provision', 'infra', 'provision', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('provision-full', 'infra', 'provision-full', {env: '$(env)'}, ['generate-terraform'])
