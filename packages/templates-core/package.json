@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-templates-core",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -27,6 +27,6 @@
     "@ohoareau/microgen": "^0.11.0"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.13.0"
+    "@ohoareau/microgen": "^0.14.0"
   }
 }
