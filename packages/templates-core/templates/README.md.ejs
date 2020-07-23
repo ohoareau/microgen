@@ -1,2 +1,3 @@
-<% if (fragments.length) { %><% fragments.forEach(f => { %><%- include(f.template) %>
+<% if (fragments.length) { %><% fragments.forEach(f => { %><%- f.type === 'template' ? include(f.template) : (f.type === 'inline' ? f.content : '') %>
+
 <% }) %><% } else { %># <%- name.toUpperCase() -%><% } -%>

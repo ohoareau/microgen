@@ -25,7 +25,7 @@ export default class Package extends AbstractPackage {
     }
     protected buildReadme(vars: any): ReadmeTemplate {
         return new ReadmeTemplate(vars)
-            .addFragmentFromTemplate(`${__dirname}/../templates/README.md.ejs`)
+            .addFragmentFromTemplate(`${__dirname}/../templates/readme/original.md.ejs`)
             ;
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {

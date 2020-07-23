@@ -60,8 +60,19 @@ export default class Package extends AbstractPackage {
     }
     protected buildReadme(vars: any): ReadmeTemplate {
         return new ReadmeTemplate(vars)
-            .addFragmentFromTemplate(`${__dirname}/../templates/README.md.ejs`)
-            ;
+            .addNamedFragmentsFromTemplateDir(
+                `${__dirname}/../templates/readme`,
+                [
+                    'introduction',
+                    'executive-summary',
+                    'requirements',
+                    'get-the-project',
+                    'installation',
+                    'running-components-locally',
+                    'development',
+                ]
+            )
+        ;
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})

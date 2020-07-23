@@ -1,0 +1,13 @@
+## Running components locally (via Storybook)
+
+To launch a demo page with the component and all the pre-defined test cases for a component, we use the [Storybook](https://storybook.js.org/) tool which is a popular tool for JS developer to showcase their work.
+This tool is very handy because it is launched locally and do not need to deploy anything anywhere. There is a hot-reloading feature included that help develop locally new features, whenever the code is changed inside a JS/Typescript, the Storybook reloads automatically.
+
+    make package-storybook p=<name-of-component>
+
+For instance, if you want to launch the Storybook of the `react-xyz` component (located in `./packages/react-xyz` directory):
+
+    make package-storybook p=react-xyz
+
+Then a local webserver will be automatically launch and your browser will open directly on the local Storybook web page, you will then be able to test and manipulate your components.
+For more information on how to add stories to a Storybook, please refer to Storybook document [here](https://storybook.js.org/) and modify files of the component/package you want to test in the `./packages/<package-name>/__stories__/` directory.
