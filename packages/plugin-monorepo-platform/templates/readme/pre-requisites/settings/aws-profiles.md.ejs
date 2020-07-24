@@ -1,8 +1,0 @@
-#### AWS Profiles (for your IAM user)
-<% sortedProjectEnvs.forEach(e => { %>
-    $ AWS_PROFILE=<%- project_prefix -%>-<%- e.name -%> aws s3 ls
-    2020-06-03 19:21:42 xxxx
-    2020-06-03 18:37:03 yyyy
-
-<% }) %>
-if not installed, see [AWS Profiles installation procedure](#install-aws-profiles).

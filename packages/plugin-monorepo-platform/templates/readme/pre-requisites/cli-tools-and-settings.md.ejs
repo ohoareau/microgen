@@ -1,16 +1,7 @@
 ### Required CLI Tools & Settings
 
-<%- include('./tools/make.md.ejs') %>
-<%- include('./tools/git.md.ejs') %>
-<%- include('./tools/hub.md.ejs') %>
-<%- include('./tools/ssh.md.ejs') %>
-<%- include('./tools/nvm.md.ejs') %>
-<%- include('./tools/node.md.ejs') %>
-<%- include('./tools/npm.md.ejs') %>
-<%- include('./settings/npmrc-github.md.ejs') %>
-<%- include('./tools/yarn.md.ejs') %>
-<%- include('./tools/tfenv.md.ejs') %>
-<%- include('./tools/terraform.md.ejs') %>
-<%- include('./settings/terraformrc-terraformcloud.md.ejs') %>
-<%- include('./tools/aws-cli.md.ejs') %>
-<%- include('./settings/aws-profiles.md.ejs') %>
+<% if (sortedPreRequisites.length) { %><% sortedPreRequisites.forEach(f => { %>#### <%- f.name %>
+
+<%- f.type === 'template' ? include(f.template) : (f.type === 'inline' ? f.content : '') %>
+
+<% }) %><% } %>

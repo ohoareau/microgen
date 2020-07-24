@@ -1,16 +1,7 @@
 ### Optional Installation Procedures
 
-<%- include('./install-procedures/make.md.ejs') %>
-<%- include('./install-procedures/git.md.ejs') %>
-<%- include('./install-procedures/hub.md.ejs') %>
-<%- include('./install-procedures/ssh.md.ejs') %>
-<%- include('./install-procedures/nvm.md.ejs') %>
-<%- include('./install-procedures/node.md.ejs') %>
-<%- include('./install-procedures/npm.md.ejs') %>
-<%- include('./install-procedures/npmrc-github.md.ejs') %>
-<%- include('./install-procedures/tfenv.md.ejs') %>
-<%- include('./install-procedures/terraform.md.ejs') %>
-<%- include('./install-procedures/yarn.md.ejs') %>
-<%- include('./install-procedures/terraformrc-terraformcloud.md.ejs') %>
-<%- include('./install-procedures/aws-cli.md.ejs') %>
-<%- include('./install-procedures/aws-profiles.md.ejs') %>
+<% if (sortedInstallProcedures.length) { %><% sortedInstallProcedures.forEach(f => { %>#### Install <%- f.name %>
+
+<%- f.type === 'template' ? include(f.template) : (f.type === 'inline' ? f.content : '') %>
+
+<% }) %><% } %>

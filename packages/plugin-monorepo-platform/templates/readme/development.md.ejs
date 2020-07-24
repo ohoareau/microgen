@@ -44,10 +44,8 @@ By default if no ` env=<env>` is provided on the command line, the default value
 
 ...or to specify a target env explicitly:
 
-    make build env=dev
-    make build env=test
-    make build env=preprod
-    make build env=prod
+<% sortedProjectEnvs.forEach(e => { %>    make build env=<%- e.name %>
+<% }) %>
 
 #### Project specific build
 
@@ -56,13 +54,13 @@ By default if no ` env=<env>` is provided on the command line, the default value
 
 ### Deploy to an environment
 
-As a pre-requisite, you need to have build the production-ready version of the website targeted for the specified `env` (`dev|test|preprod|prod`)
+As a pre-requisite, you need to have build the production-ready version of the website targeted for the specified `env` (`<%- sortedProjectEnvs.map(e => e.name).join('|') -%>`)
 
     make
     make test
     make build env=<env>
 
-where `<env>` must be one of the values: `dev`, `test`, `preprod`, `prod`.
+where `<env>` must be one of the values: <%- sortedProjectEnvs.map(e => `\`${e.name}\``).join(', ') -%>.
 
 The first time you want to deploy from your local environment, you need to initialize terraform locally:
 
@@ -76,3 +74,7 @@ After having built the production-ready static files, you can then execute:
 The `provision` command will synchronize the infrastructure resources (on AWS) with the ones described in the Terraform configuration (*.tf files located in the `./infra/environments/<env>/` directory).
 
 The `deploy` command will send and synchronize remote s3 bucket (containing static files served by the CloudFront CDN) with your local `./<deployable-project>/public/` or `./<deployable-project>/build/` directory, and then trigger a cache invalidation on the CloudFront distribution.
+You can deploy a single project by executing one of these commands:
+
+<% deployableProjects.forEach(p => { %>    make deploy-<%- p.name -%> env=<env>
+<% }) %>

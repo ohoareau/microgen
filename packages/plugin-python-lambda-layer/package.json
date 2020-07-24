@@ -21,13 +21,7 @@
     "gen": "../../packages/microgen/bin/microgen"
   },
   "dependencies": {
-    "@ohoareau/microgen-templates-core": "^0.2.14"
-  },
-  "peerDependencies": {
-    "@ohoareau/microgen": "^0.11.0"
-  },
-  "devDependencies": {
     "@ohoareau/microgen": "^0.14.0",
-    "aws-sdk": "^2.656.0"
+    "@ohoareau/microgen-templates-core": "^0.2.14"
   }
 }

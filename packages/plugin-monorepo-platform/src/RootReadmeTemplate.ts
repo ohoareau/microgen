@@ -1,5 +1,11 @@
 import {ReadmeTemplate, ReadmeTemplateConfig} from "@ohoareau/microgen-templates-core";
-import {buildProjectEnvsVars, buildProjectsVars, buildTechnologiesVars} from "./utils";
+import {
+    buildInstallProceduresVars,
+    buildPreRequisitesVars,
+    buildProjectEnvsVars,
+    buildProjectsVars,
+    buildTechnologiesVars
+} from "./utils";
 
 export type project = {
     id: string,
@@ -20,6 +26,8 @@ export type RootReadmeTemplateConfig = ReadmeTemplateConfig & {
     project_prefix?: string,
     project_envs?: any,
     technologies?: {[id: string]: Omit<technology, 'id'>},
+    preRequisites?: {[id: string]: any},
+    installProcedures?: {[id: string]: any},
 };
 
 export class RootReadmeTemplate extends ReadmeTemplate {
@@ -38,6 +46,8 @@ export class RootReadmeTemplate extends ReadmeTemplate {
             ...x,
             ...buildProjectsVars(x),
             ...buildTechnologiesVars(x),
+            ...buildPreRequisitesVars(x),
+            ...buildInstallProceduresVars(x),
             ...buildProjectEnvsVars(x),
         });
         this

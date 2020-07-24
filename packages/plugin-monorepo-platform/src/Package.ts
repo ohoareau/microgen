@@ -177,30 +177,22 @@ export default class Package extends AbstractPackage {
         return t;
     }
     protected getTechnologies(): any {
-        const technos = {
-            microgen: {name: "MicroGen", link: "https://github.com/ohoareau/microgen"},
-            make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
-            aws: {name: "Amazon Web Services (AWS)", link: "https://aws.amazon.com/"},
-            aws_cli: {name: "AWS CLI", link: "https://aws.amazon.com/fr/cli/"},
-            nodejs: {name: "Node.js", link: "https://nodejs.org/en/"},
-            js_es6: {name: "Javascript (ES6)", link: "http://es6-features.org/"},
-            yarn: {name: "Yarn", link: "https://yarnpkg.com/"},
-            nvm: {name: "NVM", link: "https://github.com/nvm-sh/nvm"},
-            npm: {name: "NPM", link: "https://www.npmjs.com/"},
-            markdown: {name: "Markdown", link: "https://guides.github.com/features/mastering-markdown/"},
-            git: {name: "Git", link: "https://git-scm.com/"},
-            json: {name: "JSON", link: "https://www.json.org/json-fr.html"},
-        };
-        switch (this.vars.scm) {
-            case 'github':
-                technos['github'] = {name: "GitHub", link: "https://github.com/"};
-                technos['github_actions'] = {name: "GitHub Actions", link: "https://github.com/features/actions"};
-                technos['github_packages'] = {name: "GitHub Packages", link: "https://github.com/features/packages"};
-                break;
-            case 'gitlab':
-                technos['gitlab'] = {name: "Gitlab", link: "https://gitlab.com/"};
-                break;
-        }
-        return technos;
+        return [
+            'microgen',
+            'make',
+            'aws_cli',
+            'node',
+            'es6',
+            'yarn',
+            'nvm',
+            'npm',
+            'markdown',
+            'git',
+            'jest',
+            'prettier',
+            'json',
+            ...((this.vars.scm === 'github') ? ['github', 'github_actions', 'github_packages'] : []),
+            (this.vars.scm === 'gitlab') && 'gitlab',
+        ];
     }
 }

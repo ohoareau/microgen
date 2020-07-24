@@ -1,6 +1,7 @@
 import IPackage from './IPackage';
 import StaticFileTemplate from './StaticFileTemplate';
 import {populateData} from "./utils";
+import {requireTechnologies} from '@ohoareau/technologies';
 
 export type BasePackageConfig = {
     name: string,
@@ -53,6 +54,12 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     protected getTechnologies(): any {
         return {};
     }
+    protected getPreRequisites(): any {
+        return {};
+    }
+    protected getInstallProcedures(): any {
+        return {};
+    }
     protected getDefaultCommonVars(): any {
         return {
             deployable: false,
@@ -86,7 +93,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     }
     async describe(): Promise<any> {
         return {
-            technologies: await this.getTechnologies(),
+            ...requireTechnologies(this.getTechnologies().filter(x => !!x)),
         };
     }
     async hydrate(data: any): Promise<void> {

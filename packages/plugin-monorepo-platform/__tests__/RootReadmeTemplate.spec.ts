@@ -14,7 +14,7 @@ describe('RootReadmeTemplate', () => {
             new RootReadmeTemplate({
                 projects: {
                     project1: {description: 'desc of project1'},
-                    project2: {description: 'desc of project2', startable: true},
+                    project2: {description: 'desc of project2', startable: true, deployable: true},
                     project3: {description: 'desc of project3', startable: true},
                 }
             }),
@@ -25,8 +25,8 @@ describe('RootReadmeTemplate', () => {
         expectRenderSameAsFile(
             new RootReadmeTemplate({
                 projects: {
-                    project2: {description: 'desc of project2', startable: true},
-                    project1: {description: 'desc of project1'},
+                    project2: {description: 'desc of project2', startable: true, deployable: true},
+                    project1: {description: 'desc of project1', deployable: true},
                     project3: {description: 'desc of project3', startable: true},
                 },
                 technologies: {
@@ -34,6 +34,9 @@ describe('RootReadmeTemplate', () => {
                     techno3: {link: 'https://techno3.com'},
                     techno4: {link: 'https://techno4.com'},
                     techno2: {link: 'https://techno2.com'},
+                },
+                preRequisites: {
+                    aa: {name: 'Aa', type: 'inline', content: 'This is the content'},
                 },
             }),
             'with-projects-and-technos.md'

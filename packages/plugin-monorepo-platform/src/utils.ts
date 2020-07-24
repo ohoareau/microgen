@@ -17,6 +17,36 @@ export const buildTechnologiesVars = (vars: any): {
         sortedTechnologies,
     };
 };
+export const buildPreRequisitesVars = (vars: any): {
+    originalPreRequisites: any,
+    sortedPreRequisites: any[],
+} => {
+    const originalPreRequisites = vars.preRequisites || {};
+    const sortedPreRequisites = Object.entries(originalPreRequisites).reduce((acc, [id, v]) => {
+        acc.push({id, name: id, ...<any>v});
+        return acc;
+    }, <any[]>[]);
+    //sortedPreRequisites.sort((a, b) => applySortBys( a, b, ['priority', 'name', 'id']));
+    return {
+        originalPreRequisites,
+        sortedPreRequisites,
+    };
+};
+export const buildInstallProceduresVars = (vars: any): {
+    originalInstallProcedures: any,
+    sortedInstallProcedures: any[],
+} => {
+    const originalInstallProcedures = vars.installProcedures || {};
+    const sortedInstallProcedures = Object.entries(originalInstallProcedures).reduce((acc, [id, v]) => {
+        acc.push({id, name: id, ...<any>v});
+        return acc;
+    }, <any[]>[]);
+    //sortedInstallProcedures.sort((a, b) => applySortBys( a, b, ['priority', 'name', 'id']));
+    return {
+        originalInstallProcedures,
+        sortedInstallProcedures,
+    };
+};
 export const buildProjectEnvsVars = (vars: any): {
     originalProjectEnvs: any,
     sortedProjectEnvs: any[],

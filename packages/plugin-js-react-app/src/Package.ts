@@ -71,25 +71,24 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected getTechnologies(): any {
-        return {
-            create_react_app: {name: "Create React App (CRA)", link: "https://create-react-app.dev/"},
-            make: {name: "Make / Makefile", link: "https://www.gnu.org/software/make/manual/make.html"},
-            aws: {name: "Amazon Web Services (AWS)", link: "https://aws.amazon.com/"},
-            aws_cli: {name: "AWS CLI", link: "https://aws.amazon.com/fr/cli/"},
-            aws_cloudfront: {name: "AWS CloudFront", link: "https://aws.amazon.com/fr/cloudfront/"},
-            aws_s3: {name: "AWS S3", link: "https://aws.amazon.com/fr/s3/"},
-            aws_route53: {name: "AWS Route53", link: "https://aws.amazon.com/fr/route53/"},
-            nodejs: {name: "Node.js", link: "https://nodejs.org/en/"},
-            js_es6: {name: "Javascript (ES6)", link: "http://es6-features.org/"},
-            reactjs: {name: "ReactJS", link: "https://fr.reactjs.org/"},
-            yarn: {name: "Yarn", link: "https://yarnpkg.com/"},
-            nvm: {name: "NVM", link: "https://github.com/nvm-sh/nvm"},
-            npm: {name: "NPM", link: "https://www.npmjs.com/"},
-            markdown: {name: "Markdown", link: "https://guides.github.com/features/mastering-markdown/"},
-            git: {name: "Git", link: "https://git-scm.com/"},
-            jest: {name: "Jest", link: "https://jestjs.io/"},
-            prettier: {name: "Prettier", link: "https://prettier.io/"},
-            json: {name: "JSON", link: "https://www.json.org/json-fr.html"},
-        };
+        return [
+            'react_cra',
+            'make',
+            'aws_cli',
+            'aws_cloudfront',
+            'aws_s3',
+            'aws_route53',
+            'node',
+            'es6',
+            'yarn',
+            'nvm',
+            'npm',
+            'markdown',
+            'git',
+            'jest',
+            'prettier',
+            'json',
+            this.vars.publish_image && 'docker',
+        ];
     }
 }
