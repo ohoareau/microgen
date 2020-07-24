@@ -1326,10 +1326,10 @@
   resolved "https://registry.yarnpkg.com/@ohoareau/aws-parse/-/aws-parse-0.2.0.tgz#3dcaae525dcf2da06d124b32ad8a442f96d3dc5d"
   integrity sha512-mIWqp2VM7VcfDk1gEHsHfSGQ5XuJNcP5p5xE9slw/1MMPHDDUpJlJANYf1x2SCsZIAYYDRcYZEF8kpDYnP+tkA==
 
-"@ohoareau/technologies@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@ohoareau/technologies/-/technologies-0.4.0.tgz#d9b43fae1855d96af2dbe2403e80df4c6eec05dc"
-  integrity sha512-7nFj7/Fists9QJnGWC09VZhVAt7DWxbwVxJ7Me+GID42xwDiF7+q814xsgECvY40zzqvnWHFIanTiRNaKKipwg==
+"@ohoareau/technologies@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@ohoareau/technologies/-/technologies-0.4.1.tgz#23b75fb78cf2a0fc8ccb2beff13ce3ebbe12298c"
+  integrity sha512-RKKL/pEbWmdBb0lh1MSd42O5Y9XAkCg7xWQctVZ5Hz/8wwK+rABcqbgjdDb/rUqjJaa29cV7Q25WhtPYarK/YA==
 
 "@sinonjs/commons@^1.7.0":
   version "1.7.2"

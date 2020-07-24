@@ -40,7 +40,7 @@
     "gen": "./bin/microgen"
   },
   "dependencies": {
-    "@ohoareau/technologies": "^0.4.0",
+    "@ohoareau/technologies": "^0.4.1",
     "ejs": "^3.0.2",
     "fs-extra": "^8.1.0",
     "stringify-object": "^3.3.0",
