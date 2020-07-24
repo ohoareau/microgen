@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "license": "MIT",
   "author": {
     "email": "oha+oss@greenberets.io",
@@ -40,12 +40,12 @@
     "gen": "./bin/microgen"
   },
   "dependencies": {
+    "@ohoareau/technologies": "^0.4.0",
     "ejs": "^3.0.2",
     "fs-extra": "^8.1.0",
     "stringify-object": "^3.3.0",
     "yargonaut": "^1.1.4",
-    "yargs": "^15.3.1",
-    "@ohoareau/technologies": "^0.4.0"
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "aws-sdk": "^2.663.0"
