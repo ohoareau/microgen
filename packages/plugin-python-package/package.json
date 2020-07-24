@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-python-package",
-  "version": "0.4.15",
+  "version": "0.4.16",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
     "gen": "../../packages/microgen/bin/microgen"
   },
   "dependencies": {
-    "@ohoareau/microgen": "^0.15.0",
-    "@ohoareau/microgen-templates-core": "^0.2.15"
+    "@ohoareau/microgen": "^0.16.0",
+    "@ohoareau/microgen-templates-core": "^0.2.16"
   }
 }
