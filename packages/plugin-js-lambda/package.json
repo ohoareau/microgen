@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@ohoareau/microgen": "^0.16.0",
-    "@ohoareau/microgen-templates-core": "^0.2.16"
+    "@ohoareau/microgen-templates": "^0"
   },
   "devDependencies": {
     "aws-sdk": "^2.719.0"

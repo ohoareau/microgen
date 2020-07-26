@@ -1,7 +1,7 @@
 import Handler, {HandlerConfig} from './Handler';
 import Microservice, {MicroserviceConfig} from './Microservice';
 import {AbstractPackage, BasePackageConfig} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate, PackageExcludesTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate, PackageExcludesTemplate} from "@ohoareau/microgen-templates";
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},

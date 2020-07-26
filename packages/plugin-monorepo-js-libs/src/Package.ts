@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate, CodeOfConductTemplate, ContributingTemplate, NvmRcTemplate} from "@ohoareau/microgen-templates";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -18,9 +18,6 @@ export default class Package extends AbstractPackage {
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildFilesFromTemplates(vars: any, cfg: any): any {
         const files = {
-            ['.nvmrc']: true,
-            ['CODE_OF_CONDUCT.md']: true,
-            ['CONTRIBUTING.md']: true,
             ['jest.config.js']: true,
             ['lerna.json']: true,
             ['tsconfig.json']: true,
@@ -49,14 +46,14 @@ export default class Package extends AbstractPackage {
     }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {
-            ['LICENSE.md']: this.buildLicense(vars),
+            ['LICENSE.md']: new LicenseTemplate(vars),
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
+            ['CODE_OF_CONDUCT.md']: new CodeOfConductTemplate(vars),
+            ['CONTRIBUTING.md']: new ContributingTemplate(vars),
+            ['.nvmrc']: new NvmRcTemplate(vars),
         };
-    }
-    protected buildLicense(vars: any): LicenseTemplate {
-        return new LicenseTemplate(vars);
     }
     protected buildReadme(vars: any): ReadmeTemplate {
         return new ReadmeTemplate(vars)

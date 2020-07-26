@@ -1,4 +1,4 @@
-import {ReadmeTemplate, ReadmeTemplateConfig} from "@ohoareau/microgen-templates-core";
+import {ReadmeTemplate, ReadmeTemplateConfig} from "@ohoareau/microgen-templates";
 import {
     buildInstallProceduresVars,
     buildPreRequisitesVars,

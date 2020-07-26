@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, ReadmeTemplate, NvmRcTemplate} from "@ohoareau/microgen-templates";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -17,7 +17,6 @@ export default class Package extends AbstractPackage {
     protected buildFilesFromTemplates(vars: any, cfg: any): any {
         return {
             ['packages/.gitkeep']: true,
-            ['.nvmrc']: true,
             ['lerna.json']: true,
             ['Makefile']: true,
             ['package.json']: true,
@@ -26,13 +25,11 @@ export default class Package extends AbstractPackage {
     }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {
-            ['LICENSE.md']: this.buildLicense(vars),
+            ['LICENSE.md']: new LicenseTemplate(vars),
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
+            ['.nvmrc']: new NvmRcTemplate(vars),
         };
-    }
-    protected buildLicense(vars: any): LicenseTemplate {
-        return new LicenseTemplate(vars);
     }
     protected buildReadme(vars: any): ReadmeTemplate {
         return new ReadmeTemplate(vars)

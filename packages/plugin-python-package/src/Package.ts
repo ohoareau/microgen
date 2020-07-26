@@ -1,5 +1,5 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates-core";
+import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
