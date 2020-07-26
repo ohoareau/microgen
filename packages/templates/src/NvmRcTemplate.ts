@@ -1,6 +1,7 @@
 import {AbstractFileTemplate} from '@ohoareau/microgen';
 
 export type NvmRcTemplateConfig = {
+    node_version?: string,
 };
 
 export class NvmRcTemplate extends AbstractFileTemplate {
@@ -22,6 +23,7 @@ export class NvmRcTemplate extends AbstractFileTemplate {
             this.customConsumed = true;
         }
         return {
+            node_version: this.customConfig.node_version || '14.4.0',
             config: this.customConfig,
         }
     }
