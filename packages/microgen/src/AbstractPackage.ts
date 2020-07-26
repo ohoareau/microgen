@@ -52,7 +52,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         return {};
     }
     protected getTechnologies(): any {
-        return {};
+        return [];
     }
     protected getPreRequisites(): any {
         return {};
