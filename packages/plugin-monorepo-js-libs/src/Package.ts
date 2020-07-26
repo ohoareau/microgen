@@ -22,6 +22,8 @@ export default class Package extends AbstractPackage {
             ['lerna.json']: true,
             ['tsconfig.json']: true,
             ['tslint.json']: true,
+        }
+        vars.generator_package && Object.assign(files, {
             ['packages/generator-package/__tests__/index.spec.ts']: true,
             ['packages/generator-package/src/index.ts']: true,
             ['packages/generator-package/templates/__tests__/index.spec.tsx']: true,
@@ -37,7 +39,7 @@ export default class Package extends AbstractPackage {
             ['packages/generator-package/README.md']: true,
             ['packages/generator-package/tsconfig.json']: true,
             ['.storybook/main.js']: true,
-        };
+        });
         if (vars.scm && vars.scm === 'github') {
             files['.github/workflows/deploy-to-env.yml'] = true;
             files['.github/workflows/push-to-feature-branch.yml'] = true;
@@ -91,7 +93,6 @@ export default class Package extends AbstractPackage {
         const scm = vars.scm || 'git';
         const m = vars.makefile || {};
         const t = new MakefileTemplate(m)
-            .addTarget('new', ['yarn --silent yo ./packages/generator-package 2>/dev/null'])
             .addPredefinedTarget('package-build-storybook', 'yarn-build-storybook', {dir: 'packages/$(p)'})
             .addPredefinedTarget('package-generate-svg-components', 'yarn-generate-svg-components', {dir: 'packages/$(p)'})
             .addPredefinedTarget('package-storybook', 'yarn-story', {dir: 'packages/$(p)'})
@@ -115,6 +116,11 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('clean', ['clean-lib', 'clean-modules', 'clean-coverage', 'clean-buildinfo'])
             .setDefaultTarget('install')
         ;
+        if (vars.generator_package) {
+            t
+                .addTarget('new', ['yarn --silent yo ./packages/generator-package 2>/dev/null'])
+            ;
+        }
         if (m.deployable_storybooks) {
             t
                 .addPredefinedTarget('deploy-storybooks', 'yarn-deploy-storybooks')
