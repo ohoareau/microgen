@@ -7,7 +7,7 @@ module.exports = {
     transform: {".(ts|tsx)$": "ts-jest"},
     testMatch: ['**/__tests__/**/*.spec.(ts|tsx)'],
     coverageDirectory: './coverage',
-    setupFilesAfterEnv: [
+    setupFilesAfterEnv: require('fs').existsSync(`${__dirname}/node_modules/testing-library/jest-dom`) ? [
         "@testing-library/jest-dom/extend-expect"
-    ],
+    ] : [],
 };
