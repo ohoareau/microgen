@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-js-statics",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +24,7 @@
     "@ohoareau/microgen": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-templates": "^0.1.3"
+    "@ohoareau/microgen-templates": "^0.1.4"
   },
   "devDependencies": {
     "@ohoareau/microgen": "^0.17.2"
