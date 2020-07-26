@@ -2,9 +2,11 @@ import IPackage from './IPackage';
 import StaticFileTemplate from './StaticFileTemplate';
 import {populateData} from "./utils";
 import {requireTechnologies} from '@ohoareau/technologies';
+import detectTechnologies from '@ohoareau/technologies-detector';
 
 export type BasePackageConfig = {
     name: string,
+    targetDir: string,
     packageType: string,
     sources?: string[],
     files?: {[key: string]: any},
@@ -26,6 +28,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         this.sources = config.sources || [];
         this.files = config.files || {};
         this.vars = config.vars || {};
+        this.vars.targetDir = config.targetDir;
     }
     public getPackageType(): string {
         return this.packageType;
@@ -93,8 +96,11 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     }
     async describe(): Promise<any> {
         return {
-            ...requireTechnologies(this.getTechnologies().filter(x => !!x)),
+            ...requireTechnologies(this.detectTechnologies().concat(this.getTechnologies().filter(x => !!x))),
         };
+    }
+    detectTechnologies(): string[] {
+        return detectTechnologies(this.vars.targetDir);
     }
     async hydrate(data: any): Promise<void> {
         populateData(this.vars, data);

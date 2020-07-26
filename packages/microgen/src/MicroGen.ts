@@ -160,7 +160,8 @@ export class MicroGen implements IGenerator {
                         type = this.vars.defaultPackageType;
                     }
                     if (!this.packagers[type]) throw new Error(`Unsupported package type '${type}'`);
-                    const p = this.packagers[type]({...c, packageType: type, name, vars: {...this.vars, ...(c.vars || {})}});
+                    const targetDir = g.getDir() === '.' ? name : `${g.getDir()}/${name}`;
+                    const p = this.packagers[type]({...c, packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}});
                     this.applyPackageEventHooks(p, 'created');
                     return p;
                 }
