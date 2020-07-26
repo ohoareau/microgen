@@ -181,6 +181,11 @@ export default class Package extends AbstractPackage {
             'microgen',
             'make',
             'aws_cli',
+            'aws_profiles',
+            'aws_iam',
+            'aws_organizations',
+            'aws_console',
+            'aws_cloudwatch',
             'node',
             'es6',
             'yarn',
@@ -191,7 +196,7 @@ export default class Package extends AbstractPackage {
             'jest',
             'prettier',
             'json',
-            ...((this.vars.scm === 'github') ? ['github', 'github_actions', 'github_packages'] : []),
+            ...((this.vars.scm === 'github') ? ['github', 'github_actions', 'github_packages', 'npm_rc_github', 'hub', 'ssh_github'] : []),
             (this.vars.scm === 'gitlab') && 'gitlab',
         ];
     }
