@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-templates",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "@ohoareau/aws-parse": "^0.2.0",
-    "@ohoareau/microgen": "^0.17.0"
+    "@ohoareau/microgen": "^0.17.1"
   }
 }
