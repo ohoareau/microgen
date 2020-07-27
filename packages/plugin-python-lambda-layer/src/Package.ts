@@ -44,6 +44,7 @@ export default class Package extends AbstractPackage {
         return new GitIgnoreTemplate(vars.gitignore || {})
             .addIgnore('/venv/')
             .addIgnore('/.idea/')
+            .addIgnore('__pycache__/')
         ;
     }
 }
