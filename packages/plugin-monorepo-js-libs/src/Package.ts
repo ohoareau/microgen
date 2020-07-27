@@ -31,7 +31,7 @@ export default class Package extends AbstractPackage {
             ['packages/generator-package/templates/_tpls/MainComponent.tsx']: true,
             ['packages/generator-package/templates/src/index.ts']: true,
             ['packages/generator-package/templates/LICENSE.md']: true,
-            ['packages/generator-package/templates/package.json']: true,
+            ['packages/generator-package/templates/package.json.remove_ext']: true,
             ['packages/generator-package/templates/README.md']: true,
             ['packages/generator-package/templates/tsconfig.json']: true,
             ['packages/generator-package/LICENSE.md']: true,

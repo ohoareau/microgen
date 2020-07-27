@@ -40,7 +40,7 @@ export default class extends Generator {
             .forEach((template) => {
                 if (/^_tpls\//.test(template)) return; // ignore
                 const source = `${tplDir}/${template}`;
-                const target = this.destinationPath(`packages/${packageDirName}/${template}`);
+                const target = this.destinationPath(`packages/${packageDirName}/${template}`).replace(/\.remove_ext$/, '');
                 this.fs.copyTpl(source, target, this.props);
             })
         ;
