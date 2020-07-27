@@ -1,7 +1,11 @@
 module.exports = {
     rootDir: '.',
     modulePaths: ['<rootDir>'],
-    moduleNameMapper: {'~(.*)$': '<rootDir>/$1'},
+    moduleNameMapper: {
+        '~(.*)$': '<rootDir>/$1',
+        "\\.css$": "identity-obj-proxy",
+        "^lodash-es$": "lodash"
+    },
     testEnvironment: 'node',
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
     transform: {".(ts|tsx)$": "ts-jest"},
