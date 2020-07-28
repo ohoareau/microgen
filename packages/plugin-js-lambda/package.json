@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-js-lambda",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
