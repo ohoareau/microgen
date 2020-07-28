@@ -2,9 +2,12 @@ import {AbstractPackage} from '@ohoareau/microgen';
 import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates";
 
 export type environment = {
+    name: string,
 };
 
 export type layer = {
+    name: string,
+    type: string,
 };
 
 export type model = {
@@ -27,10 +30,10 @@ export default class Package extends AbstractPackage {
     protected buildDynamicFiles(vars: any, cfg: any): any {
         const model = this.buildModel(vars, cfg);
         return {
-            ...this.buildConfigFileIfNeeded(model, vars),
-            ...this.buildEnvironmentsFiles(model, vars),
-            ...this.buildLayersFiles(model, vars),
-            ...this.buildModulesFiles(model, vars),
+            ...this.buildConfigFileIfNeeded(model, vars, cfg),
+            ...this.buildEnvironmentsFiles(model, vars, cfg),
+            ...this.buildLayersFiles(model, vars, cfg),
+            ...this.buildModulesFiles(model, vars, cfg),
             ['LICENSE.md']: this.buildLicense(vars),
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
@@ -92,22 +95,55 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('provision-full', ['init-full', 'sync-full'])
         ;
     }
-    protected buildEnvironmentsFiles(model: model, vars: any): {[name: string]: any} {
-        return {
+    protected buildEnvironmentsFiles(model: model, vars: any, cfg: any): {[name: string]: any} {
+        if (!this.hasVarsCategoryFeature(vars, 'infra', 'environments')) return {
             ['environments/.gitkeep']: () => '',
         };
+        return model.environments.reduce((acc, e) =>
+            Object.assign(acc, this.buildEnvironmentFiles(e, model, vars, cfg))
+        , {});
     }
-    protected buildLayersFiles(model: model, vars: any): {[name: string]: any} {
-        return {
+    protected buildLayersFiles(model: model, vars: any, cfg: any): {[name: string]: any} {
+        if (!this.hasVarsCategoryFeature(vars, 'infra', 'layers')) return {
             ['layers/.gitkeep']: () => '',
         };
+        return model.layers.reduce((acc, l) =>
+            Object.assign(acc, this.buildLayerFiles(l, model, vars, cfg))
+        , {});
     }
-    protected buildModulesFiles(model: model, vars: any): {[name: string]: any} {
-        return {
+    protected buildModulesFiles(model: model, vars: any, cfg: any): {[name: string]: any} {
+        if (!this.hasVarsCategoryFeature(vars, 'infra', 'modules')) return {
             ['modules/.gitkeep']: () => '',
         };
+        return model.layers.reduce((acc, l) =>
+            Object.assign(acc, this.buildModuleFilesFromLayer(l, model, vars, cfg))
+        , {});
     }
-    protected buildConfigFileIfNeeded(model: model, vars: any): {[name: string]: any} {
+    protected buildEnvironmentFiles(environment: environment, model: model, vars: any, cfg: any): any {
+        if (!this.hasVarsCategoryFeature(vars, 'infra', `environment_${environment.name}`, true)) {
+            return {}
+        }
+        return {};
+    }
+    protected buildLayerFiles(layer: layer, model: model, vars: any, cfg: any): any {
+        if (!this.hasVarsCategoryFeature(vars, 'infra', `layer_${layer.name}`, true)) {
+            return {}
+        }
+        return {
+            [`layers/${layer.name}.tmpl.tf`]: `// ${layer.name}`,
+        };
+    }
+    protected buildModuleFilesFromLayer(layer: layer, model: model, vars: any, cfg: any): any {
+        if (!this.hasVarsCategoryFeature(vars, 'infra', `module_${layer.name}`, true)) {
+            return {}
+        }
+        return {
+            [`modules/${layer.name}/main.tf`]: ({renderFile}) => renderFile(cfg)(`modules/${layer.type}/main.tf.ejs`, vars),
+            [`modules/${layer.name}/outputs.tf`]: ({renderFile}) => renderFile(cfg)(`modules/${layer.type}/outputs.tf.ejs`, vars),
+            [`modules/${layer.name}/variables.tf`]: ({renderFile}) => renderFile(cfg)(`modules/${layer.type}/variables.tf.ejs`, vars),
+        };
+    }
+    protected buildConfigFileIfNeeded(model: model, vars: any, cfg: any): {[name: string]: any} {
         return model.config ? {
             ['config.json']: JSON.stringify(model.config, null, 4),
         } : {};
@@ -129,7 +165,7 @@ export default class Package extends AbstractPackage {
         }
         return {
             environments: Object.entries(vars.environments || {}).reduce((acc, [k, v]) => [...acc, {name: k, ...<any>v}], <environment[]>[]),
-            layers: Object.entries(vars.layers || {}).reduce((acc, [k, v]) => [...acc, {name: k, ...<any>v}], <layer[]>[]),
+            layers: Object.entries(vars.layers || {}).reduce((acc, [k, v]) => [...acc, {name: k, type: k, ...<any>v}], <layer[]>[]),
             config: (0 < Object.keys(config.environments).length) ? config : undefined,
         };
     }

@@ -1,0 +1,20 @@
+{
+  "modules": {
+    "main": {
+      "type": "static-website",
+      "variables": {
+        "env": "{{env}}",
+        "name": "$name",
+        "dns": "app.{{dns}}",
+        "dns_zone": "!",
+        "project_prefix": "!",
+        "project_name": "!",
+        "geolocations": "?"
+      }
+    }
+  },
+  "outputs": {
+    "dns": "%.main.dns",
+    "cloudfront_id": "%.main.dns"
+  }
+}

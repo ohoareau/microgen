@@ -1,0 +1,8 @@
+provider "aws" {
+}
+
+module "dns" {
+  source = "github.com/ohoareau/terraform-modules//modules/dns"
+  zone   = var.dns
+  name   = var.env
+}

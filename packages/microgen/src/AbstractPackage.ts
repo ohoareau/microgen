@@ -127,6 +127,13 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         }
         return files;
     }
+    hasVarsFeature(vars: any, feature: string, defaultValue: boolean = false): boolean {
+        const k = `feature_${feature}`;
+        return (!!vars && ('undefined' !== typeof vars[k])) ? vars[k] : defaultValue;
+    }
+    hasVarsCategoryFeature(vars: any, category: string, feature: string, defaultValue: boolean = false): boolean {
+        return this.hasVarsFeature(vars, `${category}_${feature}`, defaultValue);
+    }
 }
 
 // noinspection JSUnusedGlobalSymbols
