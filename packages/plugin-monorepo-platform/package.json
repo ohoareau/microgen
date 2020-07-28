@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-monorepo-platform",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
