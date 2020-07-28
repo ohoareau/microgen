@@ -17,6 +17,12 @@ module.exports = {
                 name: 'Olivier Hoareau',
                 email: 'oha+oss@greenberets.io',
             },
+            project_envs: {
+                dev: {},
+                test: {},
+                preprod: {},
+                prod: {},
+            },
             prefix: 'myothercompany',
             project: 'someproject',
             projects: [

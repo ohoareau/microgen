@@ -149,6 +149,9 @@ export default class Package extends AbstractPackage {
             .addTarget('start', [vars.startCmd || `npx concurrently -n ${startableProjects.map(p => p.name)} ${startableProjects.map(p => `"make start-${p.name}"`).join(' ')}`])
             .setDefaultTarget('install')
         ;
+        Object.keys(vars.project_envs || {}).forEach(env => {
+            t.addTarget(`switch-${env}`, generateEnvLocalableProjects.map(p => `make -C . generate-env-local-${p.name} env=${env}`))
+        });
         preInstallableProjects.forEach(p => {
             t.addSubTarget(`pre-install-${p.name}`, p.name, 'pre-install');
         });
