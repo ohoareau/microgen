@@ -2,6 +2,10 @@ import {AbstractPackage} from '@ohoareau/microgen';
 import {GitIgnoreTemplate, LicenseTemplate, ReadmeTemplate, PackageExcludesTemplate} from "@ohoareau/microgen-templates";
 
 export default class Package extends AbstractPackage {
+    protected getDefaultFeatures(): any {
+        return {
+        };
+    }
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
     }

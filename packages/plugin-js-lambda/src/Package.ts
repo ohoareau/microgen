@@ -61,6 +61,20 @@ export default class Package extends AbstractPackage<PackageConfig> {
     getExternalEventListeners(event) {
         return this.externalEvents[event] || [];
     }
+    protected getDefaultFeatures() {
+        return {
+            buildable: true,
+            cleanable: true,
+            installable: true,
+            generateEnvLocalable: true,
+            testable: true,
+        }
+    }
+    protected getDefaultExtraOptions(): any {
+        return {
+            phase: 'pre',
+        };
+    }
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
     }
@@ -139,7 +153,6 @@ export default class Package extends AbstractPackage<PackageConfig> {
         const t = new MakefileTemplate(vars.makefile || {})
             .addGlobalVar('env', 'dev')
             .setDefaultTarget('install')
-            .addTarget('pre-install')
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build', 'yarn-build')
             .addPredefinedTarget('generate-env-local', 'generate-env-local')

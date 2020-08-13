@@ -17,6 +17,10 @@ export type model = {
 };
 
 export default class Package extends AbstractPackage {
+    protected getDefaultFeatures() {
+        return {
+        }
+    }
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
     }
@@ -73,7 +77,6 @@ export default class Package extends AbstractPackage {
             .addGlobalVar('layers', '$(shell AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) list-layers)')
             .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
             .addTarget('all')
-            .addTarget('pre-install')
             .addPredefinedTarget('apply', 'tflayer-apply')
             .addPredefinedTarget('destroy', 'tflayer-destroy')
             .addPredefinedTarget('get', 'tflayer-get')

@@ -32,6 +32,9 @@ export class MicroGen implements IGenerator {
     public readonly vars: {[key: string]: any} = {};
     public readonly rootDir: string
     protected readonly packageEventHooks = {};
+    protected readonly groupEventHooks = {};
+    protected readonly globalEventHooks = {};
+    private readonly globalContext = {};
     constructor({rootDir, plugins = [], groups = {}, vars = {}, ...extra}: MicroGenConfig) {
         this.rootDir = rootDir;
         this.vars = {
@@ -102,6 +105,14 @@ export class MicroGen implements IGenerator {
         if (!this.packageEventHooks[packageType][eventType]) this.packageEventHooks[packageType][eventType] = [];
         this.packageEventHooks[packageType][eventType].push(hook);
     }
+    registerGroupEventHook(eventType: string, hook: Function): void {
+        if (!this.groupEventHooks[eventType]) this.groupEventHooks[eventType] = [];
+        this.groupEventHooks[eventType].push(hook);
+    }
+    registerGlobalEventHook(eventType: string, hook: Function): void {
+        if (!this.globalEventHooks[eventType]) this.globalEventHooks[eventType] = [];
+        this.globalEventHooks[eventType].push(hook);
+    }
     async describePackages(): Promise<any[]> {
         return (await this.prepare()).reduce((acc, [g, x]) => {
             return acc.concat(x.map((p: any) => {
@@ -117,7 +128,7 @@ export class MicroGen implements IGenerator {
     }
     protected applyPackageEventHooks(p: IPackage, eventType: string, data: any = {}): void {
         let hooks = <Function[]>[];
-        const packageType = p.getName ? p.getName() : (p['name'] ? p['name'] : undefined);
+        const packageType = p.getPackageType ? p.getPackageType() : (p['packageType'] ? p['packageType'] : undefined);
         if (!packageType) return;
         if (this.packageEventHooks[packageType]) {
             if (this.packageEventHooks[packageType][eventType])
@@ -131,8 +142,26 @@ export class MicroGen implements IGenerator {
             if (this.packageEventHooks['*']['*'])
                 hooks = hooks.concat(this.packageEventHooks['*'][eventType]);
         }
-        const ctx = {data};
+        const ctx = {data, globalContext: this.globalContext};
         hooks.forEach(h => h(p, eventType, ctx));
+    }
+    protected applyGroupEventHooks(g: PackageGroup, eventType: string, data: any = {}): void {
+        let hooks = <Function[]>[];
+        if (this.groupEventHooks[eventType])
+            hooks = hooks.concat(this.groupEventHooks[eventType]);
+        if (this.groupEventHooks['*'])
+            hooks = hooks.concat(this.groupEventHooks['*']);
+        const ctx = {data, globalContext: this.globalContext};
+        hooks.forEach(h => h(g, eventType, ctx));
+    }
+    protected applyGlobalEventHooks(eventType: string, data: any = {}): void {
+        let hooks = <Function[]>[];
+        if (this.globalEventHooks[eventType])
+            hooks = hooks.concat(this.globalEventHooks[eventType]);
+        if (this.globalEventHooks['*'])
+            hooks = hooks.concat(this.globalEventHooks['*']);
+        const ctx = {data, globalContext: this.globalContext};
+        hooks.forEach(h => h(this, eventType, ctx));
     }
     registerPlugin(plugin: IPlugin) {
         plugin.register(this);
@@ -153,7 +182,9 @@ export class MicroGen implements IGenerator {
     }
     private async prepare(): Promise<[PackageGroup, IPackage[]][]> {
         return Object.values(this.groups).reduce((acc, g) => {
-            acc.push([g, (<PackageGroup>g).getPackages().map(
+            const pkgs = (<PackageGroup>g).getPackages();
+            this.applyGroupEventHooks(g, 'before_prepare', {packages: pkgs});
+            acc.push([g, pkgs.map(
                 ({name, type, ...c}: any) => {
                     if (!type) {
                         if (!this.vars.defaultPackageType) throw new Error(`No type specified for package '${name}'`);
@@ -161,11 +192,13 @@ export class MicroGen implements IGenerator {
                     }
                     if (!this.packagers[type]) throw new Error(`Unsupported package type '${type}'`);
                     const targetDir = g.getDir() === '.' ? name : `${g.getDir()}/${name}`;
-                    const p = this.packagers[type]({...c, packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}});
-                    this.applyPackageEventHooks(p, 'created');
+                    const localConfig = {...c, packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}};
+                    const p = this.packagers[type](localConfig);
+                    this.applyPackageEventHooks(p, 'created', localConfig);
                     return p;
                 }
             )]);
+            this.applyGroupEventHooks(g, 'prepared', {packages: pkgs});
             return acc;
         }, <[PackageGroup, IPackage[]][]>[]);
     }
@@ -186,13 +219,15 @@ export class MicroGen implements IGenerator {
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
         const groupments = await this.prepare();
         const description = await this.preGenerate(groupments, vars);
-        return (groupments).reduce(async (acc, [g, packages]) => {
+        this.applyGlobalEventHooks('before_generate');
+        const r = await ((groupments).reduce(async (acc, [g, packages]) => {
             const result = await acc;
             vars.verbose = vars.verbose || process.env.MICROGEN_VERBOSE || 0;
             const {write = false, targetDir} = vars;
+            this.applyGroupEventHooks(g, 'before');
             await packages.reduce(async (acc, p) => {
                 await acc;
-                this.applyPackageEventHooks(p, 'before_hydrate');
+                this.applyPackageEventHooks(p, 'before_hydrate', description);
                 await p.hydrate(description);
                 this.applyPackageEventHooks(p, 'after_hydrate', description);
             }, Promise.resolve());
@@ -213,6 +248,7 @@ export class MicroGen implements IGenerator {
                     {}
                 )
             ;
+            this.applyGroupEventHooks(g, 'after');
             const entries = Object.entries(rr);
             entries.sort(([k1], [k2]) => k1 < k2 ? -1 : (k1 === k2 ? 0 : 1));
             entries.forEach(([k, x]) => {
@@ -231,7 +267,9 @@ export class MicroGen implements IGenerator {
             });
             Object.assign(result, rr);
             return result;
-        }, Promise.resolve({}));
+        }, Promise.resolve({})));
+        this.applyGlobalEventHooks('generated', r);
+        return r;
     }
     init(): void {
         writeFile(

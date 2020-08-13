@@ -3,12 +3,18 @@ module.exports = {
         '@monorepo-platform',
         '@js-gatsby',
         '@js-lambda',
+        '@js-next',
         '@js-react-app',
     ],
     projects: {
-        app: {type: 'js-gatsby'},
+        front: {type: 'js-gatsby'},
+        app: {type: 'js-next'},
         back: {type: 'js-react-app'},
-        api: {type: 'js-lambda'}
+        api: {type: 'js-lambda'},
+        projectx: {},
+        projecty: {},
+        projectz: {},
+        projectt: {},
     },
     root: {
         type: 'monorepo-platform',
@@ -25,16 +31,6 @@ module.exports = {
             },
             prefix: 'myothercompany',
             project: 'someproject',
-            projects: [
-                {name: 'app', deployable: true},
-                {name: 'back', deployable: true},
-                {name: 'front', startable: true, deployable: true},
-                {name: 'api', phase: 'pre'},
-                {name: 'projectx'},
-                {name: 'projecty'},
-                {name: 'projectz'},
-                {name: 'projectt'},
-            ],
             technologies: {
                 sometechno: {name: 'Some other techno', link: 'https://mytechno.org'},
             },

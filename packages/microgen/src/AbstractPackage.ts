@@ -6,6 +6,7 @@ import detectTechnologies from '@ohoareau/technologies-detector';
 
 export type BasePackageConfig = {
     name: string,
+    description?: string,
     targetDir: string,
     packageType: string,
     sources?: string[],
@@ -18,17 +19,51 @@ const fs = require('fs');
 export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageConfig> implements IPackage {
     public readonly packageType: string;
     public readonly name: string;
+    public readonly description: string;
     public readonly sources: string[];
     public readonly vars: {[key: string]: any};
     public readonly files: {[key: string]: any};
+    public readonly features: any;
+    public readonly extraOptions: any;
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
     constructor(config: C) {
-        this.name = config.name;
-        this.packageType = config.packageType;
-        this.sources = config.sources || [];
-        this.files = config.files || {};
-        this.vars = config.vars || {};
-        this.vars.targetDir = config.targetDir;
+        const {name, description, packageType, sources = [], files = {}, vars =  {}, targetDir, ...extra} = config;
+        this.name = name;
+        this.description = description || name;
+        this.packageType = packageType;
+        this.sources = sources;
+        this.files = files;
+        this.vars = vars;
+        this.vars.targetDir = targetDir;
+        [this.features, this.extraOptions] = Object.entries(<any>extra).reduce((acc, [k, v]) => {
+            if ('boolean' === typeof v) acc[0][k] = v;
+            else acc[1][k] = v;
+            return acc;
+        }, [{}, {}]);
+        this.features = {...this.getDefaultFeatures(), ...this.features};
+        this.extraOptions = {...this.getDefaultExtraOptions(), ...this.extraOptions};
+    }
+    protected getDefaultFeatures(): any {
+        return {};
+    }
+    protected getDefaultExtraOptions(): any {
+        return {};
+    }
+    public getDescription() {
+        return this.description;
+    }
+    public getFeatures(): any {
+        return this.features;
+    }
+    public getExtraOptions(): any {
+        return this.extraOptions;
+    }
+    public getExtraOption(name: string, defaultValue: any = undefined): any {
+        return ('undefined' === (typeof this.extraOptions[name])) ? defaultValue : this.extraOptions[name];
+    }
+    public hasFeature(name: string, defaultValue = false): boolean {
+        if (undefined === this.features[name]) return defaultValue;
+        return !!this.features[name];
     }
     public getPackageType(): string {
         return this.packageType;

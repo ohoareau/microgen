@@ -2,6 +2,17 @@ import {AbstractPackage} from '@ohoareau/microgen';
 import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from '@ohoareau/microgen-templates';
 
 export default class Package extends AbstractPackage {
+    protected getDefaultFeatures() {
+        return {
+            buildable: true,
+            installable: true,
+            deployable: true,
+            generateEnvLocalable: true,
+            startable: true,
+            servable: true,
+            testable: true,
+        }
+    }
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
     }
@@ -101,7 +112,6 @@ export default class Package extends AbstractPackage {
             .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-${vars.name}`)
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()})`)
             .setDefaultTarget('install')
-            .addTarget('pre-install')
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build', 'yarn-build')
             .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'public/'})
