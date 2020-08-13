@@ -84,13 +84,13 @@ export const buildProjectsVars = (vars: any): {
     }, <any[]>[]);
     sortedProjects.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1));
     const deployableProjects = sortedProjects.filter(p => !!p.deployable);
-    const buildableProjects = sortedProjects.filter(p => (undefined === p.buildable) || !!p.buildable);
+    const buildableProjects = sortedProjects.filter(p => !!p.buildable);
     const buildablePreProjects = buildableProjects.filter(p => 'pre' === p.phase);
     const buildablePostProjects = buildableProjects.filter(p => 'pre' !== p.phase);
-    const testableProjects = sortedProjects.filter(p => (undefined === p.testable) || !!p.testable);
-    const generateEnvLocalableProjects = sortedProjects.filter(p => (undefined === p.buildable) || !!p.buildable);
-    const preInstallableProjects = sortedProjects.filter(p => (undefined === p.preInstallable) || !!p.preInstallable);
-    const installableProjects = sortedProjects.filter(p => (undefined === p.installable) || !!p.installable);
+    const testableProjects = sortedProjects.filter(p => !!p.testable);
+    const generateEnvLocalableProjects = sortedProjects.filter(p => !!p.buildable);
+    const preInstallableProjects = sortedProjects.filter(p => !!p.preInstallable);
+    const installableProjects = sortedProjects.filter(p => !!p.installable);
     const startableProjects = sortedProjects.filter(p => !!p.startable);
     const refreshableProjects = sortedProjects.filter(p => !!p.refreshable);
     return {

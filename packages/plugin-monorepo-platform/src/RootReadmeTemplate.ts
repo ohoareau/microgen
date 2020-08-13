@@ -13,6 +13,15 @@ export type project = {
     description: string,
     startable?: boolean,
     deployable?: boolean,
+    buildable?: boolean,
+    cleanable?: boolean,
+    generateEnvLocalable?: boolean,
+    installable?: boolean,
+    preInstallable?: boolean,
+    refreshable?: boolean,
+    servable?: boolean,
+    testable?: boolean,
+    validatable?: boolean,
 };
 
 export type technology = {

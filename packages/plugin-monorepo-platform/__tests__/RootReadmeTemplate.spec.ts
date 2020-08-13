@@ -13,9 +13,9 @@ describe('RootReadmeTemplate', () => {
         expectRenderSameAsFile(
             new RootReadmeTemplate({
                 projects: {
-                    project1: {description: 'desc of project1'},
-                    project2: {description: 'desc of project2', startable: true, deployable: true},
-                    project3: {description: 'desc of project3', startable: true},
+                    project1: {description: 'desc of project1', installable: true, buildable: true, testable: true},
+                    project2: {description: 'desc of project2', installable: true, buildable: true, testable: true, startable: true, deployable: true},
+                    project3: {description: 'desc of project3', installable: true, buildable: true, testable: true, startable: true},
                 }
             }),
             'with-projects.md'
@@ -25,9 +25,9 @@ describe('RootReadmeTemplate', () => {
         expectRenderSameAsFile(
             new RootReadmeTemplate({
                 projects: {
-                    project2: {description: 'desc of project2', startable: true, deployable: true},
-                    project1: {description: 'desc of project1', deployable: true},
-                    project3: {description: 'desc of project3', startable: true},
+                    project2: {description: 'desc of project2', installable: true, buildable: true, testable: true, startable: true, deployable: true},
+                    project1: {description: 'desc of project1', installable: true, buildable: true, testable: true, deployable: true},
+                    project3: {description: 'desc of project3', installable: true, buildable: true, testable: true, startable: true},
                 },
                 technologies: {
                     techno1: {link: 'https://techno1.com'},
