@@ -5,13 +5,20 @@ export abstract class AbstractYarnTarget extends GenericTarget {
     getCommandOptions(options: any): any {
         return {};
     }
+    getCommandEnvs(options: any): any {
+        return {};
+    }
     buildSteps(options: any) {
         return [
             this.buildCli(
                 `yarn --silent ${this.getCommandName(options)}`,
                 [],
                 this.getCommandOptions(options),
-                options
+                options,
+                {},
+                [],
+                [],
+                this.getCommandEnvs(options),
             )
         ];
     }

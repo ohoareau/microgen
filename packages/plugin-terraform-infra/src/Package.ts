@@ -17,10 +17,6 @@ export type model = {
 };
 
 export default class Package extends AbstractPackage {
-    protected getDefaultFeatures() {
-        return {
-        }
-    }
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
     }

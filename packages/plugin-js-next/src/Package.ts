@@ -1,18 +1,19 @@
 import {AbstractPackage} from '@ohoareau/microgen';
 import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates";
+import {BuildableBehaviour, DeployableBehaviour, InstallableBehaviour, StartableBehaviour, ServableBehaviour, GenerateEnvLocalableBehaviour, ValidatableBehaviour, TestableBehaviour} from '@ohoareau/microgen-behaviours';
 
 export default class Package extends AbstractPackage {
-    protected getDefaultFeatures(): any {
-        return {
-            buildable: true,
-            deployable: true,
-            generateEnvLocalable: true,
-            installable: true,
-            startable: true,
-            servable: true,
-            testable: true,
-            validatable: true,
-        };
+    protected getBehaviours() {
+        return [
+            new BuildableBehaviour(),
+            new DeployableBehaviour(),
+            new GenerateEnvLocalableBehaviour(),
+            new InstallableBehaviour(),
+            new StartableBehaviour(),
+            new ServableBehaviour(),
+            new TestableBehaviour(),
+            new ValidatableBehaviour(),
+        ]
     }
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
@@ -81,8 +82,8 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'NEXT'})
-            .addPredefinedTarget('start', 'yarn-start')
-            .addPredefinedTarget('serve', 'yarn-serve')
+            .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort')})
+            .addPredefinedTarget('serve', 'yarn-serve', {port: this.getParameter('servePort')})
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})

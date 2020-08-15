@@ -1,13 +1,14 @@
 import {AbstractPackage} from '@ohoareau/microgen';
 import {GitIgnoreTemplate, MakefileTemplate, ReadmeTemplate, LicenseTemplate} from "@ohoareau/microgen-templates";
+import {BuildableBehaviour, CleanableBehaviour, InstallableBehaviour} from "@ohoareau/microgen-behaviours";
 
 export default class Package extends AbstractPackage {
-    protected getDefaultFeatures(): any {
-        return {
-            buildable: true,
-            cleanable: true,
-            installable: true,
-        };
+    protected getBehaviours() {
+        return [
+            new BuildableBehaviour(),
+            new CleanableBehaviour(),
+            new InstallableBehaviour(),
+        ]
     }
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;

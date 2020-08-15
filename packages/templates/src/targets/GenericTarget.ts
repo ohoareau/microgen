@@ -30,17 +30,25 @@ export class GenericTarget {
             }, acc);
         }, '');
     }
+    buildCliEnvs(envs: any, options: any): string {
+        return Object.entries(envs).reduce((acc, [k, v]) => {
+            if (undefined === v) return acc;
+            const value = true === v ? '1' : String(v);
+            return `${acc || ''}${acc ? ' ' : ''}${k}=${value || ''}`;
+        }, '');
+    }
     buildCliArgs(args: any, options: any): string {
         return args.reduce((acc, v) => {
             if (undefined === v) return acc;
             return `${acc || ''}${acc ? ' ' : ''}${v}`;
         }, '');
     }
-    buildCli(command: string, args: (string|undefined)[], opts: any, options: any, preOpts: any = {}, preCmds: string[] = [], postCmds: string[] = []): string {
+    buildCli(command: string, args: (string|undefined)[], opts: any, options: any, preOpts: any = {}, preCmds: string[] = [], postCmds: string[] = [], envs: any = {}): string {
         const a = this.buildCliArgs(args, options)
         const o = this.buildCliOptions(opts, options)
         const po = this.buildCliOptions(preOpts, options)
-        const x = `${command}${po ? ' ' : ''}${po || ''}${a ? ' ' : ''}${a || ''}${o ? ' ' : ''}${o || ''}`;
+        const ev = this.buildCliEnvs(envs, options)
+        const x = `${ev || ''}${ev ? ' ' : ''}${command}${po ? ' ' : ''}${po || ''}${a ? ' ' : ''}${a || ''}${o ? ' ' : ''}${o || ''}`;
         const pre = `${preCmds.join(' && ')}${preCmds.length ? ' && ' : ''}`;
         const post = `${postCmds.length ? ' && ' : ''}${postCmds.join(' && ')}`;
         return `${pre || ''}${(pre || post) ? '(' : ''}${x}${(pre || post) ? ')' : ''}${post || ''}`;

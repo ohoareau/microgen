@@ -2,6 +2,7 @@ export interface IPackage {
     getPackageType(): string,
     getName(): string;
     getDescription(): string;
+    getParameter(name: string, defaultValue?: any): any;
     getFeatures(): any;
     getExtraOptions(): any;
     getExtraOption(name: string, defaultValue?: any): any;

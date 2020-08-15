@@ -2,6 +2,7 @@ import Handler, {HandlerConfig} from './Handler';
 import Microservice, {MicroserviceConfig} from './Microservice';
 import {AbstractPackage, BasePackageConfig} from '@ohoareau/microgen';
 import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate, PackageExcludesTemplate} from "@ohoareau/microgen-templates";
+import {BuildableBehaviour, CleanableBehaviour, InstallableBehaviour, GenerateEnvLocalableBehaviour, TestableBehaviour} from '@ohoareau/microgen-behaviours';
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
@@ -61,14 +62,14 @@ export default class Package extends AbstractPackage<PackageConfig> {
     getExternalEventListeners(event) {
         return this.externalEvents[event] || [];
     }
-    protected getDefaultFeatures() {
-        return {
-            buildable: true,
-            cleanable: true,
-            installable: true,
-            generateEnvLocalable: true,
-            testable: true,
-        }
+    protected getBehaviours() {
+        return [
+            new BuildableBehaviour(),
+            new CleanableBehaviour(),
+            new InstallableBehaviour(),
+            new GenerateEnvLocalableBehaviour(),
+            new TestableBehaviour(),
+        ]
     }
     protected getDefaultExtraOptions(): any {
         return {

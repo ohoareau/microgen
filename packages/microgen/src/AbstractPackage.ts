@@ -3,6 +3,7 @@ import StaticFileTemplate from './StaticFileTemplate';
 import {populateData} from "./utils";
 import {requireTechnologies} from '@ohoareau/technologies';
 import detectTechnologies from '@ohoareau/technologies-detector';
+import IBehaviour from "./IBehaviour";
 
 export type BasePackageConfig = {
     name: string,
@@ -33,21 +34,38 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         this.packageType = packageType;
         this.sources = sources;
         this.files = files;
-        this.vars = vars;
-        this.vars.targetDir = targetDir;
-        [this.features, this.extraOptions] = Object.entries(<any>extra).reduce((acc, [k, v]) => {
+        this.vars = {targetDir};
+        const [xFeatures, xExtraOptions] = Object.entries(<any>extra).reduce((acc, [k, v]) => {
             if ('boolean' === typeof v) acc[0][k] = v;
             else acc[1][k] = v;
             return acc;
         }, [{}, {}]);
-        this.features = {...this.getDefaultFeatures(), ...this.features};
-        this.extraOptions = {...this.getDefaultExtraOptions(), ...this.extraOptions};
+        this.features = {...this.getDefaultFeatures()};
+        this.extraOptions = {...this.getDefaultExtraOptions()};
+        const {vars: bbVars = {}, features: bbFeatures = {}, extraOptions: bbExtraOptions = {}} = this.getBehaviours().reduce((acc, b) => {
+            const {vars: bVars = {}, features: bFeatures = {}, extraOptions: bExtraOptions = {}} = b.build(this);
+            Object.assign(acc.vars, bVars);
+            Object.assign(acc.features, bFeatures);
+            Object.assign(acc.extraOptions, bExtraOptions);
+            return acc;
+        }, <any>{vars: {}, features: {}, extraOptions: {}});
+        Object.assign(this.vars, bbVars, vars);
+        Object.assign(this.features, bbFeatures, xFeatures);
+        Object.assign(this.extraOptions, bbExtraOptions, xExtraOptions);
+    }
+    protected getBehaviours(): IBehaviour[] {
+        return [];
     }
     protected getDefaultFeatures(): any {
         return {};
     }
     protected getDefaultExtraOptions(): any {
         return {};
+    }
+    public getParameter(name: string, defaultValue: any = undefined): any {
+        if ('undefined' !== typeof this[name]) return this[name];
+        if ('undefined' !== typeof this.vars[name]) return this.vars[name];
+        return defaultValue;
     }
     public getDescription() {
         return this.description;
@@ -126,6 +144,12 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         return {};
     }
     // noinspection JSUnusedLocalSymbols
+    protected buildDefaultBehavioursVars(vars: any): any {
+        return this.getBehaviours().reduce((acc, b) => {
+            return Object.assign(acc, b.buildDynamicVars(this, vars));
+        }, {});
+    }
+    // noinspection JSUnusedLocalSymbols
     protected buildSources(vars: any, cfg: any): any[] {
         return [];
     }
@@ -139,6 +163,11 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     }
     async hydrate(data: any): Promise<void> {
         populateData(this.vars, data);
+        data && data.projectData && populateData(this.vars, data.projectData);
+        Object.entries(this.buildDefaultBehavioursVars(this.vars)).forEach(([k, v]) => {
+            if ('undefined' !== typeof this.vars[k]) return;
+            this.vars[k] = v;
+        });
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
         const pluginCfg = {templatePath: this.getTemplateRoot()};

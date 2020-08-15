@@ -227,9 +227,11 @@ export class MicroGen implements IGenerator {
             this.applyGroupEventHooks(g, 'before');
             await packages.reduce(async (acc, p) => {
                 await acc;
+                description.projectData = {};
                 this.applyPackageEventHooks(p, 'before_hydrate', description);
                 await p.hydrate(description);
                 this.applyPackageEventHooks(p, 'after_hydrate', description);
+                delete description.projectData;
             }, Promise.resolve());
             const rr = (await Promise.all(packages.map(async p => {
                 const n = (<any>p).getName ? (<any>p).getName() : p['name'];

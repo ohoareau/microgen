@@ -24,7 +24,8 @@
     "@ohoareau/microgen": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-templates": "^0.1.8"
+    "@ohoareau/microgen-templates": "^0.1.8",
+    "@ohoareau/microgen-behaviours": "^0"
   },
   "devDependencies": {
     "@ohoareau/microgen": "^0.20.0"

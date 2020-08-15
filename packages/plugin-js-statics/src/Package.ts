@@ -1,16 +1,17 @@
 import {AbstractPackage} from '@ohoareau/microgen';
 import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates";
+import {BuildableBehaviour, DeployableBehaviour, InstallableBehaviour, StartableBehaviour, TestableBehaviour, GenerateEnvLocalableBehaviour} from "@ohoareau/microgen-behaviours";
 
 export default class Package extends AbstractPackage {
-    protected getDefaultFeatures(): any {
-        return {
-            buildable: true,
-            deployable: true,
-            generateEnvLocalable: true,
-            installable: true,
-            startable: true,
-            testable: true,
-        };
+    protected getBehaviours() {
+        return [
+            new BuildableBehaviour(),
+            new DeployableBehaviour(),
+            new GenerateEnvLocalableBehaviour(),
+            new InstallableBehaviour(),
+            new StartableBehaviour(),
+            new TestableBehaviour(),
+        ]
     }
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
@@ -70,7 +71,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS'})
-            .addPredefinedTarget('start', 'yarn-start')
+            .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort')})
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
