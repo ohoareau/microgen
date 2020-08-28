@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-js-docusaurus",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@ohoareau/microgen-behaviours": "^0.2.3",
-    "@ohoareau/microgen-templates": "^0.3.3"
+    "@ohoareau/microgen-templates": "^0.3.4"
   },
   "devDependencies": {
     "@ohoareau/microgen": "^0.22.3"
