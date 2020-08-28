@@ -1,5 +1,11 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates";
+import {
+    GitIgnoreTemplate,
+    LicenseTemplate,
+    MakefileTemplate,
+    ReadmeTemplate,
+    TerraformToVarsTemplate
+} from "@ohoareau/microgen-templates";
 import RootReadmeTemplate from "./RootReadmeTemplate";
 import {buildProjectsVars} from "./utils";
 
@@ -18,20 +24,19 @@ export default class Package extends AbstractPackage {
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildDynamicFiles(vars: any, cfg: any): any {
-        const files = {
+        return {
             ['LICENSE.md']: this.buildLicense(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
+            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
+            ['README.md']: this.buildReadme(vars),
         };
-        vars.readme && (files['README.md'] = this.buildReadme(vars));
-        return files;
     }
     protected buildLicense(vars: any): LicenseTemplate {
         return new LicenseTemplate(vars);
     }
     protected buildReadme(vars: any): ReadmeTemplate {
-        return new RootReadmeTemplate(vars)
-        ;
+        return new RootReadmeTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})
@@ -114,7 +119,7 @@ export default class Package extends AbstractPackage {
             startableProjects,
             testableProjects,
         } = buildProjectsVars(vars);
-        const t = new MakefileTemplate(vars.makefile || {})
+        const t = new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'develop')
             .addPredefinedTarget('generate', 'yarn-microgen')
@@ -178,6 +183,9 @@ export default class Package extends AbstractPackage {
         });
         ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
         return t;
+    }
+    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
+        return new TerraformToVarsTemplate(vars);
     }
     protected getTechnologies(): any {
         return [

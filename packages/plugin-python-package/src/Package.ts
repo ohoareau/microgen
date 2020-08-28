@@ -1,5 +1,11 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates";
+import {
+    GitIgnoreTemplate,
+    LicenseTemplate,
+    MakefileTemplate,
+    ReadmeTemplate,
+    TerraformToVarsTemplate
+} from "@ohoareau/microgen-templates";
 import {BuildableBehaviour, DeployableBehaviour, InstallableBehaviour, PreInstallableBehaviour, TestableBehaviour, CleanableBehaviour} from "@ohoareau/microgen-behaviours";
 
 export default class Package extends AbstractPackage {
@@ -38,6 +44,7 @@ export default class Package extends AbstractPackage {
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
+            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         };
     }
     protected buildLicense(vars: any): LicenseTemplate {
@@ -54,7 +61,7 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate(vars.makefile || {})
+        return new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('pypi_repo', undefined, vars.pypi_repo)
             .addMetaTarget('pre-install', ['create-venv'])
@@ -73,5 +80,8 @@ export default class Package extends AbstractPackage {
             .addTarget('test-cov', ['source venv/bin/activate && python -m unittest tests/*.py -v'])
             .setDefaultTarget('install')
         ;
+    }
+    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
+        return new TerraformToVarsTemplate(vars);
     }
 }

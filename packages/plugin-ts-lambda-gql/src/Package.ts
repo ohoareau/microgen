@@ -1,5 +1,10 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate} from "@ohoareau/microgen-templates";
+import {
+    GitIgnoreTemplate,
+    LicenseTemplate,
+    MakefileTemplate,
+    TerraformToVarsTemplate
+} from "@ohoareau/microgen-templates";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -46,6 +51,7 @@ export default class Package extends AbstractPackage {
             ['LICENSE.md']: this.buildLicense(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
+            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         };
     }
     protected buildLicense(vars: any): LicenseTemplate {
@@ -71,7 +77,7 @@ export default class Package extends AbstractPackage {
             ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate(vars.makefile || {})
+        return new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
@@ -92,5 +98,8 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
             ;
+    }
+    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
+        return new TerraformToVarsTemplate(vars);
     }
 }

@@ -2,16 +2,17 @@ import RootReadmeTemplate from "../src/RootReadmeTemplate";
 import path from "path";
 
 const expectRenderSameAsFile = (template: RootReadmeTemplate, file: string) => {
-    expect(template.render().trimRight()).toEqual(require('fs').readFileSync(path.resolve(`${__dirname}/../__fixtures__/root-readmes/${file}`), 'utf8').trim());
+    expect((template.render() || '').trimRight()).toEqual(require('fs').readFileSync(path.resolve(`${__dirname}/../__fixtures__/root-readmes/${file}`), 'utf8').trim());
 };
 
 describe('RootReadmeTemplate', () => {
     it('empty', () => {
-        expectRenderSameAsFile(new RootReadmeTemplate(), 'empty.md');
+        expectRenderSameAsFile(new RootReadmeTemplate({readme: true}), 'empty.md');
     })
     it('with-projects', () => {
         expectRenderSameAsFile(
             new RootReadmeTemplate({
+                readme: true,
                 projects: {
                     project1: {description: 'desc of project1', installable: true, buildable: true, testable: true},
                     project2: {description: 'desc of project2', installable: true, buildable: true, testable: true, startable: true, deployable: true},
@@ -24,6 +25,7 @@ describe('RootReadmeTemplate', () => {
     it('with-projects-and-technos', () => {
         expectRenderSameAsFile(
             new RootReadmeTemplate({
+                readme: true,
                 projects: {
                     project2: {description: 'desc of project2', installable: true, buildable: true, testable: true, startable: true, deployable: true},
                     project1: {description: 'desc of project1', installable: true, buildable: true, testable: true, deployable: true},

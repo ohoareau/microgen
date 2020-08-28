@@ -9,16 +9,17 @@ export abstract class AbstractTemplate implements ITemplate {
     describe(): any {
         return undefined;
     }
-    build(helpers): string {
+    build(helpers): string|undefined {
         if (this.factory) {
             return this.factory(helpers);
         }
         const description = this.describe();
         if (!description) return '';
+        if (!!description.ignored) return undefined;
         const {dir, name, vars = {}}: {dir: string, name: string, vars: any} = description;
         return helpers.renderFile({templatePath: dir})(name, vars);
     }
-    render(helpers: {copy} = {copy: () => {}}): string {
+    render(helpers: {copy} = {copy: () => {}}): string|undefined {
         return this.build({render, renderFile, jsStringify, ...helpers});
     }
 }

@@ -1,5 +1,11 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates";
+import {
+    GitIgnoreTemplate,
+    LicenseTemplate,
+    MakefileTemplate,
+    ReadmeTemplate,
+    TerraformToVarsTemplate
+} from "@ohoareau/microgen-templates";
 
 export type environment = {
     name: string,
@@ -38,6 +44,7 @@ export default class Package extends AbstractPackage {
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
+            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         };
     }
     protected buildLicense(vars: any): LicenseTemplate {
@@ -66,7 +73,7 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate(vars.makefile || {})
+        return new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('env', 'dev')
             .addGlobalVar('layer', '"all"')
@@ -93,6 +100,9 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('provision', ['init', 'sync'])
             .addMetaTarget('provision-full', ['init-full', 'sync-full'])
         ;
+    }
+    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
+        return new TerraformToVarsTemplate(vars);
     }
     protected buildEnvironmentsFiles(model: model, vars: any, cfg: any): {[name: string]: any} {
         if (!this.hasVarsCategoryFeature(vars, 'infra', 'environments')) return {

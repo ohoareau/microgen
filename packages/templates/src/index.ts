@@ -6,3 +6,4 @@ export * from './PackageExcludesTemplate';
 export * from './CodeOfConductTemplate';
 export * from './ContributingTemplate';
 export * from './NvmRcTemplate';
+export * from './TerraformToVarsTemplate';

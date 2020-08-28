@@ -31,6 +31,7 @@ export type technology = {
 };
 
 export type RootReadmeTemplateConfig = ReadmeTemplateConfig & {
+    readme?: boolean,
     projects?: {[id: string]: Omit<project, 'id'>},
     project_prefix?: string,
     project_envs?: any,

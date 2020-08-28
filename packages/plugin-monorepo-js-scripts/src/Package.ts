@@ -1,5 +1,11 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, ReadmeTemplate, NvmRcTemplate} from "@ohoareau/microgen-templates";
+import {
+    GitIgnoreTemplate,
+    LicenseTemplate,
+    ReadmeTemplate,
+    NvmRcTemplate,
+    TerraformToVarsTemplate
+} from "@ohoareau/microgen-templates";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -29,6 +35,7 @@ export default class Package extends AbstractPackage {
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['.nvmrc']: new NvmRcTemplate(vars),
+            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         };
     }
     protected buildReadme(vars: any): ReadmeTemplate {
@@ -51,5 +58,8 @@ export default class Package extends AbstractPackage {
             .addIgnore('.DS_Store')
             .addIgnore('public/')
             ;
+    }
+    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
+        return new TerraformToVarsTemplate(vars);
     }
 }

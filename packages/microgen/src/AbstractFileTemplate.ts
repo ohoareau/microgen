@@ -9,11 +9,15 @@ export abstract class AbstractFileTemplate extends AbstractTemplate {
     }
     abstract getTemplatePath(): string;
     abstract getName(): string;
+    isIgnored() {
+        return false;
+    }
     describe() {
         return {
             dir: this.getTemplatePath(),
             name: this.getName(),
             vars: this.getVars(),
+            ignored: this.isIgnored(),
         }
     }
 }

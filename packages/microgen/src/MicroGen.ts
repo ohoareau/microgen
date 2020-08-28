@@ -263,8 +263,11 @@ export class MicroGen implements IGenerator {
                         source,
                         `${this.computeTargetDir(targetDir, g.getDir())}/${p}/${target}`
                     )
-                    rr[k] = t.render({copy: fileCopy});
-                    if (write && (true !== rr[k])) writeFile(filePath, rr[k]);
+                    const xxx = t.render({copy: fileCopy});
+                    if (undefined !== xxx) {
+                        rr[k] = xxx;
+                        if (write && (true !== rr[k])) writeFile(filePath, rr[k]);
+                    }
                 }
             });
             Object.assign(result, rr);

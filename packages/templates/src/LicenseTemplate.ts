@@ -1,7 +1,7 @@
 import {AbstractFileTemplate} from '@ohoareau/microgen';
 
 export type LicenseTemplateConfig = {
-    license?: string,
+    license?: string|boolean,
 };
 
 export class LicenseTemplate extends AbstractFileTemplate {
@@ -17,6 +17,9 @@ export class LicenseTemplate extends AbstractFileTemplate {
     }
     getName() {
         return 'LICENSE.md.ejs';
+    }
+    isIgnored() {
+        return false === this.customConfig.license;
     }
     getVars() {
         if (!this.customConsumed) {

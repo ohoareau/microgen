@@ -2,7 +2,7 @@ import {GitIgnoreTemplate} from '../src';
 import path from 'path';
 
 const expectRenderSameAsFile = (template: GitIgnoreTemplate, file: string) => {
-    expect(template.render().trimRight()).toEqual(require('fs').readFileSync(path.resolve(`${__dirname}/../__fixtures__/gitignores/${file}`), 'utf8').trim());
+    expect((template.render() || '').trimRight()).toEqual(require('fs').readFileSync(path.resolve(`${__dirname}/../__fixtures__/gitignores/${file}`), 'utf8').trim());
 };
 
 describe('render', () => {

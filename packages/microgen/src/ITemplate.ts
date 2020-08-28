@@ -1,5 +1,5 @@
 export interface ITemplate {
-    render(helpers?: {[key: string]: any}): string;
+    render(helpers?: {[key: string]: any}): string|undefined;
 }
 
 export const isTemplate = (value: any): value is ITemplate => {

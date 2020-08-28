@@ -1,5 +1,11 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, MakefileTemplate, ReadmeTemplate, LicenseTemplate} from "@ohoareau/microgen-templates";
+import {
+    GitIgnoreTemplate,
+    MakefileTemplate,
+    ReadmeTemplate,
+    LicenseTemplate,
+    TerraformToVarsTemplate
+} from "@ohoareau/microgen-templates";
 import {BuildableBehaviour, CleanableBehaviour, InstallableBehaviour} from "@ohoareau/microgen-behaviours";
 
 export default class Package extends AbstractPackage {
@@ -19,6 +25,7 @@ export default class Package extends AbstractPackage {
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
+            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         }
     }
     protected buildLicense(vars: any): LicenseTemplate {
@@ -33,7 +40,7 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const t = new MakefileTemplate(vars.makefile || {})
+        const t = new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .addShellTarget('build', './bin/build', ['clean'])
             .addShellTarget('clean', './bin/clean')
@@ -42,5 +49,8 @@ export default class Package extends AbstractPackage {
         ;
         vars.deployable && t.addTarget('deploy');
         return t;
+    }
+    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
+        return new TerraformToVarsTemplate(vars);
     }
 }

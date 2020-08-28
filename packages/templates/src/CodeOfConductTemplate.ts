@@ -1,6 +1,7 @@
 import {AbstractFileTemplate} from '@ohoareau/microgen';
 
 export type CodeOfConductTemplateConfig = {
+    code_of_conduct?: boolean,
 };
 
 export class CodeOfConductTemplate extends AbstractFileTemplate {
@@ -24,6 +25,9 @@ export class CodeOfConductTemplate extends AbstractFileTemplate {
         return {
             config: this.customConfig,
         }
+    }
+    isIgnored(): boolean {
+        return false === this.customConfig.code_of_conduct;
     }
 }
 

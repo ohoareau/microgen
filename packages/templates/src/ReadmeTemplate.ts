@@ -1,6 +1,7 @@
 import {AbstractFileTemplate} from '@ohoareau/microgen';
 
 export type ReadmeTemplateConfig = {
+    readme?: boolean,
     project_name?: string,
     name?: string,
 };
@@ -59,6 +60,9 @@ export class ReadmeTemplate extends AbstractFileTemplate {
     addFragmentFromConfig(fragment: FragmentConfig): this {
         this.fragments.push(fragment);
         return this;
+    }
+    isIgnored() {
+        return false === this.customConfig.readme;
     }
     getVars() {
         if (!this.customConsumed) {

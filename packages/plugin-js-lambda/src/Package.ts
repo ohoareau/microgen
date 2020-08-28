@@ -1,7 +1,14 @@
 import Handler, {HandlerConfig} from './Handler';
 import Microservice, {MicroserviceConfig} from './Microservice';
 import {AbstractPackage, BasePackageConfig} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate, PackageExcludesTemplate} from "@ohoareau/microgen-templates";
+import {
+    GitIgnoreTemplate,
+    LicenseTemplate,
+    MakefileTemplate,
+    ReadmeTemplate,
+    PackageExcludesTemplate,
+    TerraformToVarsTemplate
+} from "@ohoareau/microgen-templates";
 import {BuildableBehaviour, CleanableBehaviour, InstallableBehaviour, GenerateEnvLocalableBehaviour, TestableBehaviour} from '@ohoareau/microgen-behaviours';
 
 export type PackageConfig = BasePackageConfig & {
@@ -116,6 +123,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             ['package-excludes.lst']: this.buildPackageExcludes(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
+            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         });
         const objects: any = (<any[]>[]).concat(
             Object.values(this.microservices),
@@ -151,7 +159,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const t = new MakefileTemplate(vars.makefile || {})
+        const t = new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .setDefaultTarget('install')
             .addPredefinedTarget('install', 'yarn-install')
@@ -167,6 +175,9 @@ export default class Package extends AbstractPackage<PackageConfig> {
         ;
         vars.deployable && t.addPredefinedTarget('deploy', 'yarn-deploy');
         return t;
+    }
+    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
+        return new TerraformToVarsTemplate(vars);
     }
     protected getTechnologies(): any {
         return [

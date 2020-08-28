@@ -38,6 +38,7 @@ export type ExportedVarConfig = {
 };
 
 export type MakefileTemplateConfig = {
+    makefile?: boolean,
     targets?: {[name: string]: Omit<ShellTargetConfig, 'name'> | Omit<MetaTargetConfig, 'name'> | Omit<SubTargetConfig, 'name'> | Omit<PredefinedTargetConfig, 'name'>},
     globals?: {[name: string]: Omit<GlobalVarConfig, 'name'>},
     exports?: {[name: string]: Omit<ExportedVarConfig, 'name'>},
@@ -48,7 +49,7 @@ export class MakefileTemplate extends AbstractFileTemplate {
     private targets: any[] = [];
     private globalVars: any[] = [];
     private exportedVars: any[] = [];
-    private customConfig: MakefileTemplateConfig ;
+    private customConfig: MakefileTemplateConfig;
     private customConsumed: boolean;
     constructor(config: MakefileTemplateConfig = {targets: {}, globals: {}, exports: {}}) {
         super();
@@ -61,6 +62,9 @@ export class MakefileTemplate extends AbstractFileTemplate {
     }
     getName() {
         return 'Makefile.ejs';
+    }
+    isIgnored(): boolean {
+        return false === this.customConfig.makefile;
     }
     addTargetFromConfig(config: TargetConfig): this {
         switch (true) {

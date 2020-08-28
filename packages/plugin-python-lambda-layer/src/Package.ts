@@ -1,5 +1,11 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, ReadmeTemplate, PackageExcludesTemplate} from "@ohoareau/microgen-templates";
+import {
+    GitIgnoreTemplate,
+    LicenseTemplate,
+    ReadmeTemplate,
+    PackageExcludesTemplate,
+    TerraformToVarsTemplate
+} from "@ohoareau/microgen-templates";
 
 export default class Package extends AbstractPackage {
     protected getDefaultExtraOptions(): any {
@@ -34,6 +40,7 @@ export default class Package extends AbstractPackage {
             ['README.md']: this.buildReadme(vars),
             ['package-excludes.lst']: this.buildPackageExcludes(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
+            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         };
     }
     protected buildLicense(vars: any): LicenseTemplate {
@@ -41,6 +48,9 @@ export default class Package extends AbstractPackage {
     }
     protected buildReadme(vars: any): ReadmeTemplate {
         return new ReadmeTemplate(vars);
+    }
+    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
+        return new TerraformToVarsTemplate(vars);
     }
     protected buildPackageExcludes(vars: any): PackageExcludesTemplate {
         return new PackageExcludesTemplate(vars);

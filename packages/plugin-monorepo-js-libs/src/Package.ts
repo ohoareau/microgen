@@ -1,5 +1,14 @@
 import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate, CodeOfConductTemplate, ContributingTemplate, NvmRcTemplate} from "@ohoareau/microgen-templates";
+import {
+    GitIgnoreTemplate,
+    LicenseTemplate,
+    MakefileTemplate,
+    ReadmeTemplate,
+    CodeOfConductTemplate,
+    ContributingTemplate,
+    NvmRcTemplate,
+    TerraformToVarsTemplate
+} from "@ohoareau/microgen-templates";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -55,6 +64,7 @@ export default class Package extends AbstractPackage {
             ['CODE_OF_CONDUCT.md']: new CodeOfConductTemplate(vars),
             ['CONTRIBUTING.md']: new ContributingTemplate(vars),
             ['.nvmrc']: new NvmRcTemplate(vars),
+            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         };
     }
     protected buildReadme(vars: any): ReadmeTemplate {
@@ -91,7 +101,7 @@ export default class Package extends AbstractPackage {
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         const scm = vars.scm || 'git';
-        const m = vars.makefile || {};
+        const m = {makefile: false !== vars.makefile, ...(vars.makefile || {})};
         const t = new MakefileTemplate(m)
             .addPredefinedTarget('package-build-storybook', 'yarn-build-storybook', {dir: 'packages/$(p)'})
             .addPredefinedTarget('package-generate-svg-components', 'yarn-generate-svg-components', {dir: 'packages/$(p)'})
@@ -147,5 +157,8 @@ export default class Package extends AbstractPackage {
             ;
         }
         return t;
+    }
+    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
+        return new TerraformToVarsTemplate(vars);
     }
 }

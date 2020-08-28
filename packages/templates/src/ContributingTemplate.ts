@@ -1,6 +1,7 @@
 import {AbstractFileTemplate} from '@ohoareau/microgen';
 
 export type ContributingTemplateConfig = {
+    contributing?: boolean,
 };
 
 export class ContributingTemplate extends AbstractFileTemplate {
@@ -24,6 +25,9 @@ export class ContributingTemplate extends AbstractFileTemplate {
         return {
             config: this.customConfig,
         }
+    }
+    isIgnored(): boolean {
+        return false === this.customConfig.contributing;
     }
 }
 
