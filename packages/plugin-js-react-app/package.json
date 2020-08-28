@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-js-react-app",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@ohoareau/microgen-behaviours": "^0.2.4",
-    "@ohoareau/microgen-templates": "^0.3.5"
+    "@ohoareau/microgen-templates": "^0.3.6"
   },
   "devDependencies": {
     "@ohoareau/microgen": "^0.22.4"
