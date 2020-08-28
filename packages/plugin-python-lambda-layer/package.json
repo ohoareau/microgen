@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-python-lambda-layer",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,9 +25,9 @@
     "@ohoareau/microgen": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-templates": "^0.3.4"
+    "@ohoareau/microgen-templates": "^0.3.5"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.22.3"
+    "@ohoareau/microgen": "^0.22.4"
   }
 }
