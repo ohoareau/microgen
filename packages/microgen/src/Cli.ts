@@ -69,7 +69,7 @@ export class Cli {
             .options({
                 config: {
                     alias: 'c',
-                    default: './microgen.js',
+                    default: '.',
                 }
             })
             .alias('v', 'verbose')
