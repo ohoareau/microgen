@@ -170,10 +170,10 @@ export default class Package extends AbstractPackage {
             t.addSubTarget(`generate-env-local-${p.name}`, p.name, 'generate-env-local', {env: '$(env)'});
         });
         buildableProjects.forEach(p => {
-            t.addSubTarget(`build-${p.name}`, p.name, 'build', {env: '$(env)'}, [`generate-env-local-${p.name}`]);
+            t.addSubTarget(`build-${p.name}`, p.name, 'build', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : []);
         });
         deployableProjects.forEach(p => {
-            !!p.deployable && t.addSubTarget(`deploy-${p.name}`, p.name, 'deploy', {env: '$(env)'}, [`generate-env-local-${p.name}`], {sourceEnvLocal: true});
+            !!p.deployable && t.addSubTarget(`deploy-${p.name}`, p.name, 'deploy', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
         });
         refreshableProjects.forEach(p => {
             !!p.refreshable && t.addSubTarget(`refresh-${p.name}`, 'infra', 'provision', {env: '$(env)', layer: p.name}, ['generate-terraform', `build-${p.name}`]);
