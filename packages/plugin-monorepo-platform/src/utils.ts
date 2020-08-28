@@ -88,7 +88,7 @@ export const buildProjectsVars = (vars: any): {
     const buildablePreProjects = buildableProjects.filter(p => 'pre' === p.phase);
     const buildablePostProjects = buildableProjects.filter(p => 'pre' !== p.phase);
     const testableProjects = sortedProjects.filter(p => !!p.testable);
-    const generateEnvLocalableProjects = sortedProjects.filter(p => !!p.buildable);
+    const generateEnvLocalableProjects = sortedProjects.filter(p => !!p.generateEnvLocalable);
     const preInstallableProjects = sortedProjects.filter(p => !!p.preInstallable);
     const installableProjects = sortedProjects.filter(p => !!p.installable);
     const startableProjects = sortedProjects.filter(p => !!p.startable);
