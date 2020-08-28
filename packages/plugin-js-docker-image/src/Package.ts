@@ -70,13 +70,12 @@ export default class Package extends AbstractPackage {
             .addGlobalVar('image_tag', '$(image_name):latest')
             .addPredefinedTarget('install-code', 'yarn-install-prod', {dir: 'code'})
             .addPredefinedTarget('build-code', 'yarn-build', {dir: 'code'})
-            .addPredefinedTarget('build-image', 'docker-build', {awsEcrLogin: true, tag: '$(image_tag)', path: vars.image_dir || '.', buildArgs: vars.image_buildArgs || {}})
+            .addPredefinedTarget('build-image', 'docker-build', {awsEcrLogin: true, tag: '$(ecr_url)/$(image_tag)', path: vars.image_dir || '.', buildArgs: vars.image_buildArgs || {}})
             .addMetaTarget('build', ['build-code', 'build-image'])
             .addMetaTarget('install', ['install-code'])
-            .addPredefinedTarget('tag', 'docker-tag', {awsEcrLogin: true, tag: '$(image_tag)', remoteTag: '$(ecr_url)/$(image_tag)'})
             .addPredefinedTarget('push', 'docker-push', {awsEcrLogin: true, tag: '$(ecr_url)/$(image_tag)'})
             .setDefaultTarget('install')
-            .addMetaTarget('deploy', ['tag', 'push'])
+            .addMetaTarget('deploy', ['push'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local')
         ;
     }
