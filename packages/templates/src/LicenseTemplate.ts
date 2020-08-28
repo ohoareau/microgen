@@ -2,6 +2,7 @@ import {AbstractFileTemplate} from '@ohoareau/microgen';
 
 export type LicenseTemplateConfig = {
     license?: string|boolean,
+    company?: string,
 };
 
 export class LicenseTemplate extends AbstractFileTemplate {
@@ -25,8 +26,15 @@ export class LicenseTemplate extends AbstractFileTemplate {
         if (!this.customConsumed) {
             this.customConsumed = true;
         }
+        const licenseStartYear = new Date().getFullYear();
+        const licenseEndYear = new Date().getFullYear();
+        const licensePeriod = (licenseEndYear === licenseStartYear) ? `${licenseEndYear}` : `${licenseStartYear} - ${licenseEndYear}`;
         return {
             license: this.customConfig.license || 'MIT',
+            company: this.customConfig.company || undefined,
+            licenseStartYear,
+            licenseEndYear,
+            licensePeriod,
         }
     }
 }

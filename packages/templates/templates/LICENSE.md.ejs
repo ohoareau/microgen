@@ -1,2 +1,3 @@
 <% if ('MIT' === license.toUpperCase()) { %><%- include('./licenses/MIT.md.ejs') -%>
+<% } else if ('ISC' === license.toUpperCase()) { %><%- include('./licenses/ISC.md.ejs') -%>
 <% } else { %><%- include('./licenses/default.md.ejs') %><% } -%>
