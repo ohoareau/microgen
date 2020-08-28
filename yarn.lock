@@ -1326,10 +1326,10 @@
   resolved "https://registry.yarnpkg.com/@ohoareau/aws-parse/-/aws-parse-0.2.0.tgz#3dcaae525dcf2da06d124b32ad8a442f96d3dc5d"
   integrity sha512-mIWqp2VM7VcfDk1gEHsHfSGQ5XuJNcP5p5xE9slw/1MMPHDDUpJlJANYf1x2SCsZIAYYDRcYZEF8kpDYnP+tkA==
 
-"@ohoareau/dir2obj@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@ohoareau/dir2obj/-/dir2obj-0.2.0.tgz#d86fdd1348d12db27e82f232e348ae3f431d61a5"
-  integrity sha512-n+O79wXPeY/TRnhiv9KmtAC44S1yOxBI16fJ+anc5NCycbHRDdCrOASGgtY1UmApKjY4YyPmeEKSqsxQfv6mTA==
+"@ohoareau/dir2obj@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@ohoareau/dir2obj/-/dir2obj-0.3.0.tgz#11a717fcb05628294d8707286f3753aed831b87a"
+  integrity sha512-og3YOP8XMTwRfdVnkkypJN7lp8ZsqFhReSD7Dg1RN6E6P/CVAcefXsk8Ee+3b2/uCRyeNpx/LEzi8QEroq39ug==
   dependencies:
     yaml "^1.10.0"
 
