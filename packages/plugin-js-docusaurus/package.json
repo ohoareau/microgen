@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc",
     "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
-    "gen": "../../packages/microgen/bin/microgen"
+    "gen": "../../packages/microgen/bin/microgen",
+    "dump": "../../packages/microgen/bin/microgen dump"
   },
   "peerDependencies": {
     "@ohoareau/microgen": "^0"

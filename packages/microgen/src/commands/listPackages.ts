@@ -7,7 +7,7 @@ export default {
     },
     handler: async argv =>
         (await new MicroGen({
-            ...(argv.config as any),
+            ...(argv.c as any),
             rootDir: process.cwd(),
             verbose: argv.verbose,
         }).describePackages()).map(p => {

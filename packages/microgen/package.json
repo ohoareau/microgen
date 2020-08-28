@@ -37,10 +37,12 @@
   "scripts": {
     "build": "tsc",
     "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
-    "gen": "./bin/microgen"
+    "gen": "./bin/microgen",
+    "dump": "./bin/microgen dump"
   },
   "dependencies": {
     "@ohoareau/technologies-detector": "^0.1.0",
+    "@ohoareau/dir2obj": "^0.2.0",
     "ejs": "^3.0.2",
     "fs-extra": "^8.1.0",
     "stringify-object": "^3.3.0",

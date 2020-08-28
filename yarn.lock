@@ -1326,6 +1326,13 @@
   resolved "https://registry.yarnpkg.com/@ohoareau/aws-parse/-/aws-parse-0.2.0.tgz#3dcaae525dcf2da06d124b32ad8a442f96d3dc5d"
   integrity sha512-mIWqp2VM7VcfDk1gEHsHfSGQ5XuJNcP5p5xE9slw/1MMPHDDUpJlJANYf1x2SCsZIAYYDRcYZEF8kpDYnP+tkA==
 
+"@ohoareau/dir2obj@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@ohoareau/dir2obj/-/dir2obj-0.2.0.tgz#d86fdd1348d12db27e82f232e348ae3f431d61a5"
+  integrity sha512-n+O79wXPeY/TRnhiv9KmtAC44S1yOxBI16fJ+anc5NCycbHRDdCrOASGgtY1UmApKjY4YyPmeEKSqsxQfv6mTA==
+  dependencies:
+    yaml "^1.10.0"
+
 "@ohoareau/technologies-detector@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@ohoareau/technologies-detector/-/technologies-detector-0.1.0.tgz#d388e0c23879f409ad68ef2c6359a6e8b0fd4a5a"
@@ -7189,6 +7196,11 @@ yallist@^3.0.0, yallist@^3.0.2, yallist@^3.0.3:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-3.1.1.tgz#dbb7daf9bfd8bac9ab45ebf602b8cbad0d5d08fd"
   integrity sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==
+
+yaml@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.10.0.tgz#3b593add944876077d4d683fee01081bd9fff31e"
+  integrity sha512-yr2icI4glYaNG+KWONODapy2/jDdMSDnrONSjblABjD9B4Z5LgiircSt8m8sRZFNi08kG9Sm0uSHtEmP3zaEGg==
 
 yargonaut@^1.1.4:
   version "1.1.4"

@@ -1,5 +1,6 @@
 import {Argv} from 'yargs';
 import * as commands from './commands';
+import dir2obj from '@ohoareau/dir2obj';
 
 export class Cli {
     private readonly yargs: Argv;
@@ -24,12 +25,44 @@ export class Cli {
         ;
     }
     private registerOptions(yargs: Argv, pkg: any) {
+        let cachedConfig: any = undefined;
         yargs
             .coerce('config', arg => {
+                if (cachedConfig) return cachedConfig;
                 try {
-                    return require(require('fs').realpathSync(arg));
+                    const fs = require('fs');
+                    const path = fs.realpathSync(arg);
+                    let cfg = {};
+                    if (fs.existsSync(path)) {
+                        if (fs.lstatSync(path).isDirectory()) {
+                            const genJsDir = `${path}/.genjs`;
+                            const microgenJsFile = `${path}/microgen.js`;
+                            const genJsFile = `${path}/gen.js`;
+                            if (fs.existsSync(genJsDir)) {
+                                if (fs.lstatSync(genJsDir).isDirectory()) {
+                                    cfg = {...cfg, ...dir2obj(genJsDir)};
+                                }
+                            }
+                            if (fs.existsSync(microgenJsFile)) {
+                                if (!fs.lstatSync(microgenJsFile).isDirectory()) {
+                                    cfg = {...cfg, ...require(microgenJsFile)};
+                                }
+                            }
+                            if (fs.existsSync(genJsFile)) {
+                                if (!fs.lstatSync(genJsFile).isDirectory()) {
+                                    cfg = {...cfg, ...require(genJsFile)};
+                                }
+                            }
+                        } else {
+                            cfg = {...cfg, ...require(path)};
+                        }
+                    }
+                    cachedConfig = cfg;
+                    return cachedConfig;
                 } catch (e) {
-                    return {};
+                    console.error(e.message);
+                    cachedConfig = {};
+                    return cachedConfig;
                 }
             })
             .count('verbose')

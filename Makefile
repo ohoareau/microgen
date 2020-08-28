@@ -58,4 +58,13 @@ clean-buildinfo:
 package-fixture:
 	@cd packages/$(p) && yarn --silent gen -c __fixtures__/$(f).js -t ../../generated/$(f)
 
+package-fixture-dump:
+	@cd packages/$(p) && yarn --silent dump -c __fixtures__/$(f).js -t ../../generated/$(f)
+
+package-fixture-dir:
+	@cd packages/$(p) && yarn --silent gen -c __fixtures__/$(f) -t ../../generated/$(f)
+
+package-fixture-dir-dump:
+	@cd packages/$(p) && yarn --silent dump -c __fixtures__/$(f) -t ../../generated/$(f)
+
 .PHONY: all install install-root install-packages test build publish clean-buildinfo clean-modules clean-lib clean-coverage clean package-build package-install package-test
