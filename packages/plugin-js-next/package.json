@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-js-next",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@ohoareau/microgen": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-behaviours": "^0.2.0",
-    "@ohoareau/microgen-templates": "^0.3.0"
+    "@ohoareau/microgen-behaviours": "^0.2.1",
+    "@ohoareau/microgen-templates": "^0.3.1"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.22.0"
+    "@ohoareau/microgen": "^0.22.1"
   }
 }
