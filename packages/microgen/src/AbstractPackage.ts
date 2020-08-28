@@ -97,6 +97,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
             acc[k] = ({renderFile}) => renderFile(cfg)(true === v ? `${k}.ejs` : v, vars);
             return acc;
         }, {});
+        Object.assign(files, await this.buildStaticFiles(vars, cfg));
         return Object.assign(files, await this.buildDynamicFiles(vars, cfg));
     }
     // noinspection JSUnusedLocalSymbols
@@ -105,6 +106,10 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     }
     // noinspection JSUnusedLocalSymbols
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
+        return {};
+    }
+    // noinspection JSUnusedLocalSymbols
+    protected async buildStaticFiles(vars: any, cfg: any): Promise<any> {
         return {};
     }
     protected getTechnologies(): any {

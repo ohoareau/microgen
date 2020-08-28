@@ -1,5 +1,6 @@
 export * from './DockerBuildTarget';
 export * from './DockerPushTarget';
+export * from './DockerTagTarget';
 export * from './TfgenTarget';
 export * from './TfenvInstallTarget';
 export * from './TflayerApplyTarget';
@@ -18,6 +19,7 @@ export * from './TflayerInitUpgradeTarget';
 export * from './TflayerInitFullTarget';
 export * from './TflayerInitFullUpgradeTarget';
 export * from './YarnInstallTarget';
+export * from './YarnInstallProdTarget';
 export * from './YarnTestJestTarget';
 export * from './YarnBuildTarget';
 export * from './YarnServeTarget';

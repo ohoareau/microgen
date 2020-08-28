@@ -1,0 +1,33 @@
+{
+  "name": "@ohoareau/microgen-plugin-js-docker-image",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib",
+    "templates"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
+    "gen": "../../packages/microgen/bin/microgen",
+    "dump": "../../packages/microgen/bin/microgen dump"
+  },
+  "peerDependencies": {
+    "@ohoareau/microgen": "^0"
+  },
+  "dependencies": {
+    "@ohoareau/microgen-templates": "^0.3.4"
+  },
+  "devDependencies": {
+    "@ohoareau/microgen": "^0.22.3"
+  }
+}

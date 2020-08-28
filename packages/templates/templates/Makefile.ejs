@@ -8,6 +8,13 @@
 export <%- exportedVar.name %>
 <% }) %>
 <% } -%>
+<% if (defines.length) { -%>
+<% defines.forEach(define => { -%>
+define <%- define.name %>
+<%- define.code %>
+endef
+<% }) %>
+<% } -%>
 <% if (targetGroups.length) { -%>
 <% targetGroups.forEach(targetGroup => { -%>
 <% targetGroup.targets.forEach(target => { -%>

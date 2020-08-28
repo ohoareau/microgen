@@ -37,21 +37,28 @@ export type ExportedVarConfig = {
     name: string,
 };
 
+export type DefineConfig = {
+    name: string,
+    code: string,
+};
+
 export type MakefileTemplateConfig = {
     makefile?: boolean,
     targets?: {[name: string]: Omit<ShellTargetConfig, 'name'> | Omit<MetaTargetConfig, 'name'> | Omit<SubTargetConfig, 'name'> | Omit<PredefinedTargetConfig, 'name'>},
     globals?: {[name: string]: Omit<GlobalVarConfig, 'name'>},
     exports?: {[name: string]: Omit<ExportedVarConfig, 'name'>},
+    defines?: {[name: string]: Omit<DefineConfig, 'name'>},
     defaultTarget?: string,
 };
 
 export class MakefileTemplate extends AbstractFileTemplate {
     private targets: any[] = [];
     private globalVars: any[] = [];
+    private defines: any[] = [];
     private exportedVars: any[] = [];
     private customConfig: MakefileTemplateConfig;
     private customConsumed: boolean;
-    constructor(config: MakefileTemplateConfig = {targets: {}, globals: {}, exports: {}}) {
+    constructor(config: MakefileTemplateConfig = {targets: {}, globals: {}, exports: {}, defines: {}}) {
         super();
         this.customConsumed = false;
         this.customConfig = config;
@@ -90,6 +97,9 @@ export class MakefileTemplate extends AbstractFileTemplate {
     addExportedVarFromConfig(config: ExportedVarConfig): this {
         return this.addExportedVar(config.name);
     }
+    addDefineFromConfig(config: DefineConfig): this {
+        return this.addDefine(config.name, config.code);
+    }
     getVars() {
         if (!this.customConsumed) {
             Object.entries(this.customConfig.targets || {}).forEach(([name, targetConfig]) => {
@@ -119,10 +129,12 @@ export class MakefileTemplate extends AbstractFileTemplate {
         });
         const globalVars = Object.values(this.globalVars.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name, type: g.defaultValue ? '?=' : '=', value: g.value || g.defaultValue}));
         const exportedVars = Object.values(this.exportedVars.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name}));
+        const defines = Object.values(this.defines.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((d: any) => ({name: d.name, code: d.code}));
         return {
             globalVars,
             targetGroups,
             exportedVars,
+            defines,
         }
     }
     addTarget(name, steps: string[] = [], dependencies: string[] = [], options: any = {}): this {
@@ -149,6 +161,10 @@ export class MakefileTemplate extends AbstractFileTemplate {
         const tName = `${(type || name).split(/-/g).map(t => `${t.slice(0, 1).toUpperCase()}${t.slice(1)}`).join('')}Target`;
         if (!predefinedTargets[tName]) throw new Error(`Unknown predefined target with name ${type || name}`);
         this.targets.push(new predefinedTargets[tName]({name, steps: extraSteps, dependencies: extraDependencies, options}));
+        return this;
+    }
+    addDefine(name: string, code: string): this {
+        this.defines.push({name, code});
         return this;
     }
     setDefaultTarget(name) {
