@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-monorepo-js-libs",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,9 +25,9 @@
     "@ohoareau/microgen": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-templates": "^0.2.0"
+    "@ohoareau/microgen-templates": "^0.3.0"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.21.0"
+    "@ohoareau/microgen": "^0.22.0"
   }
 }
