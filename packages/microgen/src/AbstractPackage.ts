@@ -13,7 +13,7 @@ export type BasePackageConfig = {
     sources?: string[],
     files?: {[key: string]: any},
     vars?: {[key: string]: any},
-    features?: string[],
+    enabled_features?: string[],
     disabled_features?: string[],
 }
 
@@ -30,7 +30,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     public readonly extraOptions: any;
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
     constructor(config: C) {
-        const {name, description, packageType, sources = [], files = {}, vars =  {}, features = [], disabled_features = [], targetDir, ...extra} = config;
+        const {name, description, packageType, sources = [], files = {}, vars =  {}, enabled_features = [], disabled_features = [], targetDir, ...extra} = config;
         this.name = name;
         this.description = description || name;
         this.packageType = packageType;
@@ -53,7 +53,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         }, <any>{vars: {}, features: {}, extraOptions: {}});
         Object.assign(this.vars, bbVars, vars);
         Object.assign(this.features, bbFeatures, xFeatures);
-        features.forEach(f => this.features[f] = true);
+        enabled_features.forEach(f => this.features[f] = true);
         disabled_features.forEach(f => this.features[f] = false);
         Object.assign(this.extraOptions, bbExtraOptions, xExtraOptions);
     }
