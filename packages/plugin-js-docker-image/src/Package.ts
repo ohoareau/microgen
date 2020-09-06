@@ -24,7 +24,7 @@ export default class Package extends AbstractPackage {
     }
     protected getDefaultExtraOptions(): any {
         return {
-            phase: 'pre',
+            phase: 'post',
         };
     }
     protected getTemplateRoot(): string {
@@ -34,6 +34,9 @@ export default class Package extends AbstractPackage {
     protected buildDefaultVars(vars: any): any {
         return {
             description: 'JS Docker image',
+            image_tag: '$(image_tag)',
+            image_region: "`echo $$REPOSITORY_URL_PREFIX | cut -d '.' -f 4`",
+            image_domain: '$$REPOSITORY_URL_PREFIX',
         };
     }
     protected buildStaticFiles(vars: any, cfg: any): any {
@@ -66,7 +69,7 @@ export default class Package extends AbstractPackage {
             .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
             .addGlobalVar('AWS_DEFAULT_REGION', '$(REPOSITORY_REGION)')
             .addGlobalVar('ecr_url', '$(REPOSITORY_URL_PREFIX)')
-            .addGlobalVar('image_name', '$(env)-$(shell basename `pwd`)')
+            .addGlobalVar('image_name', '$(env)-$(subst _,-,$(patsubst %_image,%,$(shell basename `pwd`)))')
             .addGlobalVar('image_tag', '$(image_name):latest')
             .addPredefinedTarget('install-code', 'yarn-install-prod', {dir: 'code'})
             .addPredefinedTarget('build-code', 'yarn-build', {dir: 'code'})

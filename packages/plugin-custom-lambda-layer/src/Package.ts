@@ -19,6 +19,11 @@ export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
     }
+    protected getDefaultExtraOptions(): any {
+        return {
+            phase: 'pre',
+        };
+    }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
         return {
             ['LICENSE']: this.buildLicense(vars),
