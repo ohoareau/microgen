@@ -70,7 +70,7 @@ export default class Package extends AbstractPackage {
             .addGlobalVar('AWS_DEFAULT_REGION', '$(REPOSITORY_REGION)')
             .addGlobalVar('ecr_url', '$(REPOSITORY_URL_PREFIX)')
             .addGlobalVar('image_name', '$(env)-$(subst _,-,$(patsubst %_image,%,$(shell basename `pwd`)))')
-            .addGlobalVar('image_tag', '$(image_name):latest')
+            .addGlobalVar('image_tag', '$(ecr_url)/$(image_name):latest')
             .addPredefinedTarget('install-code', 'yarn-install-prod', {dir: 'code'})
             .addPredefinedTarget('build-code', 'yarn-build', {dir: 'code'})
             .addPredefinedTarget('build-image', 'docker-build', {sourceLocalEnvLocal: true, awsProfile: true, awsEcrLogin: true, tag: vars.image_tag, region: vars.image_region, domain: vars.image_domain, path: vars.image_dir || '.', buildArgs: vars.image_buildArgs || {}})
