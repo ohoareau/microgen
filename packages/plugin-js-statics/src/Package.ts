@@ -28,7 +28,7 @@ export default class Package extends AbstractPackage {
             project_prefix: 'mycompany',
             project_name: 'myproject',
             target_dir: 'build',
-            ignore_target: true,
+            ignore_target_dir: true,
         };
     }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
@@ -55,7 +55,7 @@ export default class Package extends AbstractPackage {
             .addGroup('testing', [
                 '/coverage',
             ]);
-        if (vars.ignore_target) {
+        if (vars.ignore_target_dir) {
             t
                 .addGroup('production', [
                     `/${vars.target_dir}`,

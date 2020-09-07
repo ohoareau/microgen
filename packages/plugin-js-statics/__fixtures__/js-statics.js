@@ -15,7 +15,7 @@ module.exports = {
                 prefix: 'myothercompany',
                 project: 'someproject',
                 target_dir: 'some-target-dir',
-                ignore_target: false,
+                ignore_target_dir: false,
                 name: 'cdn',
             },
         }
