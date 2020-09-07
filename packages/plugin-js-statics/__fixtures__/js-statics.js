@@ -14,6 +14,8 @@ module.exports = {
             vars: {
                 prefix: 'myothercompany',
                 project: 'someproject',
+                target_dir: 'some-target-dir',
+                ignore_target: false,
                 name: 'cdn',
             },
         }

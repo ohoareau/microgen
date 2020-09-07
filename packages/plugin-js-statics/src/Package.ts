@@ -27,6 +27,8 @@ export default class Package extends AbstractPackage {
         return {
             project_prefix: 'mycompany',
             project_name: 'myproject',
+            target_dir: 'build',
+            ignore_target: true,
         };
     }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
@@ -45,23 +47,28 @@ export default class Package extends AbstractPackage {
         return new ReadmeTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return new GitIgnoreTemplate(vars.gitignore || {})
+        const t = new GitIgnoreTemplate(vars.gitignore || {})
             .addComment('See https://help.github.com/articles/ignoring-files/ for more about ignoring files.')
             .addGroup('dependencies', [
                 '/node_modules', '/.pnp', '.pnp.js',
             ])
             .addGroup('testing', [
                 '/coverage',
-            ])
-            .addGroup('production', [
-                '/build',
-            ])
+            ]);
+        if (vars.ignore_target) {
+            t
+                .addGroup('production', [
+                    `/${vars.target_dir}`,
+                ])
+        }
+        t
             .addGroup('misc', [
                 '.DS_Store',
                 '.env.local', '.env.development.local', '.env.test.local', '.env.production.local',
                 'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*',
             ])
             ;
+        return t;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         return new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
@@ -74,7 +81,7 @@ export default class Package extends AbstractPackage {
             .setDefaultTarget('install')
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build', 'yarn-build')
-            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'build/'})
+            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: `${vars.target_dir}/`})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS'})
