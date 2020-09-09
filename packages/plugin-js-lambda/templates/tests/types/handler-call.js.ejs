@@ -4,6 +4,6 @@ expect(await handler(<%- jsStringify(event) -%>, <%- jsStringify(context) -%>)).
 <% if ('undefined' !== typeof expectedBody) { -%>
 expect((await handler(<%- jsStringify(event) -%>, <%- jsStringify(context) -%>)).body).toEqual(<%- jsStringify(expectedBody) -%>);
 <% } -%>
-<% if ('undefined' !== typeof expectedStatus) { -%>
-    expect((await handler(<%- jsStringify(event) -%>, <%- jsStringify(context) -%>)).status).toEqual(<%- expectedStatus -%>);
+<% if ('undefined' !== typeof expectedStatusCode) { -%>
+    expect((await handler(<%- jsStringify(event) -%>, <%- jsStringify(context) -%>)).statusCode).toEqual(<%- expectedStatusCode -%>);
 <% } -%>
