@@ -36,6 +36,8 @@ type Mutation {
             vars: {
                 license: 'MIT',
                 dependencies: {
+                    dynamoose: "*",
+                    "apollo-server-lambda": "*"
                 },
             },
             sources: ['custom'],
@@ -75,12 +77,12 @@ type Mutation {
                 },
                 handler: {
                     type: 'controller',
-                    middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                    middlewares: [ '@error', '@debug', '@authorizer'],
                 },
                 events: {
                     type: 'service',
                     vars: {service: '@event', method: 'consume'},
-                    middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                    middlewares: [ '@error', '@debug', '@authorizer'],
                     test: {
                         mocks: ['dynamoose'],
                         groups: {
@@ -105,13 +107,13 @@ type Mutation {
                 migrate: {
                     type: 'service',
                     vars: {service: '@migration', method: 'migrate'},
-                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                    middlewares: [ '@error', '@debug', '@authorizer']
                 }
             },
             microservices: {
                 log: {
                     handlers: {
-                        handler: {type: 'controller', middlewares: ['@warmup', '@error', '@debug', '@authorizer']},
+                        handler: {type: 'controller', middlewares: [ '@error', '@debug', '@authorizer']},
                     },
                     types: {
                         log: {
@@ -131,9 +133,9 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
-                                handler: {type: 'controller', middlewares: ['@warmup', '@error', '@debug', '@authorizer']},
+                                handler: {type: 'controller', middlewares: [ '@error', '@debug', '@authorizer']},
                             },
                             operations: {
                                 create: {},
@@ -147,7 +149,7 @@ type Mutation {
                 },
                 module: {
                     handlers: {
-                        handler: {type: 'controller', middlewares: ['@warmup', '@error', '@debug', '@authorizer']},
+                        handler: {type: 'controller', middlewares: [ '@error', '@debug', '@authorizer']},
                     },
                     types: {
                         module: {
@@ -163,9 +165,9 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
-                                handler: {type: 'controller', middlewares: ['@warmup', '@error', '@debug', '@authorizer']},
+                                handler: {type: 'controller', middlewares: [ '@error', '@debug', '@authorizer']},
                             },
                             operations: {
                                 create: {
@@ -201,11 +203,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -262,11 +264,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -291,11 +293,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -356,11 +358,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose', '@lambda'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -456,11 +458,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -487,11 +489,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -516,11 +518,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {create: {}, get: {}, update: {}, delete: {}, find: {}}
@@ -539,11 +541,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {create: {}, get: {}, update: {}, delete: {}, find: {}}
@@ -551,7 +553,7 @@ type Mutation {
                     }
                 },
                 notification: {
-                    handlers: {handler: {type: 'controller', middlewares: ['@warmup', '@error', '@debug', '@authorizer']}},
+                    handlers: {handler: {type: 'controller', middlewares: [ '@error', '@debug', '@authorizer']}},
                     types: {
                         notification: {
                             schema: {
@@ -581,11 +583,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -599,7 +601,7 @@ type Mutation {
                     }
                 },
                 project: {
-                    handlers: {handler: {type: 'controller', middlewares: ['@warmup', '@error', '@debug', '@authorizer']}},
+                    handlers: {handler: {type: 'controller', middlewares: [ '@error', '@debug', '@authorizer']}},
                     types: {
                         project: {
                             schema: {
@@ -615,11 +617,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -721,11 +723,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -750,11 +752,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -777,11 +779,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {create: {}, get: {}, update: {}, delete: {}, find: {}}
@@ -789,7 +791,7 @@ type Mutation {
                     }
                 },
                 tag: {
-                    handlers: {handler: {type: 'controller', middlewares: ['@warmup', '@error', '@debug', '@authorizer']}},
+                    handlers: {handler: {type: 'controller', middlewares: [ '@error', '@debug', '@authorizer']}},
                     types: {
                         tag: {
                             schema: {
@@ -804,11 +806,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -822,7 +824,7 @@ type Mutation {
                     }
                 },
                 user: {
-                    handlers: {handler: {type: 'controller', middlewares: ['@warmup', '@error', '@debug', '@authorizer']}},
+                    handlers: {handler: {type: 'controller', middlewares: [ '@error', '@debug', '@authorizer']}},
                     types: {
                         user: {
                             schema: {
@@ -841,11 +843,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -942,11 +944,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -1027,11 +1029,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {
@@ -1083,11 +1085,11 @@ type Mutation {
                                 }
                             },
                             backends: ['@dynamoose'],
-                            middlewares: ['@warmup', '@error', '@debug', '@authorizer'],
+                            middlewares: [ '@error', '@debug', '@authorizer'],
                             handlers: {
                                 handler: {
                                     type: 'controller',
-                                    middlewares: ['@warmup', '@error', '@debug', '@authorizer']
+                                    middlewares: [ '@error', '@debug', '@authorizer']
                                 }
                             },
                             operations: {

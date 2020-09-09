@@ -51,6 +51,9 @@ export default class Handler {
         if ((0 <= this.middlewares.indexOf('@apigateway') || ('apigateway' === this.type)) && (true === this.vars.healthz)) {
             pushGroupTest(addedGroups, 'apigateway', {name: 'healthz', type: 'handler-call', config: {event: {httpMethod: 'GET', resource: '/healthz'}, expectedBody: JSON.stringify({status: 'ok', code: 1001, message: 'healthy'})}});
         }
+        if (('graphql' === this.type)) {
+            pushGroupTest(addedGroups, 'graphql', {name: 'ui', type: 'handler-call', config: {event: {httpMethod: 'GET', resource: '/graphql'}, expectedStatus: 200}});
+        }
         if (!!Object.keys(addedGroups).length) {
             if (!test) test = <{[key: string]: any}>{};
             test.groups = <any>Object.entries(addedGroups).reduce((acc, [k, v]: [string, any[]]) => {
