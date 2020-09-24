@@ -4,7 +4,7 @@ export class NodemonTarget extends GenericTarget {
     buildSteps(options: any) {
         return [
             this.buildCli(
-                `AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ./node_modules/.bin/nodemon ${options.script || 'server.js'}`,
+                `AWS_REGION=$(AWS_REGION) AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ./node_modules/.bin/nodemon ${options.script || 'server.js'}`,
                 [],
                 [],
                 options,

@@ -195,6 +195,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
         ;
         let index = 0;
         if (this.hasStarters()) {
+            t.addGlobalVar('AWS_REGION', vars.aws_default_region || 'eu-west-3')
             if (1 < Object.entries(this.starters).length) {
                 const startTargetNames: string[] = [];
                 const startNames: string[] = [];
