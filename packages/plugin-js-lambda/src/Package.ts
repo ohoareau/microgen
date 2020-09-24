@@ -53,7 +53,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             ([name, c]: [string, any]) => {
                 this.handlers[name] = new Handler({name, ...c, directory: name === 'handler' ? undefined : 'handlers', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : undefined}});
                 if (!!c.starter) {
-                    this.starters[name] = new Starter({name, ...c, directory: name === 'handler' ? undefined : 'starters', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : '../handlers'}});
+                    this.starters[name] = new Starter({name, ...c, envs: c.starter.envs, directory: name === 'handler' ? undefined : 'starters', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : '../handlers'}});
                 }
             }
         );
@@ -206,7 +206,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
                 const startNames: string[] = [];
                 Object.entries(this.starters).forEach(([n, v]) => {
                     const scriptName = `${v.directory ? v.directory : ''}${v.directory ? '/' : ''}${v.name}.js`;
-                    t.addPredefinedTarget(`start-${n}`, 'nodemon', {script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
+                    t.addPredefinedTarget(`start-${n}`, 'nodemon', {envs: v.envs, script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
                     startTargetNames.push(`start-${n}`);
                     startNames.push(n);
                     index++;
@@ -215,7 +215,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             } else {
                 const [, v] = Object.entries(this.starters)[0];
                 const scriptName = `${v.directory ? v.directory : ''}${v.directory ? '/' : ''}${v.name}.js`;
-                t.addPredefinedTarget('start', 'nodemon', {script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
+                t.addPredefinedTarget('start', 'nodemon', {envs: v.envs, script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
                 index++;
             }
         }

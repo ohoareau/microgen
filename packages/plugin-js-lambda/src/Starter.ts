@@ -5,6 +5,7 @@ export type StarterConfig = {
     vars: {[key: string]: any},
     directory: string,
     custom?: boolean,
+    envs: {[key: string]: any},
 };
 
 export default class Starter {
@@ -12,15 +13,17 @@ export default class Starter {
     public readonly type: string;
     public readonly params: {[key: string]: any};
     public readonly vars: {[key: string]: any};
+    public readonly envs: {[key: string]: any};
     public readonly directory: string;
     public readonly custom: boolean;
-    constructor({name, type, params = {}, directory, custom = false, vars = {}}: StarterConfig) {
+    constructor({name, type, params = {}, directory, custom = false, vars = {}, envs = {}}: StarterConfig) {
         this.name = name;
         this.type = type;
         this.params = {o: name, ...params};
         this.vars = vars;
         this.directory = directory;
         this.custom = !!custom;
+        this.envs = envs;
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
         const cfg = {templatePath: `${__dirname}/../templates`};
