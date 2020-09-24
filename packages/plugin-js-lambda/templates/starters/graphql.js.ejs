@@ -41,6 +41,6 @@ const context = ({event, context, req}) => {
 
 const server = new ApolloServer({typeDefs, resolvers, context});
 
-server.listen(process.env.PORT ? {port: process.env.port} : {}).then(({ url }) => {
+server.listen(process.env.PORT ? {port: process.env.PORT} : {}).then(({ url }) => {
     console.log(`🚀 GraphQL Server ready at ${url} (AWS region is ${AWS.config.region})`);
 });
