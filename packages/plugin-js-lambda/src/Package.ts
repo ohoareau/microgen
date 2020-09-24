@@ -1,4 +1,5 @@
 import Handler, {HandlerConfig} from './Handler';
+import Starter, {StarterConfig} from './Starter';
 import Microservice, {MicroserviceConfig} from './Microservice';
 import {AbstractPackage, BasePackageConfig} from '@ohoareau/microgen';
 import {
@@ -9,23 +10,25 @@ import {
     PackageExcludesTemplate,
     TerraformToVarsTemplate
 } from "@ohoareau/microgen-templates";
-import {BuildableBehaviour, CleanableBehaviour, InstallableBehaviour, GenerateEnvLocalableBehaviour, TestableBehaviour} from '@ohoareau/microgen-behaviours';
+import {StartableBehaviour, BuildableBehaviour, CleanableBehaviour, InstallableBehaviour, GenerateEnvLocalableBehaviour, TestableBehaviour} from '@ohoareau/microgen-behaviours';
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
     externalEvents?: {[key: string]: any[]},
     handlers?: {[key: string]: HandlerConfig},
+    starters?: {[key: string]: StarterConfig},
     microservices?: {[key: string]: MicroserviceConfig},
 };
 
 export default class Package extends AbstractPackage<PackageConfig> {
     public readonly microservices: {[key: string]: Microservice} = {};
     public readonly handlers: {[key: string]: Handler} = {};
+    public readonly starters: {[key: string]: Starter} = {};
     public readonly events: {[key: string]: any[]} = {};
     public readonly externalEvents: {[key: string]: any[]} = {};
     constructor(config: PackageConfig) {
         super(config);
-        const {events = {}, externalEvents = {}, handlers = {}, microservices = {}} = config;
+        const {events = {}, externalEvents = {}, handlers = {}, starters = {}, microservices = {}} = config;
         this.events = events || {};
         this.externalEvents = externalEvents || {};
         Object.entries(microservices).forEach(
@@ -50,6 +53,13 @@ export default class Package extends AbstractPackage<PackageConfig> {
             ([name, c]: [string, any]) =>
                 this.handlers[name] = new Handler({name, ...c, directory: name === 'handler' ? undefined : 'handlers', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : undefined}})
         );
+        Object.entries(starters).forEach(
+            ([name, c]: [string, any]) =>
+                this.starters[name] = new Starter({name, ...c, directory: name === 'starter' ? undefined : 'starters', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'starter' ? 'handlers' : undefined}})
+        );
+        if (!this.hasStarters()) {
+            this.features['startable'] = false;
+        }
     }
     registerEventListener(event, listener) {
         this.events[event] = this.events[event] || [];
@@ -69,6 +79,9 @@ export default class Package extends AbstractPackage<PackageConfig> {
     getExternalEventListeners(event) {
         return this.externalEvents[event] || [];
     }
+    hasStarters(): boolean {
+        return 0 < Object.keys(this.starters).length;
+    }
     protected getBehaviours() {
         return [
             new BuildableBehaviour(),
@@ -76,7 +89,8 @@ export default class Package extends AbstractPackage<PackageConfig> {
             new InstallableBehaviour(),
             new GenerateEnvLocalableBehaviour(),
             new TestableBehaviour(),
-        ]
+            new StartableBehaviour(),
+        ];
     }
     protected getDefaultExtraOptions(): any {
         return {
@@ -101,12 +115,13 @@ export default class Package extends AbstractPackage<PackageConfig> {
         vars.devDependencies = {
             ...staticVars.devDependencies,
             ...(vars.devDependencies || {}),
+            ...(this.hasStarters() ? {nodemon: '^2.0.4'} : {}),
         };
         return vars;
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
-        const files = (await Promise.all(Object.values(this.handlers).map(async h => h.generate(vars)))).reduce((acc, f) => ({...acc, ...f}), {
+        const files = (await Promise.all([...Object.values(this.handlers), ...Object.values(this.starters)].map(async h => h.generate(vars)))).reduce((acc, f) => ({...acc, ...f}), {
             ['package.json']: () => JSON.stringify({
                 name: vars.name,
                 license: vars.license,
@@ -127,7 +142,8 @@ export default class Package extends AbstractPackage<PackageConfig> {
         });
         const objects: any = (<any[]>[]).concat(
             Object.values(this.microservices),
-            Object.values(this.handlers)
+            Object.values(this.handlers),
+            Object.values(this.starters)
         );
         <Promise<any>>(await Promise.all(objects.map(async o => (<any>o).generate(vars)))).reduce(
             (acc, r) => Object.assign(acc, r),
@@ -173,6 +189,9 @@ export default class Package extends AbstractPackage<PackageConfig> {
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
         ;
+        if (this.hasStarters()) {
+            t.addPredefinedTarget('start', 'nodemon', {script: 'starter.js', port: this.getParameter('startPort')});
+        }
         vars.deployable && t.addPredefinedTarget('deploy', 'yarn-deploy');
         return t;
     }
@@ -196,6 +215,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             'prettier',
             'json',
             this.vars.publish_image && 'docker',
+            this.hasStarters() && 'nodemon',
         ];
     }
 }

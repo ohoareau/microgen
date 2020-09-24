@@ -12,6 +12,11 @@ module.exports = {
         p0: {
             type: 'js-lambda',
             name: 'test-project-2',
+            starters: {
+                s1: {
+                    type: 'graphql',
+                }
+            }
         },
         p1: {
             type: 'js-lambda',

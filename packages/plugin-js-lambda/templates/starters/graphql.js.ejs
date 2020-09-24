@@ -1,0 +1,46 @@
+const AWS = require('aws-sdk');
+const {ApolloServer, gql} = require('apollo-server');
+const r = n => {
+    const h = require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/${n}`).handler;
+    return async (parent, params = {}, {event, context}, info) => {
+        const handlerEvent = {params};
+        (!!event && !!event.user) && (handlerEvent.user = event.user);
+        !!parent && (handlerEvent.params.parent = parent);
+        return h(handlerEvent, {...context, info});
+    };
+};
+const jwtSecret = String(process.env.JWT_SECRET || 'the-very-secret-secret');
+
+<% if ('undefined' !== typeof schemaFile) { -%>
+const typeDefs = gql(require('fs').readFileSync(`${__dirname}/<%- schemaFile -%>`, 'utf8'));
+<% } else { -%>
+const typeDefs = gql`
+<%- 'undefined' !== typeof schema ? schema : '' -%>
+`;
+<% } -%>
+
+const resolvers = {
+<% Object.entries((('undefined' !== typeof resolvers) ? resolvers : undefined) || {}).forEach(([typeName, queries]) => { -%>
+    <%- typeName -%>: {
+<% Object.entries(queries).forEach(([k, v]) => { -%>
+        <%- k -%>: r('<%- v -%>'),
+<% }) -%>
+    },
+<% }) -%>
+};
+
+const context = ({event, context, req}) => {
+    if (!!event && !!event.headers) {
+        const authHeader = event.headers.Authorization || event.headers.authorization;
+        if (!!authHeader) {
+            event.user = require('jsonwebtoken').verify((authHeader || '').split(' ')[1], jwtSecret);
+        }
+    }
+    return {event, context};
+};
+
+const server = new ApolloServer({typeDefs, resolvers, context});
+
+server.listen().then(({ url }) => {
+    console.log(`🚀 GraphQL Server ready at ${url} (AWS region is ${AWS.config.region})`);
+});

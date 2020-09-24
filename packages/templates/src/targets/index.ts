@@ -49,3 +49,4 @@ export * from './PipInstallBuildUtilsTarget';
 export * from './VirtualenvActivateTarget';
 export * from './VirtualenvDeactivateTarget';
 export * from './VirtualenvCreateTarget';
+export * from './NodemonTarget';
