@@ -50,8 +50,12 @@ export default class Package extends AbstractPackage<PackageConfig> {
         }, opNames);
         opNames.sort();
         Object.entries(handlers).forEach(
-            ([name, c]: [string, any]) =>
-                this.handlers[name] = new Handler({name, ...c, directory: name === 'handler' ? undefined : 'handlers', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : undefined}})
+            ([name, c]: [string, any]) => {
+                this.handlers[name] = new Handler({name, ...c, directory: name === 'handler' ? undefined : 'handlers', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : undefined}});
+                if (!!c.starter) {
+                    this.starters[name] = new Starter({name, ...c, directory: name === 'handler' ? undefined : 'starters', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : undefined}});
+                }
+            }
         );
         Object.entries(starters).forEach(
             ([name, c]: [string, any]) =>
