@@ -53,7 +53,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             ([name, c]: [string, any]) => {
                 this.handlers[name] = new Handler({name, ...c, directory: name === 'handler' ? undefined : 'handlers', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : undefined}});
                 if (!!c.starter) {
-                    this.starters[name] = new Starter({name, ...c, directory: name === 'handler' ? undefined : 'starters', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : undefined}});
+                    this.starters[name] = new Starter({name, ...c, directory: name === 'handler' ? undefined : 'starters', vars: {...(c.vars || {}), operations: opNames, operationDirectory: name === 'handler' ? 'handlers' : '../handlers'}});
                 }
             }
         );
@@ -193,11 +193,31 @@ export default class Package extends AbstractPackage<PackageConfig> {
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
         ;
+        let index = 0;
         if (this.hasStarters()) {
-            t.addPredefinedTarget('start', 'nodemon', {script: 'starter.js', port: this.getParameter('startPort')});
+            if (1 < Object.entries(this.starters).length) {
+                const startTargetNames: string[] = [];
+                const startNames: string[] = [];
+                Object.entries(this.starters).forEach(([n, v]) => {
+                    const scriptName = `${v.directory ? v.directory : ''}${v.directory ? '/' : ''}${v.name}.js`;
+                    t.addPredefinedTarget(`start-${n}`, 'nodemon', {script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
+                    startTargetNames.push(`start-${n}`);
+                    startNames.push(n);
+                    index++;
+                });
+                t.addTarget('start', [`npx concurrently -n ${startNames.join(',')} ${startTargetNames.map(n => `"make ${n}"`).join(' ')}`])
+            } else {
+                const [, v] = Object.entries(this.starters)[0];
+                const scriptName = `${v.directory ? v.directory : ''}${v.directory ? '/' : ''}${v.name}.js`;
+                t.addPredefinedTarget('start', 'nodemon', {script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
+                index++;
+            }
         }
         vars.deployable && t.addPredefinedTarget('deploy', 'yarn-deploy');
         return t;
+    }
+    protected computePort(a, b) {
+        return a + b;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
         return new TerraformToVarsTemplate(vars);

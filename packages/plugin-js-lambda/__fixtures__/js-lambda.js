@@ -76,6 +76,25 @@ type Mutation {
                         }
                     }
                 },
+                graphql2: {
+                    type: 'graphql',
+                    starter: true,
+                    vars: {
+                        schemaFile: '../schema.graphql',
+                        resolvers: {
+                            Query: {
+                                getLog: 'log_log_get',
+                                getUsers: 'user_user_find',
+                                getOrganization: 'user_organization_get',
+                            },
+                            Mutation: {
+                                createLog: 'log_log_create',
+                                createUser: 'user_user_create',
+                                createOrganization: 'user_organization_create',
+                            }
+                        }
+                    }
+                },
                 handler: {
                     type: 'controller',
                     middlewares: [ '@error', '@debug', '@authorizer'],
