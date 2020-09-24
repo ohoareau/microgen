@@ -195,7 +195,12 @@ export default class Package extends AbstractPackage<PackageConfig> {
         ;
         let index = 0;
         if (this.hasStarters()) {
-            t.addGlobalVar('AWS_REGION', vars.aws_default_region || 'eu-west-3')
+            t
+                .addGlobalVar('AWS_REGION', vars.aws_default_region || 'eu-west-3')
+                .addGlobalVar('prefix', vars.project_prefix)
+                .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
+            ;
+
             if (1 < Object.entries(this.starters).length) {
                 const startTargetNames: string[] = [];
                 const startNames: string[] = [];
