@@ -30,8 +30,10 @@ const resolvers = {
 };
 
 const context = ({event, context, req}) => {
-    if (!!event && !!event.headers) {
-        const authHeader = event.headers.Authorization || event.headers.authorization;
+    const headers = (event || {}).headers || req.headers;
+    if (!!headers) {
+        event = event || {};
+        const authHeader = headers.Authorization || headers.authorization;
         if (!!authHeader) {
             event.user = require('jsonwebtoken').verify((authHeader || '').split(' ')[1], jwtSecret);
         }
