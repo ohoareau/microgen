@@ -45,6 +45,7 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('authorize', name, microserviceType) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
                 this.hasHooks('validate', name, microserviceType) && microserviceType.registerHook(name, 'validate', {type: '@validate', config: {}});
                 this.hasHooks('transform', name, microserviceType) && microserviceType.registerHook(name, 'transform', {type: '@transform', config: {}});
+                this.hasHooks('prepopulate', name, microserviceType) && microserviceType.registerHook(name, 'prepopulate', {type: '@prepopulate', config: {}});
                 this.hasHooks('populate', name, microserviceType) && microserviceType.registerHook(name, 'populate', {type: '@populate', config: {}});
                 this.hasHooks('prepare', name, microserviceType) && microserviceType.registerHook(name, 'prepare', {type: '@prepare', config: {}});
                 this.hasHooks('after', name, microserviceType) && microserviceType.registerHook(name, 'after', {type: '@after', config: {}});
@@ -55,6 +56,7 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('prefetch', name, microserviceType) && microserviceType.registerHook(name, 'init', {type: '@prefetch'});
                 this.hasHooks('validate', name, microserviceType) && microserviceType.registerHook(name, 'validate', {type: '@validate', config: {required: false}});
                 this.hasHooks('transform', name, microserviceType) && microserviceType.registerHook(name, 'transform', {type: '@transform', config: {}});
+                this.hasHooks('prepopulate', name, microserviceType) && microserviceType.registerHook(name, 'prepopulate', {type: '@prepopulate', config: {prefix: 'update'}});
                 this.hasHooks('populate', name, microserviceType) && microserviceType.registerHook(name, 'populate', {type: '@populate', config: {prefix: 'update'}});
                 this.hasHooks('prepare', name, microserviceType) && microserviceType.registerHook(name, 'prepare', {type: '@prepare', config: {}});
                 this.hasHooks('after', name, microserviceType) && microserviceType.registerHook(name, 'after', {type: '@after', config: {}});
@@ -100,12 +102,21 @@ export default class MicroserviceTypeOperation {
                 return !!Object.keys(microserviceType.model.fields).length;
             case 'transform':
                 return !!Object.keys(microserviceType.model.transformers).length;
+            case 'prepopulate':
+                switch (operation) {
+                    case 'create':
+                        return !!Object.keys(microserviceType.model.defaultValues).length || !!Object.keys(microserviceType.model.cascadeValues).length;
+                    case 'update':
+                        return !!Object.keys(microserviceType.model.updateDefaultValues).length || !!Object.keys(microserviceType.model.cascadeValues).length;
+                    default:
+                        return false;
+                }
             case 'populate':
                 switch (operation) {
                     case 'create':
-                        return !!Object.keys(microserviceType.model.values).length || !!Object.keys(microserviceType.model.defaultValues).length || !!Object.keys(microserviceType.model.cascadeValues).length;
+                        return !!Object.keys(microserviceType.model.values).length;
                     case 'update':
-                        return !!Object.keys(microserviceType.model.updateValues).length || !!Object.keys(microserviceType.model.updateDefaultValues).length || !!Object.keys(microserviceType.model.cascadeValues).length;
+                        return !!Object.keys(microserviceType.model.updateValues).length;
                     default:
                         return false;
                 }

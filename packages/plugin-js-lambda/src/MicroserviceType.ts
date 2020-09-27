@@ -174,7 +174,7 @@ export default class MicroserviceType {
             (backendDef.name && ('@' === backendDef.name.substr(0, 1)) && (backendDef.name = backendDef.name.substr(1)));
         }
         const localRequirements = {};
-        const befores = ['init', 'validate', 'populate', 'transform', 'authorize', 'before', 'prepare'].reduce((acc, n) => {
+        const befores = ['init', 'prepopulate', 'validate', 'populate', 'transform', 'authorize', 'before', 'prepare'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before'})));
@@ -420,6 +420,10 @@ export default class MicroserviceType {
         if ('@populate' === type) {
             requirements['populate'] = true;
             return `    ${conditionCode || ''}await populate(query${!!config['prefix'] ? `, '${config['prefix']}'` : ''});`;
+        }
+        if ('@prepopulate' === type) {
+            requirements['prepopulate'] = true;
+            return `    ${conditionCode || ''}await prepopulate(query${!!config['prefix'] ? `, '${config['prefix']}'` : ''});`;
         }
         if ('@update-references' === type) {
             requirements['updateRefs'] = true;
