@@ -74,6 +74,7 @@ export default class SchemaParser {
                 ...((index && index.length > 0) ? {index} : {}),
                 ...(list ? {list} : {}),
             };
+            acc.authorizers[k] = [];
             acc.transformers[k] = transform ? (Array.isArray(transform) ? [...transform] : [transform]) : [];
             required && (acc.requiredFields[k] = true);
             if (refAttribute) {
@@ -86,7 +87,7 @@ export default class SchemaParser {
             }
             (undefined !== reference) && (acc.referenceFields[k] = reference);
             (validators && 0 < validators.length) && (acc.validators[k] = validators);
-            (authorizers && 0 < authorizers.length) && (acc.authorizers[k] = authorizers);
+            (authorizers && 0 < authorizers.length) && (acc.authorizers[k] = [...acc.authorizers[k], ...authorizers]);
             (undefined !== value) && (acc.values[k] = value);
             (undefined !== updateValue) && (acc.updateValues[k] = updateValue);
             (undefined !== defaultValue) && (acc.defaultValues[k] = defaultValue);
