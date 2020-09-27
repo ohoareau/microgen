@@ -373,6 +373,10 @@ export default class MicroserviceType {
             requirements['deleteRefs'] = true;
             return `    ${conditionCode || ''}await deleteRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['idField']});`
         }
+        if ('@authorize' === type) {
+            requirements['authorize'] = true;
+            return `    ${conditionCode || ''}await authorize(query);`;
+        }
         if ('@validate' === type) {
             requirements['validate'] = true;
             return `    ${conditionCode || ''}await validate(query${false === config['required'] ? ', false' : ''});`;

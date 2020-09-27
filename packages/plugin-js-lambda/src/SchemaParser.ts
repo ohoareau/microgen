@@ -6,7 +6,7 @@ export default class SchemaParser {
         Object.entries(fieldTypes).forEach(([k, v]) => this.fieldTypes[k] = v);
     }
     parse(def: any): any {
-        def = {name: 'unknown', attributes: {}, operations: {}, hooks: {}, ...def};
+        def = {name: 'unknown', attributes: {}, operations: {}, indexes: {}, hooks: {}, ...def};
         const schema = {
             primaryKey: <any>undefined,
             fields: {},
@@ -26,9 +26,12 @@ export default class SchemaParser {
             name: def.name,
             prefetchs: {},
             autoTransitionTo: {},
+            cascadeValues: {},
+            authorizers: {},
         };
         this.parseAttributes(def, schema);
         this.parseRefAttributeFields(def, schema);
+        this.parseIndexes(def, schema);
         this.parseJob(def, schema);
         this.parseOperations(def, schema);
         return schema;
@@ -37,6 +40,12 @@ export default class SchemaParser {
         Object.entries(def.operations).reduce((acc, [k, d]) => {
             if (!d || !(<any>d)['prefetch']) return acc;
             Object.assign(acc.prefetchs[k] = acc.prefetchs[k] || {}, (<any>d).prefetch.reduce((acc2, k) => Object.assign(acc2, {[k]: true}), {}));
+            return acc;
+        }, schema);
+    }
+    parseIndexes(def: any, schema: any) {
+        Object.entries(def.indexes || {}).reduce((acc, [k, v]) => {
+            acc.indexes[k] = [...(acc.indexes[k] || []), ...<any>v];
             return acc;
         }, schema);
     }
@@ -58,7 +67,7 @@ export default class SchemaParser {
                 type = 'string', prefetch = false, list = false, volatile = false, required = false, index = [], internal = false, validators = undefined, primaryKey = false,
                 value = undefined, default: rawDefaultValue = undefined, defaultValue = undefined, updateValue = undefined, updateDefault: rawUpdateDefaultValue = undefined, updateDefaultValue = undefined,
                 upper = false, lower = false, transform = undefined, reference = undefined, refAttribute = undefined,
-                autoTransitionTo = undefined,
+                autoTransitionTo = undefined, cascadePopulate = undefined, permissions = undefined, authorizers = [],
             } = def;
             acc.fields[k] = {
                 type, primaryKey, volatile,
@@ -77,6 +86,7 @@ export default class SchemaParser {
             }
             (undefined !== reference) && (acc.referenceFields[k] = reference);
             (validators && 0 < validators.length) && (acc.validators[k] = validators);
+            (authorizers && 0 < authorizers.length) && (acc.authorizers[k] = authorizers);
             (undefined !== value) && (acc.values[k] = value);
             (undefined !== updateValue) && (acc.updateValues[k] = updateValue);
             (undefined !== defaultValue) && (acc.defaultValues[k] = defaultValue);
@@ -84,6 +94,8 @@ export default class SchemaParser {
             (undefined !== updateDefaultValue) && (acc.updateDefaultValues[k] = updateDefaultValue);
             (undefined !== rawUpdateDefaultValue) && (acc.updateDefaultValues[k] = {type: '@value', config: {value: rawUpdateDefaultValue}});
             (undefined !== autoTransitionTo) && (acc.autoTransitionTo[k] = {type: '@value', config: {value: autoTransitionTo}});
+            (undefined !== cascadePopulate) && (acc.cascadeValues[k] = cascadePopulate);
+            (undefined !== permissions) && (acc.authorizers[k].push({type: '@permissions', config: {permissions}}));
             internal && (acc.privateFields[k] = true);
             index && (index.length > 0) && (acc.indexes[k] = index);
             volatile && (acc.volatileFields[k] = true);
@@ -92,6 +104,7 @@ export default class SchemaParser {
             lower && (acc.transformers[k].push({type: '@lower'}));
             prefetch && ((acc.prefetchs['update'] = acc.prefetchs['update'] || {})[k] = true);
             if (!acc.transformers[k].length) delete acc.transformers[k];
+            if (!acc.authorizers[k].length) delete acc.authorizers[k];
             return acc;
         }, schema);
     }
@@ -162,7 +175,7 @@ export default class SchemaParser {
             type: string, config: {},
             internal: false, required: false, primaryKey: false, volatile: false,
             reference: <any>undefined, refAttribute: <any>undefined, validators: [],
-            index: <any>[],
+            index: <any>[], value: <any>undefined,
         };
         if (/!$/.test(d.type)) {
             d.required = true;
@@ -183,6 +196,10 @@ export default class SchemaParser {
         if (/^@/.test(d.type)) {
             d.type = d.type.substr(1);
             d.index.push({name});
+        }
+        if (/^user_ref:/.test(d.type)) {
+            d.type = d.type.substr(5);
+            d.value = {type: '@user_id'};
         }
         if (/^ref:/.test(d.type)) {
             const tokens = d.type.substr(4).split(':');

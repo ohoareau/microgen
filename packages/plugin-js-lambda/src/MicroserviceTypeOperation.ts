@@ -42,6 +42,7 @@ export default class MicroserviceTypeOperation {
         ;
         switch (name) {
             case 'create':
+                this.hasHooks('authorize', name, microserviceType) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
                 this.hasHooks('validate', name, microserviceType) && microserviceType.registerHook(name, 'validate', {type: '@validate', config: {}});
                 this.hasHooks('transform', name, microserviceType) && microserviceType.registerHook(name, 'transform', {type: '@transform', config: {}});
                 this.hasHooks('populate', name, microserviceType) && microserviceType.registerHook(name, 'populate', {type: '@populate', config: {}});
@@ -50,6 +51,7 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('autoTransitionTo', name, microserviceType) && microserviceType.registerHook(name, 'end', {type: '@auto-transitions', config: {}});
                 break;
             case 'update':
+                this.hasHooks('authorize', name, microserviceType) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
                 this.hasHooks('prefetch', name, microserviceType) && microserviceType.registerHook(name, 'init', {type: '@prefetch'});
                 this.hasHooks('validate', name, microserviceType) && microserviceType.registerHook(name, 'validate', {type: '@validate', config: {required: false}});
                 this.hasHooks('transform', name, microserviceType) && microserviceType.registerHook(name, 'transform', {type: '@transform', config: {}});
@@ -68,6 +70,7 @@ export default class MicroserviceTypeOperation {
                 );
                 break;
             case 'delete':
+                this.hasHooks('authorize', name, microserviceType) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
                 this.hasHooks('prefetch', name, microserviceType) && microserviceType.registerHook(name, 'init', {type: '@prefetch'});
                 Object.entries(model.referenceFields || {}).forEach(([k, v]: [string, any]) =>
                     registerReferenceEventListener(v, 'delete', {
@@ -89,6 +92,8 @@ export default class MicroserviceTypeOperation {
     }
     hasHooks(type: string, operation: string, microserviceType: MicroserviceType): boolean {
         switch (type) {
+            case 'authorize':
+                return !!Object.keys(microserviceType.model.authorizers).length;
             case 'prefetch':
                 return !!Object.keys(microserviceType.model.prefetchs).length;
             case 'validate':
@@ -98,9 +103,9 @@ export default class MicroserviceTypeOperation {
             case 'populate':
                 switch (operation) {
                     case 'create':
-                        return !!Object.keys(microserviceType.model.values).length || !!Object.keys(microserviceType.model.defaultValues).length;
+                        return !!Object.keys(microserviceType.model.values).length || !!Object.keys(microserviceType.model.defaultValues).length || !!Object.keys(microserviceType.model.cascadeValues).length;
                     case 'update':
-                        return !!Object.keys(microserviceType.model.updateValues).length || !!Object.keys(microserviceType.model.updateDefaultValues).length;
+                        return !!Object.keys(microserviceType.model.updateValues).length || !!Object.keys(microserviceType.model.updateDefaultValues).length || !!Object.keys(microserviceType.model.cascadeValues).length;
                     default:
                         return false;
                 }
