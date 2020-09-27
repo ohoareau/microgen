@@ -176,7 +176,7 @@ export default class SchemaParser {
             type: string, config: {},
             internal: false, required: false, primaryKey: false, volatile: false,
             reference: <any>undefined, refAttribute: <any>undefined, validators: [],
-            index: <any>[], value: <any>undefined,
+            index: <any>[],
         };
         if (/!$/.test(d.type)) {
             d.required = true;
@@ -200,7 +200,7 @@ export default class SchemaParser {
         }
         if (/^user_ref:/.test(d.type)) {
             d.type = d.type.substr(5);
-            d.value = {type: '@user_id'};
+            d['value'] = {type: '@user_id'};
         }
         if (/^ref:/.test(d.type)) {
             const tokens = d.type.substr(4).split(':');
