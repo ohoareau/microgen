@@ -44,7 +44,9 @@ export default class Package extends AbstractPackage {
         return new LicenseTemplate(vars);
     }
     protected buildReadme(vars: any): ReadmeTemplate {
-        return new ReadmeTemplate(vars);
+        return new ReadmeTemplate(vars)
+            .addFragmentFromTemplate(`${__dirname}/../templates/readme/original.md.ejs`)
+        ;
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return new GitIgnoreTemplate(vars.gitignore || {})
@@ -89,8 +91,8 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'NEXT'})
-            .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort')})
-            .addPredefinedTarget('serve', 'yarn-serve', {port: this.getParameter('servePort')})
+            .addPredefinedTarget('start', 'yarn-dev', {options: {p: this.getParameter('startPort')}})
+            .addPredefinedTarget('serve', 'yarn-start', {options: {p: this.getParameter('servePort')}})
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})

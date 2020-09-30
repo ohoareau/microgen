@@ -31,6 +31,7 @@ export * from './YarnLernaChangedTarget';
 export * from './YarnLernaPublishTarget';
 export * from './YarnMicrogenTarget';
 export * from './YarnDeployTarget';
+export * from './YarnDevTarget';
 export * from './YarnDeployStorybooksTarget';
 export * from './YarnBuildStorybookTarget';
 export * from './YarnStoryTarget';
