@@ -3,7 +3,9 @@ import GenericTarget from './GenericTarget';
 export abstract class AbstractYarnTarget extends GenericTarget {
     abstract getCommandName(options: any): string;
     getCommandOptions(options: any): any {
-        return {};
+        return {
+            ...(options.options || {}),
+        }
     }
     getCommandEnvs(options: any): any {
         return {};
