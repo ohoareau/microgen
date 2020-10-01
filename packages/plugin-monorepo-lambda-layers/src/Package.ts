@@ -61,6 +61,7 @@ export default class Package extends AbstractPackage {
             .addTarget('layer-build', ['make -C layers/$(l) build'])
             .addTarget('publish', ['$(foreach l,$(layers),make -C layers/$(l) publish;)'])
             .addTarget('layer-publish', ['make -C layers/$(l) publish'])
+            .addPredefinedTarget('generate', 'yarn-microgen')
             .addPredefinedTarget('install-root', 'yarn-install')
             .addTarget('list-layers', ['echo $(layers)'])
             .addTarget('new', ['/bin/echo -n "Layer name: " && read layer_name && cp -R templates layers/$$layer_name'])
