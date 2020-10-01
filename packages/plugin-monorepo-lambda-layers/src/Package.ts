@@ -65,6 +65,7 @@ export default class Package extends AbstractPackage {
             .addTarget('list-layers', ['echo $(layers)'])
             .addTarget('new', ['/bin/echo -n "Layer name: " && read layer_name && cp -R templates layers/$$layer_name'])
         ;
+
         ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
         return t;
     }
