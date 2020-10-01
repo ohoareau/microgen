@@ -51,6 +51,7 @@ export default class Package extends AbstractPackage {
         const scm = vars.scm || 'git';
         const t = new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .setDefaultTarget('install')
+            .addExportedVar('CI')
             .addGlobalVar('l', 'noname')
             .addGlobalVar('layers', '$(shell cd layers && ls -d */)')
             .addTarget('install', ['$(foreach l,$(layers),make -C layers/$(l) install;)'], ['install-root'])
