@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# this is a sample build file, please customize it to your need
+
+# start customization here
+
+mkdir content
+touch content/hello
+
+# end customization here
+
+
+zip -r /build/layer.zip content || exit 1
