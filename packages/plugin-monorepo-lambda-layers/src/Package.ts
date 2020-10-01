@@ -60,6 +60,8 @@ export default class Package extends AbstractPackage {
             .addTarget('build', ['$(foreach l,$(layers),make -C layers/$(l) build;)'])
             .addTarget('layer-build', ['make -C layers/$(l) build'])
             .addTarget('publish', ['$(foreach l,$(layers),make -C layers/$(l) publish;)'])
+            .addTarget('clean', ['$(foreach l,$(layers),make -C layers/$(l) clean;)'])
+            .addTarget('prepare-build', ['$(foreach l,$(layers),make -C layers/$(l) prepare-build;)'])
             .addTarget('layer-publish', ['make -C layers/$(l) publish'])
             .addPredefinedTarget('generate', 'yarn-microgen')
             .addPredefinedTarget('install-root', 'yarn-install')
