@@ -92,3 +92,5 @@ coverage/*
 *.browser.js
 */postinstall.js
 *CODEOWNERS
+<% if (excludes.length) { %><% excludes.forEach(e => { %><%= e %>
+<% }) %><% } -%>

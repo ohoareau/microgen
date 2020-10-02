@@ -1,12 +1,13 @@
 import {AbstractFileTemplate} from '@ohoareau/microgen';
 
 export type PackageExcludesTemplateConfig = {
+    package_excludes?: string[],
 };
 
 export class PackageExcludesTemplate extends AbstractFileTemplate {
     private customConfig: PackageExcludesTemplateConfig ;
     private customConsumed: boolean;
-    constructor(config: PackageExcludesTemplateConfig = {}) {
+    constructor(config: PackageExcludesTemplateConfig = {package_excludes: []}) {
         super();
         this.customConsumed = false;
         this.customConfig = config;
@@ -22,6 +23,7 @@ export class PackageExcludesTemplate extends AbstractFileTemplate {
             this.customConsumed = true;
         }
         return {
+            excludes: this.customConfig.package_excludes || [],
             config: this.customConfig,
         }
     }

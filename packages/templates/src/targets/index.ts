@@ -46,6 +46,7 @@ export * from './CleanLibTarget';
 export * from './CleanCoverageTarget';
 export * from './CleanVendorTarget';
 export * from './CleanBuildTarget';
+export * from './CleanWebBundlesTarget';
 export * from './CleanTsBuildInfoTarget';
 export * from './OutputsTarget';
 export * from './PipInstallBuildUtilsTarget';

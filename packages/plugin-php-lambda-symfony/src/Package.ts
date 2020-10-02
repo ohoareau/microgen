@@ -117,12 +117,13 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('install-php', 'composer-install')
             .addPredefinedTarget('install-php-prod', 'composer-install-prod')
             .addPredefinedTarget('build-package', 'yarn-build')
-            .addTarget('build-assets', ['rm -rf build/assets', 'mkdir -p build/assets', 'cp -R web/* build/assets/', 'rm -f build/assets/*.php'])
+            .addTarget('build-assets', ['rm -rf build/assets', 'mkdir -p build/assets', 'cp -LR web/* build/assets/', 'rm -f build/assets/*.php'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local')
-            .addMetaTarget('clean', ['clean-modules', 'clean-coverage', 'clean-vendor', 'clean-build'])
+            .addMetaTarget('clean', ['clean-modules', 'clean-coverage', 'clean-vendor', 'clean-build', 'clean-web-bundles'])
             .addPredefinedTarget('clean-modules', 'clean-node-modules')
             .addPredefinedTarget('clean-coverage', 'clean-coverage')
             .addPredefinedTarget('clean-vendor', 'clean-vendor')
+            .addPredefinedTarget('clean-web-bundles', 'clean-web-bundles')
             .addPredefinedTarget('clean-build', 'clean-build')
             .addPredefinedTarget('test', 'composer-test', {ci: true, coverage: true})
             .addPredefinedTarget('test-dev', 'composer-test', {local: true, all: true, coverage: false, color: true})
@@ -133,7 +134,7 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('deploy', ['deploy-assets', 'invalidate-cache'])
             .addTarget('start', [`SYMFONY_DEBUG=true SYMFONY_ENV=dev app/console server:run --ansi -n -p ${this.getParameter('startPort')}`])
         ;
-        const buildSteps = ['build-package', 'build-assets'];
+        const buildSteps = ['build-assets', 'clean-web-bundles', 'build-package'];
         if (vars.download_on_build) {
             t
                 .addTarget('build-downloads', Object.entries(vars.download_on_build).map(([k, v]) => {
