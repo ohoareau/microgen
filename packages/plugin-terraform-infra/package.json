@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-terraform-infra",
-  "version": "0.8.18",
+  "version": "0.8.19",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,9 +25,9 @@
     "@ohoareau/microgen": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-templates": "^0.3.18"
+    "@ohoareau/microgen-templates": "^0.3.19"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.22.7"
+    "@ohoareau/microgen": "^0.22.8"
   }
 }
