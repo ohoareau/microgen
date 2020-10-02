@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@ohoareau/dir2obj": "^0.3.0",
-    "@ohoareau/technologies-detector": "^0.1.1",
+    "@ohoareau/technologies-detector": "^0.1.2",
     "ejs": "^3.0.2",
     "fs-extra": "^8.1.0",
     "stringify-object": "^3.3.0",
