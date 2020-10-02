@@ -104,7 +104,7 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
@@ -113,7 +113,6 @@ export default class Package extends AbstractPackage {
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()}_ASSETS)`)
             .setDefaultTarget('install')
             .addMetaTarget('install', ['install-js', 'install-php'])
-            .addMetaTarget('build', ['install-php-prod', 'build-package', 'build-assets', 'install-php'])
             .addPredefinedTarget('install-js', 'yarn-install')
             .addPredefinedTarget('install-php', 'composer-install')
             .addPredefinedTarget('install-php-prod', 'composer-install-prod')
@@ -134,6 +133,19 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('deploy', ['deploy-assets', 'invalidate-cache'])
             .addTarget('start', [`SYMFONY_DEBUG=true SYMFONY_ENV=dev app/console server:run --ansi -n -p ${this.getParameter('startPort')}`])
         ;
+        const buildSteps = ['build-package', 'build-assets'];
+        if (vars.download_on_build) {
+            t
+                .addTarget('build-downloads', Object.entries(vars.download_on_build).map(([k, v]) => {
+                    return `rm -f ${k} && curl -s ${v} -o ${k}`;
+                }))
+            ;
+            buildSteps.push('build-downloads');
+        }
+        t
+            .addMetaTarget('build', ['install-php-prod', ...buildSteps, 'install-php'])
+        ;
+        return t;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
         return new TerraformToVarsTemplate(vars);
