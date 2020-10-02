@@ -98,8 +98,7 @@ export default class Package extends AbstractPackage {
             .addNonIgnore('/app/logs/.gitkeep')
             .addIgnore('/app/files/*')
             .addNonIgnore('/app/files/.gitkeep')
-            .addIgnore('/bin/doctrine')
-            .addIgnore('/bin/doctrine.php')
+            .addIgnore('/bin/doctrine*')
             .addIgnore('/bin/phpunit')
             .addIgnore('/app/config/parameters.yml')
         ;
