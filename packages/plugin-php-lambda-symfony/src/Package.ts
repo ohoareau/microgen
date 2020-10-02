@@ -85,7 +85,23 @@ export default class Package extends AbstractPackage {
             .addIgnore('/coverage/')
             .addIgnore('/node_modules/')
             .addIgnore('/vendor/')
+            .addIgnore('/composer.phar')
+            .addIgnore('/build/')
+            .addIgnore('/reports/')
             .addIgnore('/.idea/')
+            .addIgnore('/.env')
+            .addIgnore('/web/bundles/')
+            .addIgnore('/app/bootstrap.php.cache')
+            .addIgnore('/app/cache/*')
+            .addNonIgnore('/app/cache/.gitkeep')
+            .addIgnore('/app/logs/*')
+            .addNonIgnore('/app/logs/.gitkeep')
+            .addIgnore('/app/files/*')
+            .addNonIgnore('/app/files/.gitkeep')
+            .addIgnore('/bin/doctrine')
+            .addIgnore('/bin/doctrine.php')
+            .addIgnore('/bin/phpunit')
+            .addIgnore('/app/config/parameters.yml')
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {

@@ -52,6 +52,9 @@ export class GitIgnoreTemplate extends AbstractFileTemplate {
         g.ignores.push({path});
         return this;
     }
+    addNonIgnore(path, group?: string): this {
+        return this.addIgnore(`!${path}`, group);
+    }
     createGroup(name: string, ignores: (string|ignore)[] = []): group {
         return {name, ignores};
     }
