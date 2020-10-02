@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-behaviours",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,6 +24,6 @@
     "@ohoareau/microgen": "^0"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.22.6"
+    "@ohoareau/microgen": "^0.22.7"
   }
 }
