@@ -133,18 +133,19 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-assets', 'invalidate-cache'])
             .addTarget('start', [`SYMFONY_DEBUG=true SYMFONY_ENV=dev app/console server:run --ansi -n -p ${this.getParameter('startPort')}`])
+            .addTarget('build-cache', [`SYMFONY_ENV=prod app/console cache:warmup --ansi -n --no-debug`])
         ;
         const buildSteps = ['build-assets', 'clean-web-bundles', 'build-package'];
         if (vars.download_on_build) {
             t
                 .addTarget('build-downloads', Object.entries(vars.download_on_build).map(([k, v]) => {
-                    return `rm -f ${k} && curl -s ${v} -o ${k}`;
+                    return `rm -f ${k} && curl -sL ${v} -o ${k}`;
                 }))
             ;
             buildSteps.push('build-downloads');
         }
         t
-            .addMetaTarget('build', ['install-php-prod', ...buildSteps, 'install-php'])
+            .addMetaTarget('build', ['install-php-prod', 'build-cache', ...buildSteps, 'install-php'])
         ;
         return t;
     }
