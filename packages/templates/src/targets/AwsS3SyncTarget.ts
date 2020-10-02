@@ -7,8 +7,8 @@ export class AwsS3SyncTarget extends AbstractAwsCliTarget {
     getOperationName() {
         return 'sync';
     }
-    getOperationArgs({source = 'build/', target = 's3://$(bucket)'}) {
-        return [source, target];
+    getOperationArgs({source = 'build/', target = 's3://$(bucket)', targetDir = undefined}) {
+        return [source, targetDir ? `${target}/${targetDir}` : target];
     }
     getOperationOptions() {
         return {delete: true};

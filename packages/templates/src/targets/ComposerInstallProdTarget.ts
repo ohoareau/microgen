@@ -5,7 +5,7 @@ export class ComposerInstallProdTarget extends AbstractComposerTarget {
         return 'install';
     }
     getCommandOptions(options: any): any {
-        return {prod: true};
+        return {'no-dev': true};
     }
 }
 

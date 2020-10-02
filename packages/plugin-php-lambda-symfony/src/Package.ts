@@ -104,32 +104,36 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const t = new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        return new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
+            .addGlobalVar('prefix', vars.project_prefix)
+            .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
+            .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
+            .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-${vars.name}-assets`)
+            .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()}_ASSETS)`)
             .setDefaultTarget('install')
             .addMetaTarget('install', ['install-js', 'install-php'])
-            .addMetaTarget('build', ['build-package'])
+            .addMetaTarget('build', ['install-php-prod', 'build-package', 'build-assets', 'install-php'])
             .addPredefinedTarget('install-js', 'yarn-install')
             .addPredefinedTarget('install-php', 'composer-install')
+            .addPredefinedTarget('install-php-prod', 'composer-install-prod')
             .addPredefinedTarget('build-package', 'yarn-build')
+            .addTarget('build-assets', ['rm -rf build/assets', 'mkdir -p build/assets', 'cp -R web/* build/assets/', 'rm -f build/assets/*.php'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local')
-            .addMetaTarget('clean', ['clean-modules', 'clean-coverage', 'clean-vendor'])
+            .addMetaTarget('clean', ['clean-modules', 'clean-coverage', 'clean-vendor', 'clean-build'])
             .addPredefinedTarget('clean-modules', 'clean-node-modules')
             .addPredefinedTarget('clean-coverage', 'clean-coverage')
             .addPredefinedTarget('clean-vendor', 'clean-vendor')
+            .addPredefinedTarget('clean-build', 'clean-build')
             .addPredefinedTarget('test', 'composer-test', {ci: true, coverage: true})
             .addPredefinedTarget('test-dev', 'composer-test', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'composer-test', {local: true})
             .addPredefinedTarget('test-ci', 'composer-test', {ci: true})
+            .addPredefinedTarget('deploy-assets', 'aws-s3-sync', {source: 'build/assets/'})
+            .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
+            .addMetaTarget('deploy', ['deploy-assets', 'invalidate-cache'])
+            .addTarget('start', [`app/console server:run --ansi -n -p ${this.getParameter('startPort')}`])
         ;
-        vars.deployable && t
-            .addMetaTarget('deploy', ['deploy-assets'])
-            .addTarget('deploy-assets', ['echo not-yet-implemented'])
-        ;
-        return t;
-    }
-    protected computePort(a, b) {
-        return a + b;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
         return new TerraformToVarsTemplate(vars);
