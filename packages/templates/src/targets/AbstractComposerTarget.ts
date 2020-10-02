@@ -13,7 +13,7 @@ export abstract class AbstractComposerTarget extends GenericTarget {
     buildSteps(options: any) {
         return [
             this.buildCli(
-                `composer -n --ansi ${this.getCommandName(options)}`,
+                `composer -q -n --ansi ${this.getCommandName(options)}`,
                 [],
                 this.getCommandOptions(options),
                 options,

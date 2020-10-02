@@ -1333,19 +1333,19 @@
   dependencies:
     yaml "^1.10.0"
 
-"@ohoareau/technologies-detector@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@ohoareau/technologies-detector/-/technologies-detector-0.1.2.tgz#81675770df3f12128bbcb1c432977086ccf7644c"
-  integrity sha512-B3ufDGijKWHPHKYjwVdQBozIZ5+O8TGXhTKDAvYOp+hHWfUjR+6Aicww7jedLpUfziN519H7dC82nfJrWCrp5g==
+"@ohoareau/technologies-detector@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@ohoareau/technologies-detector/-/technologies-detector-0.1.3.tgz#c32a2429bb9d051479917ba3ca39be8c0adede8f"
+  integrity sha512-DQxjpf/x2VqKs6rgqbKhspgAoA4IrGA9zMUi1VcOZyzS3OTlA8BU1P706CVrPcm9f+IqLZwZdYYmqpIrWS66TQ==
   dependencies:
-    "@ohoareau/technologies" "^0.6.2"
+    "@ohoareau/technologies" "^0.6.3"
     yargonaut "^1.1.4"
     yargs "^15.3.1"
 
-"@ohoareau/technologies@^0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@ohoareau/technologies/-/technologies-0.6.2.tgz#d75e77a2ce3297051f050f84493f72914e5adbd1"
-  integrity sha512-VRsS9R3SFq4Fn7Mq0Xbsirv4QQG9xBMbK6YzjOO0ZdEE70qqyVanqHNRKZ9epjQcbyrnb/eC6loQ/ka0VOuyCw==
+"@ohoareau/technologies@^0.6.3":
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/@ohoareau/technologies/-/technologies-0.6.3.tgz#4e1d497e32fcf365fcc1c64f5751f5f6dd4eacf0"
+  integrity sha512-p8DAWI5MQ3+SmqCG0bRBa0CSOTgWryEaw+2rZvpwsFl5FAouw+AcqNIZoytOYq66TsZixzSHaBmLFYRsEI+4YA==
 
 "@sinonjs/commons@^1.7.0":
   version "1.7.2"

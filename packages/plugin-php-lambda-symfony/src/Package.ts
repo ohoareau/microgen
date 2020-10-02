@@ -132,7 +132,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('deploy-assets', 'aws-s3-sync', {source: 'build/assets/'})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-assets', 'invalidate-cache'])
-            .addTarget('start', [`app/console server:run --ansi -n -p ${this.getParameter('startPort')}`])
+            .addTarget('start', [`SYMFONY_DEBUG=true SYMFONY_ENV=dev app/console server:run --ansi -n -p ${this.getParameter('startPort')}`])
         ;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
