@@ -1,5 +1,5 @@
 {
-  "name": "@ohoareau/microgen-plugin-php-symfony",
+  "name": "@ohoareau/microgen-plugin-php-lambda",
   "version": "0.1.0",
   "license": "MIT",
   "main": "lib/index.js",
