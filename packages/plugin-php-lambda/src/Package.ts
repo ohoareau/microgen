@@ -8,8 +8,6 @@ import {
     TerraformToVarsTemplate
 } from "@ohoareau/microgen-templates";
 import {
-    DeployableBehaviour,
-    StartableBehaviour,
     BuildableBehaviour,
     CleanableBehaviour,
     InstallableBehaviour,
@@ -25,8 +23,6 @@ export default class Package extends AbstractPackage {
             new InstallableBehaviour(),
             new GenerateEnvLocalableBehaviour(),
             new TestableBehaviour(),
-            new StartableBehaviour(),
-            new DeployableBehaviour(),
         ];
     }
     protected getDefaultExtraOptions(): any {
@@ -101,8 +97,6 @@ export default class Package extends AbstractPackage {
             .setDefaultTarget('install')
             .addMetaTarget('install', ['install-js', 'install-php'])
             .addPredefinedTarget('install-js', 'yarn-install')
-            .addPredefinedTarget('install-php', 'composer-install', {sourceLocalEnvLocal: !!vars.env_local_required})
-            .addPredefinedTarget('install-php-prod', 'composer-install-prod', {sourceLocalEnvLocal: !!vars.env_local_required})
             .addPredefinedTarget('build-package', 'yarn-build')
             .addPredefinedTarget('generate-env-local', 'generate-env-local')
             .addMetaTarget('clean', ['clean-modules', 'clean-coverage', 'clean-vendor', 'clean-build'])
@@ -115,6 +109,17 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-cov', 'composer-test', {local: true})
             .addPredefinedTarget('test-ci', 'composer-test', {ci: true})
         ;
+        if (!!vars.env_local_required) {
+            t
+                .addPredefinedTarget('install-php', 'composer-install', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
+                .addPredefinedTarget('install-php-prod', 'composer-install-prod', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
+            ;
+        } else {
+            t
+                .addPredefinedTarget('install-php', 'composer-install')
+                .addPredefinedTarget('install-php-prod', 'composer-install-prod')
+            ;
+        }
         const buildSteps = ['build-package'];
         if (vars.download_on_build) {
             t
