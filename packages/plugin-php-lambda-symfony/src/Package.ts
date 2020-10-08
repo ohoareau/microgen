@@ -115,7 +115,7 @@ export default class Package extends AbstractPackage {
             .setDefaultTarget('install')
             .addMetaTarget('install', ['install-js', 'install-php'])
             .addPredefinedTarget('install-js', 'yarn-install')
-            .addPredefinedTarget('install-php', 'composer-install')
+            .addPredefinedTarget('install-php', 'composer-install', {sourceLocalEnvLocal: !!vars.env_local_required})
             .addPredefinedTarget('install-php-prod', 'composer-install-prod')
             .addPredefinedTarget('build-package', 'yarn-build')
             .addTarget('build-assets', ['rm -rf build/assets', 'mkdir -p build/assets', 'cp -LR web/* build/assets/', 'rm -f build/assets/*.php'])
@@ -133,8 +133,8 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('deploy-assets', 'aws-s3-sync', {source: 'build/assets/'})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-assets', 'invalidate-cache'])
-            .addTarget('start', [`SYMFONY_DEBUG=true SYMFONY_ENV=dev app/console server:run --ansi -n -p ${this.getParameter('startPort')}`])
-            .addTarget('build-cache', [`SYMFONY_ENV=$(symfony_env) app/console cache:warmup --ansi -n --no-debug`])
+            .addTarget('start', [`SYMFONY_DEBUG=true SYMFONY_ENV=dev app/console server:run --ansi -n -p ${this.getParameter('startPort')}`], [], {sourceLocalEnvLocal: !!vars.env_local_required})
+            .addTarget('build-cache', [`SYMFONY_ENV=$(symfony_env) app/console cache:warmup --ansi -n --no-debug`], [], {sourceLocalEnvLocal: !!vars.env_local_required})
         ;
         const buildSteps = ['build-assets', 'clean-web-bundles', 'build-package'];
         if (vars.download_on_build) {
