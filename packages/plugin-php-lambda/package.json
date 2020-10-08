@@ -1,0 +1,34 @@
+{
+  "name": "@ohoareau/microgen-plugin-php-symfony",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib",
+    "templates"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
+    "gen": "../../packages/microgen/bin/microgen",
+    "dump": "../../packages/microgen/bin/microgen dump"
+  },
+  "peerDependencies": {
+    "@ohoareau/microgen": "^0"
+  },
+  "dependencies": {
+    "@ohoareau/microgen-behaviours": "^0.2.8",
+    "@ohoareau/microgen-templates": "^0.3.20"
+  },
+  "devDependencies": {
+    "@ohoareau/microgen": "^0.22.8"
+  }
+}
