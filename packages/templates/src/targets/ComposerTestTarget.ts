@@ -2,7 +2,10 @@ import AbstractComposerTarget from './AbstractComposerTarget';
 
 export class ComposerTestTarget extends AbstractComposerTarget {
     getCommandName() {
-        return 'test';
+        return 'run-script';
+    }
+    getCommandArgs(options: any): any[] {
+        return ['test'];
     }
 }
 

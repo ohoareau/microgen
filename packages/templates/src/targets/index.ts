@@ -57,3 +57,4 @@ export * from './NodemonTarget';
 export * from './ComposerInstallTarget';
 export * from './ComposerInstallProdTarget';
 export * from './ComposerTestTarget';
+export * from './ComposerUpdateTarget';
