@@ -67,7 +67,7 @@ export default class SchemaParser {
                 type = 'string', prefetch = false, list = false, volatile = false, required = false, index = [], internal = false, validators = undefined, primaryKey = false,
                 value = undefined, default: rawDefaultValue = undefined, defaultValue = undefined, updateValue = undefined, updateDefault: rawUpdateDefaultValue = undefined, updateDefaultValue = undefined,
                 upper = false, lower = false, transform = undefined, reference = undefined, refAttribute = undefined,
-                autoTransitionTo = undefined, cascadePopulate = undefined, permissions = undefined, authorizers = [],
+                autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
             } = def;
             acc.fields[k] = {
                 type, primaryKey, volatile,
@@ -96,6 +96,7 @@ export default class SchemaParser {
             (undefined !== rawUpdateDefaultValue) && (acc.updateDefaultValues[k] = {type: '@value', config: {value: rawUpdateDefaultValue}});
             (undefined !== autoTransitionTo) && (acc.autoTransitionTo[k] = {type: '@value', config: {value: autoTransitionTo}});
             (undefined !== cascadePopulate) && (acc.cascadeValues[k] = cascadePopulate);
+            (undefined !== cascadeClear) && (acc.cascadeValues[k] = this.mergeCascades(acc.cascadeValues[k], cascadeClear));
             (undefined !== permissions) && (acc.authorizers[k].push({type: '@permissions', config: {permissions}}));
             internal && (acc.privateFields[k] = true);
             index && (index.length > 0) && (acc.indexes[k] = index);
@@ -170,6 +171,20 @@ export default class SchemaParser {
             }
         });
          */
+    }
+    mergeCascades(a, b) {
+        a = {...(a || {})};
+        b = b || {};
+
+        Object.entries(b).forEach(([k, v]) => {
+            a[k] = a[k] || {};
+            (v as any).reduce((acc, vv) => {
+                acc[vv] = '**clear**';
+                return acc;
+            }, a[k]);
+        });
+
+        return a;
     }
     parseFieldString(string, name): any {
         const d = {
