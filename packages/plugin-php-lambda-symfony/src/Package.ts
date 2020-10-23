@@ -155,7 +155,7 @@ export default class Package extends AbstractPackage {
             ;
         }
         t
-            .addMetaTarget('build', ['install-php-prod', 'build-cache', ...buildSteps, 'install-php'])
+            .addMetaTarget('build', ['install-php-prod', ...(vars.build_cache_before_deploy ? ['build-cache'] : []), ...buildSteps, 'install-php'])
         ;
         return t;
     }
