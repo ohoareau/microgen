@@ -77,8 +77,14 @@ const r = async (req, res, statusCode, n, o = {}, p = {}) => {
 const server = require('http').createServer();
 
 server.on('request', async (req, res) => {
-    const response = await module.exports.handler({...req, bodyOnly: false});
-    res.setHeaders(response.headers);
+    Object.assign(req, {path: req.url, bodyOnly: false});
+    let response;
+    try {
+        response = await fnm(req, res);
+    } catch (e) {
+        response = {headers: {'Content-Type': 'application/json'}, body: e};
+    }
+    Object.entries(response.headers || {}).forEach(([k, v]) => res.setHeader(k, v));
     res.write(JSON.stringify(response.body));
     res.end();
 });
