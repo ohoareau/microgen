@@ -47,6 +47,7 @@ module.exports = {
                         healthz: true,
                         cors: true,
                         jwt: true,
+                        regex_mode: true,
                         routes: {
                             'GET /user': '<private>user_user_getCurrent',
                             'POST /user': '<private>user_user_create',
