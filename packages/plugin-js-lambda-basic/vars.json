@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "description": "AWS Lambda project",
+  "url": "https://github.com",
+  "scripts": {
+    "build": "build-package",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@ohoareau/build-package": "^0.1.0"
+  },
+  "devDependencies": {
+    "jest": "^26",
+    "aws-sdk": "^2"
+  }
+}
