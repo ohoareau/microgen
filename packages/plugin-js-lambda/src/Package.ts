@@ -206,7 +206,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
                 const startNames: string[] = [];
                 Object.entries(this.starters).forEach(([n, v]) => {
                     const scriptName = `${v.directory ? v.directory : ''}${v.directory ? '/' : ''}${v.name}.js`;
-                    t.addPredefinedTarget(`start-${n}`, 'nodemon', {envs: v.envs, script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
+                    t.addPredefinedTarget(`start-${n}`, 'nodemon', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal, envs: v.envs, script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
                     startTargetNames.push(`start-${n}`);
                     startNames.push(n);
                     index++;
