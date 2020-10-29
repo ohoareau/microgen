@@ -31,10 +31,16 @@ const AWS = require('aws-sdk');
 <% var regexMode = (('undefined' !== typeof regex_mode) && !!regex_mode); -%>
 <% var len = Object.keys(routes).reduce((acc, r) => (r.length + (regexMode ? 13 : 2)) > acc ? (r.length + (regexMode ? 13 : 2)) : acc, 0); -%>
 <% if (regexMode) { %>const m = (aa, bb) => {
+    const [p, y = undefined] = aa.path.split('?');
+    const q = {};
+    for (const [k, v] of new URLSearchParams(`?${y || ''}`).entries()) {
+        q[k] = v;
+    }
     const [xx, yy] = bb.split(' ');
     if (xx !== aa.method) return undefined;
     const Path = require('path-parser').Path;
-    return new Path(yy).test(aa.path) || undefined;
+    const r = new Path(yy).test(p) || undefined;
+    return !!r ? {...q, ...r} : undefined;
 }; <% } %>
 const fnm = async (a, b) => {
 <% if (regexMode) { %>    let x;
