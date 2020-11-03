@@ -552,6 +552,20 @@ export default class MicroserviceType {
                 x = x.replace(a[0], 'new Date().valueOf()');
             }
         }
+        if (/'\[\[result]]'/.test(x)) {
+            let a;
+            const r = /'\[\[result]]'/;
+            while ((a = r.exec(x)) !== null) {
+                x = x.replace(a[0], 'result');
+            }
+        }
+        if (/'\[\[query]]'/.test(x)) {
+            let a;
+            const r = /'\[\[query]]'/;
+            while ((a = r.exec(x)) !== null) {
+                x = x.replace(a[0], 'query');
+            }
+        }
         return x;
     }
     stringifyForHook(o, options) {
