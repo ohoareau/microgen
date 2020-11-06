@@ -83,16 +83,24 @@ const r = async (req, res, statusCode, n, o = {}, p = {}) => {
 const server = require('http').createServer();
 
 server.on('request', async (req, res) => {
-    Object.assign(req, {path: req.url, bodyOnly: false});
-    let response;
-    try {
-        response = await fnm(req, res);
-    } catch (e) {
-        response = {headers: {'Content-Type': 'application/json'}, body: e};
-    }
-    Object.entries(response.headers || {}).forEach(([k, v]) => res.setHeader(k, v));
-    res.write(JSON.stringify(response.body));
-    res.end();
+    return new Promise((resolve) => {
+        Object.assign(req, {path: req.url, bodyOnly: false});
+        const finalize = response => {
+            Object.entries(response.headers || {}).forEach(([k, v]) => res.setHeader(k, v));
+            res.write(JSON.stringify(response.body));
+            res.end();
+        };
+        let data = []
+        req
+            .on('data', d => { data.push(d) })
+            .on('end', () => {
+                data = Buffer.concat(data).toString();
+                !!data && (req.params = {data: JSON.parse(data)});
+                fnm(req, res)
+                    .then(response => { finalize(response); resolve(); })
+                    .catch(e => { finalize({headers: {'Content-Type': 'application/json'}, body: e}); resolve(); })
+        });
+    });
 });
 const port = process.env.PORT || 8080;
 server.listen(port, error => {
