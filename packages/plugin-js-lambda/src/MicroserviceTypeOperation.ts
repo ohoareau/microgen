@@ -20,9 +20,8 @@ export default class MicroserviceTypeOperation {
     public readonly name: string;
     public readonly handler?: Handler;
     public readonly microserviceType: MicroserviceType;
-    constructor(microserviceType, {type = undefined, ...cfg}: MicroserviceTypeOperationConfig) {
+    constructor(microserviceType, cfg: MicroserviceTypeOperationConfig) {
         this.microserviceType = microserviceType;
-        cfg = type ? this.enrichConfig(cfg, type) : cfg;
         const {name, as = undefined, handler = true, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}} = cfg;
         this.name = name;
         this.handler = handler ? new Handler({name: `${microserviceType.name}_${this.name}`, type: 'service', middlewares, errorMiddlewares, directory: 'handlers', params: {
@@ -94,23 +93,6 @@ export default class MicroserviceTypeOperation {
         Object.entries(hooks).forEach(([k, v]) => {
             v.forEach(h => microserviceType.registerHook(this.name, k, h));
         });
-    }
-    enrichConfig(cfg: any, type: string) {
-        const asset = this.microserviceType.microservice.package.getAsset('code', `microservice/type/operation/${type}`);
-        return this.mergeConfig(asset, cfg);
-    }
-    mergeConfig(a: any = {}, b: any = {}) {
-        return {...a, ...b, hooks: this.mergeConfigHooks(a.hooks, b.hooks), vars: this.mergeConfigVars(a.vars, b.vars)};
-    }
-    mergeConfigHooks(a: any = {}, b: any = {}) {
-        return Object.keys(b).reduce((acc, k) => {
-            acc[k] = acc[k] || [];
-            acc[k] = acc[k].concat(b[k] || []);
-            return acc;
-        }, a);
-    }
-    mergeConfigVars(a: any = {}, b: any = {}) {
-        return {...a, ...b};
     }
     hasHooks(type: string, operation: string, microserviceType: MicroserviceType): boolean {
         switch (type) {
