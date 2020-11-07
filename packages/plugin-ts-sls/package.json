@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-ts-sls",
-  "version": "0.6.21",
+  "version": "0.6.22",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,9 +25,9 @@
     "@ohoareau/microgen": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-templates": "^0.3.21"
+    "@ohoareau/microgen-templates": "^0.3.22"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.22.8"
+    "@ohoareau/microgen": "^0.22.9"
   }
 }

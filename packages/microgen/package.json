@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen",
-  "version": "0.22.8",
+  "version": "0.22.9",
   "license": "MIT",
   "author": {
     "email": "oha+oss@greenberets.io",
@@ -46,9 +46,9 @@
     "ejs": "^3.0.2",
     "fs-extra": "^8.1.0",
     "stringify-object": "^3.3.0",
+    "yaml": "^1.10.0",
     "yargonaut": "^1.1.4",
-    "yargs": "^15.3.1",
-    "yaml": "^1.10.0"
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "aws-sdk": "^2.663.0"

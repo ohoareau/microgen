@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-php-lambda",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@ohoareau/microgen": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-behaviours": "^0.2.8",
-    "@ohoareau/microgen-templates": "^0.3.21"
+    "@ohoareau/microgen-behaviours": "^0.2.9",
+    "@ohoareau/microgen-templates": "^0.3.22"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.22.8"
+    "@ohoareau/microgen": "^0.22.9"
   }
 }
