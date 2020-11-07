@@ -76,9 +76,9 @@ export class MicroGen implements IGenerator {
         } catch (e) {
             // nothing to do, local plugin does not exist.
         }
+        this.registerPlugin(new DirectoryRegistryPlugin())
         this.loadPlugins(plugins);
         this.registerPlugin(new FilesPlugin());
-        this.registerPlugin(new DirectoryRegistryPlugin())
     }
     protected loadPlugins(plugins: any[]): void {
         plugins.forEach(p => {
