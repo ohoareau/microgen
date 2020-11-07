@@ -214,7 +214,7 @@ export default class MicroserviceType {
             }
         };
     }
-    buildServiceMethodConfig({backend, name}) {
+    buildServiceMethodConfig({backend, name, vars = {}}) {
         const listeners = this.microservice.package.getEventListeners(`${this.name}_${name}`);
         let backendDef = backend || this.defaultBackendName;
         if (backendDef) {
@@ -267,6 +267,7 @@ export default class MicroserviceType {
             neededUtils,
             async: true,
             args: batchMode ? ['{data = [], ...query}'] : ['query'],
+            vars,
             code: lines.join("\n"),
         };
     }
