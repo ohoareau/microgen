@@ -1,13 +1,14 @@
-export * from './MicroGen';
 export * from './IGenerator';
-export * from './MicroGen';
 export * from './IPackage';
 export * from './IBehaviour';
 export * from './IPlugin';
+export * from './IRegistry';
 export * from './ITemplate';
 export * from './AbstractPackage';
 export * from './AbstractTemplate';
+export * from './AbstractRegistry';
 export * from './AbstractFileTemplate';
 export * from './AbstractBehaviour';
+export * from './MicroGen';
 export * from './Cli';
 export {default as default} from './MicroGen';

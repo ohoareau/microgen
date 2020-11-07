@@ -1,11 +1,14 @@
 import IPackage from './IPackage';
 import IGenerator from './IGenerator';
 import FilesPlugin from './plugins/files';
+import DirectoryRegistryPlugin from './plugins/directory-registry';
 import IPlugin, {PluginConfig} from './IPlugin';
 import {renderFile, jsStringify, copy, writeFile, populateData} from './utils';
 import {PackageGroup} from './PackageGroup';
 import ITemplate, {isTemplate} from './ITemplate';
 import Template from './Template';
+import IRegistry from "./IRegistry";
+import {BaseRegistryConfig} from "./AbstractRegistry";
 
 const fs = require('fs');
 
@@ -26,6 +29,8 @@ export type GeneratorConfig = {
 export type MicroGenConfig = GeneratorConfig & {}
 
 export class MicroGen implements IGenerator {
+    public readonly registries: IRegistry[] = [];
+    public readonly registryFactories: {[key: string]: (config: any) => IRegistry} = {};
     public readonly plugins: IPlugin[] = [];
     public readonly groups: {[key: string]: PackageGroup} = {};
     public readonly packagers: {[key: string]: (config: any) => IPackage} = {};
@@ -73,6 +78,7 @@ export class MicroGen implements IGenerator {
         }
         this.loadPlugins(plugins);
         this.registerPlugin(new FilesPlugin());
+        this.registerPlugin(new DirectoryRegistryPlugin())
     }
     protected loadPlugins(plugins: any[]): void {
         plugins.forEach(p => {
@@ -167,6 +173,20 @@ export class MicroGen implements IGenerator {
         plugin.register(this);
         this.plugins.push(plugin);
     }
+    registerRegistryFactory(type: string|string[], factory: (cfg: any) => IRegistry) {
+        (Array.isArray(type) ? type : [type]).forEach(t => {
+            const tt = t.replace(/-/g, '_');
+            this.registryFactories[t] = factory;
+            if (tt !== t) {
+                this.registryFactories[tt] = factory;
+            }
+        });
+    }
+    registerRegistry(type: string, cfg: BaseRegistryConfig) {
+        if (!this.registryFactories[type]) throw new Error(`No registered registry factory for type '${type}'`);
+        this.registries.push(this.registryFactories[type](cfg));
+        return this;
+    }
     registerPluginFromConfig(plugin: string|PluginConfig) {
         this.registerPlugin(this.createPluginFromConfig('string' === typeof plugin ? {name: plugin} : plugin));
     }
@@ -192,7 +212,7 @@ export class MicroGen implements IGenerator {
                     }
                     if (!this.packagers[type]) throw new Error(`Unsupported package type '${type}'`);
                     const targetDir = g.getDir() === '.' ? name : `${g.getDir()}/${name}`;
-                    const localConfig = {...c, packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}};
+                    const localConfig = {...c, getAsset: this.getAsset.bind(this), packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}};
                     const p = this.packagers[type](localConfig);
                     this.applyPackageEventHooks(p, 'created', localConfig);
                     return p;
@@ -201,6 +221,11 @@ export class MicroGen implements IGenerator {
             this.applyGroupEventHooks(g, 'prepared', {packages: pkgs});
             return acc;
         }, <[PackageGroup, IPackage[]][]>[]);
+    }
+    public getAsset(type: string, name: string) {
+        const r = this.registries.find(r => r.hasAsset(type, name));
+        if (!r) throw new Error(`Unknown asset '${name}' of type '${type}'`);
+        return r.getAsset(type, name);
     }
     private async preGenerate(groupments: [PackageGroup, IPackage[]][], vars: any): Promise<any> {
         const description = {};

@@ -15,6 +15,7 @@ export type BasePackageConfig = {
     vars?: {[key: string]: any},
     enabled_features?: string[],
     disabled_features?: string[],
+    getAsset?: (type: string, name: string) => any,
 }
 
 const fs = require('fs');
@@ -28,9 +29,13 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     public readonly files: {[key: string]: any};
     public readonly features: any;
     public readonly extraOptions: any;
+    public readonly assetFetcher: (type: string, name: string) => any;
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
     constructor(config: C) {
-        const {name, description, packageType, sources = [], files = {}, vars =  {}, enabled_features = [], disabled_features = [], targetDir, ...extra} = config;
+        const {getAsset, name, description, packageType, sources = [], files = {}, vars =  {}, enabled_features = [], disabled_features = [], targetDir, ...extra} = config;
+        this.assetFetcher = getAsset || ((type: string, name: string) => {
+            throw new Error(`Unknown asset '${name}' of type '${type}'`);
+        });
         this.name = name;
         this.description = description || name;
         this.packageType = packageType;
@@ -56,6 +61,9 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         enabled_features.forEach(f => this.features[f] = true);
         disabled_features.forEach(f => this.features[f] = false);
         Object.assign(this.extraOptions, bbExtraOptions, xExtraOptions);
+    }
+    public getAsset(type: string, name: string) {
+        return this.assetFetcher(type, name);
     }
     protected getBehaviours(): IBehaviour[] {
         return [];

@@ -1,0 +1,17 @@
+async: true
+
+require:
+  - find
+
+input:
+  type: ~
+
+args:
+  - field
+  - value
+  - fields = []
+
+code: |
+  const docs = await service.find({index: field, hashKey: value, limit: 1, fields});
+  if (!docs || !docs.items || (1 > docs.items.length)) throw new Error(`Unknown <%- type %> with ${field} is '${value}'`);
+  return docs.items.shift();

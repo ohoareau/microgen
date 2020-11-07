@@ -5,6 +5,7 @@ export type MicroserviceTypeOperationConfig = {
     microserviceType: MicroserviceType,
     name: string,
     type: string|undefined,
+    as: string|undefined,
     middlewares: string[],
     errorMiddlewares: string[],
     backend: string|{name: string, method?: string, args?: string[], [key: string]: any},
@@ -19,8 +20,10 @@ export default class MicroserviceTypeOperation {
     public readonly name: string;
     public readonly handler?: Handler;
     public readonly microserviceType: MicroserviceType;
-    constructor(microserviceType, {name, type = undefined, handler = true, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}, prefetch = []}: MicroserviceTypeOperationConfig) {
+    constructor(microserviceType, {type = undefined, ...cfg}: MicroserviceTypeOperationConfig) {
         this.microserviceType = microserviceType;
+        cfg = type ? this.enrichConfig(cfg, type) : cfg;
+        const {name, as = undefined, handler = true, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}} = cfg;
         this.name = name;
         this.handler = handler ? new Handler({name: `${microserviceType.name}_${this.name}`, type: 'service', middlewares, errorMiddlewares, directory: 'handlers', params: {
                 on: this.name,
@@ -29,7 +32,7 @@ export default class MicroserviceTypeOperation {
             }, vars: {
                 ...vars,
                 service: `crud/${microserviceType.name}`,
-                method: type || name,
+                method: name,
                 paramsKey: true,
                 configureService: false,
             }}) : undefined;
@@ -40,7 +43,7 @@ export default class MicroserviceTypeOperation {
                 listener
             )
         ;
-        switch (name) {
+        switch (as || name) {
             case 'create':
                 this.hasHooks('authorize', name, microserviceType) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
                 this.hasHooks('validate', name, microserviceType) && microserviceType.registerHook(name, 'validate', {type: '@validate', config: {}});
@@ -91,6 +94,23 @@ export default class MicroserviceTypeOperation {
         Object.entries(hooks).forEach(([k, v]) => {
             v.forEach(h => microserviceType.registerHook(this.name, k, h));
         });
+    }
+    enrichConfig(cfg: any, type: string) {
+        const asset = this.microserviceType.microservice.package.getAsset('code', `microservice/type/operation/${type}`);
+        return this.mergeConfig(asset, cfg);
+    }
+    mergeConfig(a, b) {
+        return {...a, ...b, hooks: this.mergeConfigHooks(a.hooks, b.hooks), vars: this.mergeConfigVars(a.vars, b.vars)};
+    }
+    mergeConfigHooks(a, b) {
+        return Object.keys(b).reduce((acc, k) => {
+            acc[k] = acc[k] || [];
+            acc[k] = acc[k].concat(b[k] || []);
+            return acc;
+        }, a);
+    }
+    mergeConfigVars(a, b) {
+        return {...a, ...b};
     }
     hasHooks(type: string, operation: string, microserviceType: MicroserviceType): boolean {
         switch (type) {

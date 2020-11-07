@@ -7,6 +7,7 @@ import {TestFileConfig} from './TestFile';
 import MicroserviceTypeOperation, {MicroserviceTypeOperationConfig} from './MicroserviceTypeOperation';
 
 export type MicroserviceTypeConfig = {
+    type?: string|undefined,
     microservice: Microservice,
     name: string,
     attributes: {[key: string]: any},
@@ -31,8 +32,10 @@ export default class MicroserviceType {
     private readonly rawAttributes;
     private readonly rawOperations;
     public readonly test: TestFileConfig|undefined;
-    constructor(microservice: Microservice, {name, attributes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined}: MicroserviceTypeConfig) {
+    constructor(microservice: Microservice, {type, ...cfg}: MicroserviceTypeConfig) {
         this.microservice = microservice;
+        cfg = type ? this.enrichConfig(cfg, type) : cfg;
+        let {name, attributes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined} = cfg;
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
         operations = Object.entries(operations).reduce((acc, [k, v]) => {
@@ -50,7 +53,10 @@ export default class MicroserviceType {
             return acc;
         }, {});
         this.rawOperations = operations;
-        this.functions = functions;
+        this.functions = Object.entries(functions).reduce((acc, [k, v]) => {
+            acc[k] = this.enrichConfigFunction(v as any);
+            return acc;
+        }, {});
         this.model = new SchemaParser().parse({name: this.name, attributes, operations});
         this.backends = (<any>backends).reduce((acc, b) => {
             if ('string' === typeof b) b = {type: 'backend', name: b};
@@ -78,6 +84,33 @@ export default class MicroserviceType {
                 this.handlers[name] = new Handler({name: `${this.name}${'handler' === name ? '' : `_${name}`}`, ...c, directory: 'handlers', vars: {...(c.vars || {}), operations: opNames, prefix: this.name}})
         );
         this.test = test;
+    }
+    enrichConfig(cfg: any, type: string) {
+        const asset = this.microservice.package.getAsset('code', `microservice/type/${type}`);
+        return this.mergeConfig(asset, cfg);
+    }
+    mergeConfig(a, b) {
+        return {
+            ...a,
+            ...b,
+            operations: this.mergeConfigOperations(a.operations, b.operations),
+            functions: this.mergeConfigFunctions(a.functions, b.functions),
+        };
+    }
+    mergeConfigOperations(a, b) {
+        return {...a, ...b};
+    }
+    mergeConfigFunctions(a, b) {
+        return {...a, ...b};
+    }
+    mergeConfigFunction(a, b) {
+        return {
+            ...a, ...b
+        };
+    }
+    enrichConfigFunction(v: any) {
+        const asset = (v as any).type ? this.microservice.package.getAsset('code', `microservice/type/function/${(v as any).type}`) : {};
+        return this.mergeConfigFunction(asset, v);
     }
     registerHook(operation, type, hook) {
         this.hooks[operation] = this.hooks[operation] || {};

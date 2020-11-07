@@ -1,5 +1,6 @@
 export interface IPackage {
     getPackageType(): string,
+    getAsset(type: string, name: string): any,
     getName(): string;
     getDescription(): string;
     getParameter(name: string, defaultValue?: any): any;

@@ -1,0 +1,9 @@
+require:
+  - find
+
+input:
+  index: ~
+
+wrap:
+  - find
+  - "{index: '<%- index -%>', hashKey: query.parent.id}"

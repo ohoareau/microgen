@@ -1,0 +1,8 @@
+require:
+  - getBy
+
+wrap:
+  - getBy
+  - "'email'"
+  - query.email
+  - query.fields || []

@@ -1,0 +1,9 @@
+require:
+  - update
+
+input:
+  step: ~
+
+wrap:
+  - update
+  - "{...query, data: {...query.data, status: '<%- step -%>'}}"
