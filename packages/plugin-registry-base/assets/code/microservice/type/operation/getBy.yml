@@ -1,0 +1,11 @@
+require:
+  - getBy
+
+input:
+  field: ~
+
+wrap:
+  - getBy
+  - "'<%- field %>'"
+  - query.<%- field %>
+  - query.fields || []

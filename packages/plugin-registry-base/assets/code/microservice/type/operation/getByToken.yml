@@ -1,0 +1,8 @@
+require:
+  - getBy
+
+wrap:
+  - getBy
+  - "'token'"
+  - query.token
+  - query.fields || []
