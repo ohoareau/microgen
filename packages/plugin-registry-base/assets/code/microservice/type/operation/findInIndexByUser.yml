@@ -1,0 +1,7 @@
+input:
+  index: ~
+  key: ~
+
+wrap:
+  - find
+  - "{...query, index: '<%- index %>', hashKey: ['<%- key %>', query.user.id]}"
