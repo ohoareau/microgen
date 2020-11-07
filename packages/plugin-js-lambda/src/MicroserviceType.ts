@@ -252,10 +252,11 @@ export default class MicroserviceType {
             code: lines.join("\n"),
         };
     }
-    buildServiceFunctionConfig({name, async = false, args = [], code = ''}) {
+    buildServiceFunctionConfig({name, async = false, vars = {}, args = [], code = ''}) {
         return {
             async,
             args,
+            vars,
             code: ((code || '').trim()).split(/\n/g).map(l => `    ${l}`).join("\n"),
         };
     }
