@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-js-lambda",
-  "version": "0.10.30",
+  "version": "0.10.31",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,11 +26,11 @@
     "@ohoareau/microgen": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-behaviours": "^0.2.9",
-    "@ohoareau/microgen-templates": "^0.3.22"
+    "@ohoareau/microgen-behaviours": "^0.2.10",
+    "@ohoareau/microgen-templates": "^0.3.23"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.22.9",
+    "@ohoareau/microgen": "^0.22.10",
     "aws-sdk": "^2.719.0"
   }
 }

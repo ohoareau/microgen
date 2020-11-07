@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-registry-base",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,6 +25,6 @@
     "@ohoareau/microgen": "^0"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.22.9"
+    "@ohoareau/microgen": "^0.22.10"
   }
 }
