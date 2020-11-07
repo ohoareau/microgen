@@ -99,17 +99,17 @@ export default class MicroserviceTypeOperation {
         const asset = this.microserviceType.microservice.package.getAsset('code', `microservice/type/operation/${type}`);
         return this.mergeConfig(asset, cfg);
     }
-    mergeConfig(a, b) {
+    mergeConfig(a: any = {}, b: any = {}) {
         return {...a, ...b, hooks: this.mergeConfigHooks(a.hooks, b.hooks), vars: this.mergeConfigVars(a.vars, b.vars)};
     }
-    mergeConfigHooks(a, b) {
+    mergeConfigHooks(a: any = {}, b: any = {}) {
         return Object.keys(b).reduce((acc, k) => {
             acc[k] = acc[k] || [];
             acc[k] = acc[k].concat(b[k] || []);
             return acc;
         }, a);
     }
-    mergeConfigVars(a, b) {
+    mergeConfigVars(a: any = {}, b: any = {}) {
         return {...a, ...b};
     }
     hasHooks(type: string, operation: string, microserviceType: MicroserviceType): boolean {

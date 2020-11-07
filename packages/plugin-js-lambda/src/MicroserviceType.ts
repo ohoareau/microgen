@@ -89,7 +89,7 @@ export default class MicroserviceType {
         const asset = this.microservice.package.getAsset('code', `microservice/type/${type}`);
         return this.mergeConfig(asset, cfg);
     }
-    mergeConfig(a, b) {
+    mergeConfig(a: any = {}, b: any = {}) {
         return {
             ...a,
             ...b,
@@ -97,13 +97,13 @@ export default class MicroserviceType {
             functions: this.mergeConfigFunctions(a.functions, b.functions),
         };
     }
-    mergeConfigOperations(a, b) {
+    mergeConfigOperations(a: any = {}, b: any = {}) {
         return {...a, ...b};
     }
-    mergeConfigFunctions(a, b) {
+    mergeConfigFunctions(a: any = {}, b: any = {}) {
         return {...a, ...b};
     }
-    mergeConfigFunction(a, b) {
+    mergeConfigFunction(a: any = {}, b: any = {}) {
         return {
             ...a, ...b
         };
