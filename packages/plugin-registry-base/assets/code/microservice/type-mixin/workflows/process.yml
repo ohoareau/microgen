@@ -1,0 +1,9 @@
+attributes:
+  status:
+    type: workflow
+    default: CREATED
+    config:
+      steps: [CREATED,PROCESSING,PROCESSED,PROCESSING_FAILED,CANCELED]
+
+operations:
+  cancel: updateStatus(CANCELED)
