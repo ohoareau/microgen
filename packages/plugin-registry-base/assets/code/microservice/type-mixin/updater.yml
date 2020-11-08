@@ -1,0 +1,6 @@
+attributes:
+  updatedAt: :updatedAt
+  updatedBy: "@ref:user.user"
+  updatedByEmail: :refattr:updatedBy:email
+  updatedByLastName: :refattr:updatedBy:lastName
+  updatedByFirstName: :refattr:updatedBy:firstName

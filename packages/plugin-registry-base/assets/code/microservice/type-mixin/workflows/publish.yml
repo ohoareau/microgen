@@ -1,0 +1,26 @@
+attributes:
+  publishedAt: :timestamp
+  archivedAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: {createdAt: '@now', createdBy: '@user_id'}
+      PUBLISHED: {publishedAt: '@now', publishedBy: '@user_id'}
+      ARCHIVED: {archivedAt: '@now', archivedBy: '@user_id'}
+    cascadeClear:
+      CREATED: [publishedAt, publishedBy, archivedAt, archivedBy]
+      PUBLISHED: [archivedAt, archivedBy]
+      ARCHIVED: [publishedAt, publishedBy]
+    permissions:
+      CREATED: ['moderator', 'admin']
+      PUBLISHED: ['moderator', 'admin']
+      ARCHIVED: ['moderator', 'admin']
+    config:
+      steps: [CREATED,PUBLISHED,ARCHIVED]
+
+operations:
+  publish: updateStatus(PUBLISHED)
+  unpublish: updateStatus(CREATED)
+  archive: updateStatus(ARCHIVED)
+  unarchive: updateStatus(CREATED)

@@ -1,0 +1,6 @@
+attributes:
+  createdAt: :createdAt
+  createdBy: "@ref:user.user"
+  createdByEmail: :refattr:createdBy:email
+  createdByLastName: :refattr:createdBy:lastName
+  createdByFirstName: :refattr:createdBy:firstName

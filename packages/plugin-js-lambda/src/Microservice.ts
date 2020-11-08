@@ -17,12 +17,14 @@ export default class Microservice {
         this.package = pkg;
         this.name = name;
         Object.entries(types).forEach(
-            ([name, c]: [string, any]) =>
+            ([name, c]: [string, any]) => {
+                c = this.package.configEnhancer.enrichConfigType({...((null === c || undefined === c || !c) ? {} : (('string' === typeof c) ? {type: c} : c))});
                 this.types[name] = new MicroserviceType(this, {
                     microservice: this,
                     name,
                     ...c,
-                })
+                });
+            }
         );
         const opNames = Object.entries(this.types).reduce((acc, [n, t]) =>
             Object.keys(t.operations).reduce((acc2, n2) => {

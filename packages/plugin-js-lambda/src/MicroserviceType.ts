@@ -5,7 +5,6 @@ import Microservice from './Microservice';
 import stringifyObject from 'stringify-object';
 import {TestFileConfig} from './TestFile';
 import MicroserviceTypeOperation, {MicroserviceTypeOperationConfig} from './MicroserviceTypeOperation';
-import YAML from 'yaml';
 
 export type MicroserviceTypeConfig = {
     type?: string|undefined,
@@ -35,14 +34,14 @@ export default class MicroserviceType {
     public readonly test: TestFileConfig|undefined;
     constructor(microservice: Microservice, {type, ...cfg}: MicroserviceTypeConfig) {
         this.microservice = microservice;
-        cfg = type ? this.enrichConfig(cfg, type) : cfg;
+        cfg = type ? this.microservice.package.configEnhancer.enrichConfig(cfg, type) : cfg;
         let {name, attributes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined} = cfg;
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
         operations = Object.entries(operations).reduce((acc, [k, v]) => {
             let c;
             try {
-                c = this.enrichConfigOperation({...((null === v || undefined === v || !v) ? {} : (('string' === typeof v) ? {type: v} : v))});
+                c = this.microservice.package.configEnhancer.enrichConfigOperation({...((null === v || undefined === v || !v) ? {} : (('string' === typeof v) ? {type: v} : v))});
             } catch (e) {
                 throw new Error(`Unable to prepare operation '${k}' for microservice type ${this.name}: ${e.message}`);
             }
@@ -61,7 +60,7 @@ export default class MicroserviceType {
         this.rawOperations = operations;
         this.functions = Object.entries(functions).reduce((acc, [k, v]) => {
             try {
-                acc[k] = this.enrichConfigFunction(v as any);
+                acc[k] = this.microservice.package.configEnhancer.enrichConfigFunction(v as any);
             } catch (e) {
                 throw new Error(`Unable to prepare function '${k}' for microservice type ${this.name}: ${e.message}`);
             }
@@ -95,102 +94,6 @@ export default class MicroserviceType {
         );
         this.test = test;
     }
-    parseConfigType = (cfg: any, type: string) => {
-        const match = type.match(/^([^(]+)\(([^)]*)\)$/);
-        let parsedVars = {};
-        if (!!match && !!match.length) {
-            type = match[1];
-            parsedVars = !!match[1] ? match[2].split(/\s*,\s*/g).reduce((acc, t) => {
-                const [k, v = undefined] = t.split(/\s*=\s*/)
-                if (undefined === v) {
-                    acc['default'] = k;
-                } else {
-                    acc[k] = YAML.parse(v || '');
-                }
-                return acc;
-            }, {}) : {};
-        }
-        cfg = {...cfg, vars: {...parsedVars, ...(cfg.vars || {})}};
-        return [type, cfg];
-    }
-    prepareVarsFromAssetInputs(vars, inputs) {
-        return Object.entries(inputs || {}).reduce((acc, [k, v]) => {
-            const input = {required: true, type: 'string', ...((null === v || undefined === v) ? {} : <any>v)};
-            let value = vars[k] || undefined;
-            if (!!input.main && vars.default) value = vars.default;
-            (undefined === value) && (value = input.default);
-            if ((undefined === value) && input.required) throw new Error(`Required input '${k}' is missing (vars: ${JSON.stringify(vars)}, inputs: ${JSON.stringify(inputs)})`);
-            switch (input.type) {
-                case 'string': value = String(value); break;
-                case 'boolean': value = Boolean(value); break;
-                case 'number': value = Number(value); break;
-                case 'string[]': value = value.split(/\s*\|\s*/g).map(x => String(x)); break;
-                case 'boolean[]': value = value.split(/\s*\|\s*/g).map(x => Boolean(x)); break;
-                case 'number[]': value = value.split(/\s*\|\s*/g).map(x => Number(x)); break;
-                default: break;
-            }
-            acc[k] = value;
-            return acc;
-        }, {});
-    }
-    enrichConfig(cfg: any, type: string) {
-        [type, cfg] = this.parseConfigType(cfg, type);
-        const asset = this.microservice.package.getAsset('code', `microservice/type/${type}`);
-        cfg.vars = this.prepareVarsFromAssetInputs(cfg.vars, asset.inputs);
-        return this.mergeConfig(asset, cfg);
-    }
-    mergeConfig(a: any = {}, b: any = {}) {
-        return {
-            ...a,
-            ...b,
-            operations: this.mergeConfigOperations(a.operations, b.operations),
-            functions: this.mergeConfigFunctions(a.functions, b.functions),
-        };
-    }
-    mergeConfigOperations(a: any = {}, b: any = {}) {
-        return {...a, ...b};
-    }
-    mergeConfigFunctions(a: any = {}, b: any = {}) {
-        return {...a, ...b};
-    }
-    mergeConfigFunction(a: any = {}, b: any = {}) {
-        return {
-            ...a, ...b
-        };
-    }
-    enrichConfigFunction(v: any) {
-        const [type, cfg] = this.parseTypeAndConfigFromRawValue(v);
-        const asset = type ? this.microservice.package.getAsset('code', `microservice/type/function/${type}`) : {};
-        cfg.vars = this.prepareVarsFromAssetInputs(cfg.vars, asset.inputs);
-        return this.mergeConfigFunction(asset, cfg);
-    }
-    enrichConfigOperation(v: any) {
-        const [type, cfg] = this.parseTypeAndConfigFromRawValue(v);
-        const asset = type ? this.microservice.package.getAsset('code', `microservice/type/operation/${type}`) : {};
-        cfg.vars = this.prepareVarsFromAssetInputs(cfg.vars, asset.inputs);
-        return this.mergeConfigOperation(asset, cfg);
-    }
-    parseTypeAndConfigFromRawValue(v: any) {
-        if ('string' === typeof v) {
-            return this.parseConfigType({}, v);
-        }
-        const {type, ...cfg} = v;
-        return type ? this.parseConfigType(cfg, type) : [undefined, cfg];
-    }
-    mergeConfigOperation(a: any = {}, b: any = {}) {
-        return {...a, ...b, hooks: this.mergeConfigHooks(a.hooks, b.hooks), vars: this.mergeConfigVars(a.vars, b.vars)};
-    }
-    mergeConfigHooks(a: any = {}, b: any = {}) {
-        return Object.keys(b).reduce((acc, k) => {
-            acc[k] = acc[k] || [];
-            acc[k] = acc[k].concat(b[k] || []);
-            return acc;
-        }, a);
-    }
-    mergeConfigVars(a: any = {}, b: any = {}) {
-        return {...a, ...b};
-    }
-
     registerHook(operation, type, hook) {
         this.hooks[operation] = this.hooks[operation] || {};
         this.hooks[operation][type] = this.hooks[operation][type] || [];
@@ -332,7 +235,7 @@ export default class MicroserviceType {
             code: lines.join("\n"),
         };
     }
-    buildServiceFunctionConfig({name, async = false, vars = {}, args = [], code = ''}) {
+    buildServiceFunctionConfig({async = false, vars = {}, args = [], code = ''}) {
         return {
             async,
             args,
@@ -371,9 +274,9 @@ export default class MicroserviceType {
         if ('string' === typeof condition) {
             let matches = condition.match(/^\s*(\$)([a-z0-9_]+)\s*\[\s*([a-z0-9_]+|\*)\s*=>\s*([a-z0-9_]+|\*)\s*]\s*$/i);
             if (!matches) {
-                matches = condition.match(/^\s*(\$|%|#)([a-z0-9_]+)\s*(=|>|<|<>|!=|%)(.*)$/i);
+                matches = condition.match(/^\s*([$%#])([a-z0-9_]+)\s*(=|>|<|<>|!=|%)(.*)$/i);
                 if (!matches) {
-                    matches = condition.match(/^\s*(\$|%|#)([a-z0-9_]+)$/i);
+                    matches = condition.match(/^\s*([$%#])([a-z0-9_]+)$/i);
                     if (!matches) {
                         throw new Error(`Unsupported condition definition: ${condition}`);
                     } else {
@@ -582,8 +485,10 @@ export default class MicroserviceType {
         }
     }
     stringifyValueForHook(x, {position = undefined}) {
+        // noinspection RegExpRedundantEscape
         if (/'\{\{[^{}]+}}'/.test(x)) {
             let a;
+            // noinspection RegExpRedundantEscape
             const r = /'\{\{([^{}]+)}}'/;
             let prefix = '';
             switch (<any>position) {
@@ -595,22 +500,28 @@ export default class MicroserviceType {
                 x = x.replace(a[0], `${prefix}${a[1]}`);
             }
         }
+        // noinspection RegExpRedundantEscape
         if (/'\{q\{[^{}]+}}'/.test(x)) {
             let a;
+            // noinspection RegExpRedundantEscape
             const r = /'\{q\{([^{}]+)}}'/;
             while ((a = r.exec(x)) !== null) {
                 x = x.replace(a[0], `query.${a[1]}`);
             }
         }
+        // noinspection RegExpRedundantEscape
         if (/'\{r\{[^{}]+}}'/.test(x)) {
             let a;
+            // noinspection RegExpRedundantEscape
             const r = /'\{r\{([^{}]+)}}'/;
             while ((a = r.exec(x)) !== null) {
                 x = x.replace(a[0], `result.${a[1]}`);
             }
         }
+        // noinspection RegExpRedundantEscape
         if (/\{\{[^{}]+}}/.test(x)) {
             let a;
+            // noinspection RegExpRedundantEscape
             const r = /\{\{([^{}]+)}}/g;
             let prefix = '';
             switch (<any>position) {

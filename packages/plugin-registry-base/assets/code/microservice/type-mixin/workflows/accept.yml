@@ -1,0 +1,25 @@
+attributes:
+  acceptedAt: :timestamp
+  refusedAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: {createdAt: '@now', createdBy: '@user_id'}
+      ACCEPTED: {acceptedAt: '@now', acceptedBy: '@user_id'}
+      REFUSED: {refusedAt: '@now', refusedBy: '@user_id'}
+    cascadeClear:
+      CREATED: [acceptedAt, acceptedBy, refusedAt, refusedBy]
+      ACCEPTED: [refusedAt, refusedBy]
+      REFUSED: [acceptedAt, acceptedBy]
+    permissions:
+      CREATED: ['contributor', 'moderator', 'admin']
+      ACCEPTED: ['moderator', 'admin']
+      REFUSED: ['moderator', 'admin']
+    config:
+      steps: [CREATED,ACCEPTED,REFUSED]
+
+operations:
+  accept: updateStatus(ACCEPTED)
+  unvalidate: updateStatus(CREATED)
+  refuse: updateStatus(REFUSED)

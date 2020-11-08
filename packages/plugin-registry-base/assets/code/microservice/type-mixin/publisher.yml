@@ -1,0 +1,6 @@
+attributes:
+  publishedAt: :timestamp
+  publishedBy: "@ref:user.user"
+  publishedByEmail: :refattr:publishedBy:email
+  publishedByLastName: :refattr:publishedBy:lastName
+  publishedByFirstName: :refattr:publishedBy:firstName

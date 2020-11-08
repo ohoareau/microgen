@@ -1,0 +1,19 @@
+attributes:
+  validatedAt: :timestamp
+  activatedAt: :timestamp
+  disableddAt: :timestamp
+  archivedAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    config:
+      steps: [CREATED,VALIDATED,ACTIVATED,DISABLED,ARCHIVED]
+
+operations:
+  activate: updateStatus(ACTIVATED)
+  archive: updateStatus(ARCHIVED)
+  deactivate: updateStatus(VALIDATED)
+  disable: updateStatus(DISABLED)
+  unarchive: updateStatus(CREATED)
+  unvalidate: updateStatus(CREATED)
+  validate: updateStatus(VALIDATED)

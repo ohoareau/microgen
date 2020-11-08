@@ -1,0 +1,3 @@
+hooks:
+  init: [{type: '@log'}]
+  notify: [{type: '@log'}]

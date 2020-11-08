@@ -1,0 +1,8 @@
+attributes:
+  email: "@email!"
+  password: password!
+  firstName: firstName!
+  lastName: lastName!
+
+operations:
+  getCurrent: getCurrentUser
