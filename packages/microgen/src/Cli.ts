@@ -40,7 +40,7 @@ export class Cli {
                             const genJsFile = `${path}/gen.js`;
                             if (fs.existsSync(genJsDir)) {
                                 if (fs.lstatSync(genJsDir).isDirectory()) {
-                                    cfg = {...cfg, ...dir2obj(genJsDir)};
+                                    cfg = {...cfg, ...dir2obj(genJsDir, {ignoreDots: true})};
                                 }
                             }
                             if (fs.existsSync(microgenJsFile)) {

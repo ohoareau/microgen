@@ -76,7 +76,13 @@ export class MicroGen implements IGenerator {
         } catch (e) {
             // nothing to do, local plugin does not exist.
         }
-        this.registerPlugin(new DirectoryRegistryPlugin())
+        this.registerPlugin(new DirectoryRegistryPlugin());
+        try {
+            const localAssetsDir = fs.realpathSync(`${rootDir}/.genjs/.assets`);
+            this.registerRegistry('directory', {path: localAssetsDir});
+        } catch (e) {
+            // nothing to do, local assets does not exist.
+        }
         this.loadPlugins(plugins);
         this.registerPlugin(new FilesPlugin());
     }
