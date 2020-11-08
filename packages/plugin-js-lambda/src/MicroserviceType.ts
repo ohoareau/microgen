@@ -138,8 +138,8 @@ export default class MicroserviceType {
         if ('string' === typeof v) {
             return this.parseConfigType({}, v);
         }
-        const {type: oldType, ...oldCfg} = v;
-        return this.parseConfigType(oldCfg, oldType);
+        const {type, ...cfg} = v;
+        return type ? this.parseConfigType(cfg, type) : [undefined, cfg];
     }
     mergeConfigOperation(a: any = {}, b: any = {}) {
         return {...a, ...b, hooks: this.mergeConfigHooks(a.hooks, b.hooks), vars: this.mergeConfigVars(a.vars, b.vars)};
