@@ -127,12 +127,12 @@ export default class MicroserviceType {
     enrichConfigFunction(v: any) {
         const [type, cfg] = this.parseTypeAndConfigFromRawValue(v);
         const asset = type ? this.microservice.package.getAsset('code', `microservice/type/function/${type}`) : {};
-        return this.mergeConfigFunction({...asset, ...cfg, vars: {...(asset.vars || {}), ...(cfg.vars || {})}}, v);
+        return this.mergeConfigFunction(asset, cfg);
     }
     enrichConfigOperation(v: any) {
         const [type, cfg] = this.parseTypeAndConfigFromRawValue(v);
         const asset = type ? this.microservice.package.getAsset('code', `microservice/type/operation/${type}`) : {};
-        return this.mergeConfigOperation({...asset, ...cfg, vars: {...(asset.vars || {}), ...(cfg.vars || {})}}, v);
+        return this.mergeConfigOperation(asset, cfg);
     }
     parseTypeAndConfigFromRawValue(v: any) {
         if ('string' === typeof v) {
