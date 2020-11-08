@@ -125,12 +125,14 @@ export default class MicroserviceType {
         };
     }
     enrichConfigFunction(v: any) {
-        const asset = (v as any).type ? this.microservice.package.getAsset('code', `microservice/type/function/${(v as any).type}`) : {};
-        return this.mergeConfigFunction(asset, v);
+        const [type, cfg] = this.parseConfigType({}, v);
+        const asset = type ? this.microservice.package.getAsset('code', `microservice/type/function/${type}`) : {};
+        return this.mergeConfigFunction({...asset, ...cfg, vars: {...(asset.vars || {}), ...(cfg.vars || {})}}, v);
     }
     enrichConfigOperation(v: any) {
-        const asset = (v as any).type ? this.microservice.package.getAsset('code', `microservice/type/operation/${(v as any).type}`) : {};
-        return this.mergeConfigOperation(asset, v);
+        const [type, cfg] = this.parseConfigType({}, v);
+        const asset = type ? this.microservice.package.getAsset('code', `microservice/type/operation/${type}`) : {};
+        return this.mergeConfigOperation({...asset, ...cfg, vars: {...(asset.vars || {}), ...(cfg.vars || {})}}, v);
     }
     mergeConfigOperation(a: any = {}, b: any = {}) {
         return {...a, ...b, hooks: this.mergeConfigHooks(a.hooks, b.hooks), vars: this.mergeConfigVars(a.vars, b.vars)};
