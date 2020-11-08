@@ -7,6 +7,7 @@ export type ServiceConfig = {
     variables?: {[key: string]: any},
     vars?: {[key: string]: any},
     test?: TestFileConfig,
+    rootDir?: string,
 };
 
 export default class Service {
@@ -15,11 +16,12 @@ export default class Service {
     public readonly variables: {[key: string]: any} = {};
     public readonly test: TestFile|undefined;
     public readonly vars: {[key: string]: any};
-    constructor({name, methods = {}, variables = {}, test = undefined, vars = {}}: ServiceConfig) {
+    constructor({rootDir, name, methods = {}, variables = {}, test = undefined, vars = {}}: ServiceConfig) {
         this.name = name;
         Object.entries(methods).forEach(
             ([name, c]: [string, any]) =>
                 this.methods[name] = new ServiceMethod({
+                    rootDir,
                     service: this,
                     name,
                     ...c,

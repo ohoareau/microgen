@@ -7,19 +7,21 @@ export type ServiceMethodConfig = {
     async: boolean,
     args: string[],
     vars?: any,
+    rootDir?: string,
 };
 
-const helpers = {
-    readProjectFile: (path, dir = '../..') => readFileSync(`${dir}/${path}`, 'utf8')
-}
+const helpers = ({rootDir}) => ({
+    readProjectFile: (path) => readFileSync(`${rootDir || process.cwd()}/${path}`, 'utf8')
+});
+
 export default class ServiceMethod {
     public readonly name: string;
     public readonly code: string;
     public readonly async: boolean;
     public readonly args: string[];
-    constructor({name, code, async = false, vars = {}, args = []}: ServiceMethodConfig) {
+    constructor({rootDir, name, code, async = false, vars = {}, args = []}: ServiceMethodConfig) {
         this.name = name;
-        this.code = code ? ejs.render(code, {...vars, ...helpers}, {}) : code;
+        this.code = code ? ejs.render(code, {...vars, ...helpers({rootDir})}, {}) : code;
         this.async = async;
         this.args = args;
     }
