@@ -1,8 +1,0 @@
-require:
-  - getBy
-
-wrap:
-  - getBy
-  - "'code'"
-  - query.code
-  - query.fields || []
