@@ -39,10 +39,11 @@ export class ConfigEnhancer {
     }
     mergeConfigType(a: any = {}, b: any = {}) {
         const x = this.mergeConfigTypeRaw(a, b);
-        return (x.mixins || []).reduce((acc, m) => {
+        const xx = (x.mixins || []).reduce((acc, m) => {
             const [asset, cfg] = this.enhanceConfig('microservice/type-mixin', ...this.parseTypeAndConfigFromRawValue(m))
             return this.mergeConfigTypeRaw(acc, this.mergeConfigTypeRaw(asset, cfg));
-        }, x);
+        }, {});
+        return this.mergeConfigTypeRaw(xx, x);
     }
     mergeConfigOperation(a: any = {}, b: any = {}) {
         const x = this.mergeConfigOperationRaw(a, b);
