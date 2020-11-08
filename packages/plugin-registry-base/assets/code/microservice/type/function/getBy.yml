@@ -3,8 +3,9 @@ async: true
 require:
   - find
 
-input:
-  type: ~
+inputs:
+  type:
+    main: true
 
 args:
   - field

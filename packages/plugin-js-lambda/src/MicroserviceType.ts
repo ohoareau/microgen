@@ -92,17 +92,41 @@ export default class MicroserviceType {
         if (!!match && !!match.length) {
             type = match[1];
             parsedVars = !!match[1] ? match[2].split(/\s*,\s*/g).reduce((acc, t) => {
-                const [k, v = 'true'] = t.split(/\s*=\s*/)
-                acc[k] = YAML.parse(v);
+                const [k, v = undefined] = t.split(/\s*=\s*/)
+                if (undefined === v) {
+                    acc['default'] = k;
+                } else {
+                    acc[k] = YAML.parse(v || '');
+                }
                 return acc;
             }, {}) : {};
         }
         cfg = {...cfg, vars: {...parsedVars, ...(cfg.vars || {})}};
         return [type, cfg];
     }
+    prepareVarsFromAssetInputs(vars, inputs) {
+        return Object.entries(inputs || {}).reduce((acc, [k, v]) => {
+            const input = {required: true, type: 'string', ...((null === v || undefined === v) ? {} : <any>v)};
+            let value = vars[k] || undefined;
+            if (!!input.main && vars.default) value = vars.default;
+            (undefined === value) && (value = input.default);
+            switch (input.type) {
+                case 'string': value = String(value); break;
+                case 'boolean': value = Boolean(value); break;
+                case 'number': value = Number(value); break;
+                case 'string[]': value = value.split(/\s*\|\s*/g).map(x => String(x)); break;
+                case 'boolean[]': value = value.split(/\s*\|\s*/g).map(x => Boolean(x)); break;
+                case 'number[]': value = value.split(/\s*\|\s*/g).map(x => Number(x)); break;
+                default: break;
+            }
+            acc[k] = value;
+            return acc;
+        }, {});
+    }
     enrichConfig(cfg: any, type: string) {
         [type, cfg] = this.parseConfigType(cfg, type);
         const asset = this.microservice.package.getAsset('code', `microservice/type/${type}`);
+        cfg.vars = this.prepareVarsFromAssetInputs(cfg.vars, asset.inputs);
         return this.mergeConfig(asset, cfg);
     }
     mergeConfig(a: any = {}, b: any = {}) {
@@ -127,11 +151,13 @@ export default class MicroserviceType {
     enrichConfigFunction(v: any) {
         const [type, cfg] = this.parseTypeAndConfigFromRawValue(v);
         const asset = type ? this.microservice.package.getAsset('code', `microservice/type/function/${type}`) : {};
+        cfg.vars = this.prepareVarsFromAssetInputs(cfg.vars, asset.inputs);
         return this.mergeConfigFunction(asset, cfg);
     }
     enrichConfigOperation(v: any) {
         const [type, cfg] = this.parseTypeAndConfigFromRawValue(v);
         const asset = type ? this.microservice.package.getAsset('code', `microservice/type/operation/${type}`) : {};
+        cfg.vars = this.prepareVarsFromAssetInputs(cfg.vars, asset.inputs);
         return this.mergeConfigOperation(asset, cfg);
     }
     parseTypeAndConfigFromRawValue(v: any) {

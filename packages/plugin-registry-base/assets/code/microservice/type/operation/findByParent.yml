@@ -1,8 +1,9 @@
 require:
   - find
 
-input:
-  index: ~
+inputs:
+  index:
+    main: true
 
 wrap:
   - find

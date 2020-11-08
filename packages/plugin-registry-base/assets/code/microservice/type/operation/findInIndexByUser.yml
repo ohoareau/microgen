@@ -1,5 +1,6 @@
-input:
-  index: ~
+inputs:
+  index:
+    main: true
   key: ~
 
 wrap:

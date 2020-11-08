@@ -1,8 +1,9 @@
 require:
   - update
 
-input:
-  step: ~
+inputs:
+  step:
+    main: true
 
 wrap:
   - update

@@ -1,8 +1,9 @@
 require:
   - getBy
 
-input:
-  field: ~
+inputs:
+  field:
+    main: true
 
 wrap:
   - getBy

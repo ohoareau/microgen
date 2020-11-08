@@ -1,3 +1,10 @@
+require:
+  - find
+
+inputs:
+  index:
+    main: true
+
 wrap:
   - find
   - "{...query, index: '<%- index %>'}"
