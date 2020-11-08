@@ -1,0 +1,6 @@
+attributes:
+  submittedAt: :timestamp
+  submittedBy: "@ref:user.user"
+  submittedByEmail: :refattr:submittedBy:email
+  submittedByLastName: :refattr:submittedBy:lastName
+  submittedByFirstName: :refattr:submittedBy:firstName

@@ -1,0 +1,6 @@
+attributes:
+  draftedAt: :timestamp
+  draftedBy: "@ref:user.user"
+  draftedByEmail: :refattr:draftedBy:email
+  draftedByLastName: :refattr:draftedBy:lastName
+  draftedByFirstName: :refattr:draftedBy:firstName

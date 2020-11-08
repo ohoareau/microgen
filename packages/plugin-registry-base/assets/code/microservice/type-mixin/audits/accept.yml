@@ -1,0 +1,6 @@
+attributes:
+  acceptedAt: :timestamp
+  acceptedBy: "@ref:user.user"
+  acceptedByEmail: :refattr:acceptedBy:email
+  acceptedByLastName: :refattr:acceptedBy:lastName
+  acceptedByFirstName: :refattr:acceptedBy:firstName

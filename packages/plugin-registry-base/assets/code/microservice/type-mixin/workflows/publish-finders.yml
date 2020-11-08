@@ -1,0 +1,8 @@
+operations:
+  findForCurrentUser: findInIndexByUser(created,key=createdBy)
+  findArchived: findInIndex(archived)
+  findArchivedForCurrentUser: findInIndexByUser(archived,key=createdBy)
+  findPublished: findInIndex(published)
+  findPublishedForCurrentUser: findInIndexByUser(published,key=createdBy)
+  findUnpublished: findInIndex(unpublished)
+  findUnpublishedForCurrentUser: findInIndexByUser(unpublished,key=createdBy)

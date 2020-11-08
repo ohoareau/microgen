@@ -1,0 +1,10 @@
+operations:
+  findForCurrentUser: findInIndexByUser(created,key=createdBy)
+  findAccepted: findInIndex(accepted)
+  findAcceptedForCurrentUser: findInIndexByUser(accepted,key=createdBy)
+  findRefused: findInIndex(refused)
+  findRefusedForCurrentUser: findInIndexByUser(refused,key=createdBy)
+  findSubmitted: findInIndex(submitted)
+  findSubmittedForCurrentUser: findInIndexByUser(submitted,key=createdBy)
+  findDraft: findInIndex(draft)
+  findDraftForCurrentUser: findInIndexByUser(draft,key=createdBy)

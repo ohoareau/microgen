@@ -1,0 +1,6 @@
+attributes:
+  refusedAt: :timestamp
+  refusedBy: "@ref:user.user"
+  refusedByEmail: :refattr:refusedBy:email
+  refusedByLastName: :refattr:refusedBy:lastName
+  refusedByFirstName: :refattr:refusedBy:firstName
