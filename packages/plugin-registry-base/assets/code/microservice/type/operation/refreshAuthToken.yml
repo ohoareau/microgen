@@ -1,0 +1,5 @@
+backend: "@auth"
+
+hooks:
+  populate:
+    - type: prepare-for-refresh-token

@@ -50,7 +50,7 @@ export default class MicroserviceType {
                 if ('string' === typeof c.wrap) {
                     c.backend = {name: 'raw', value: c.wrap};
                 } else if (Array.isArray(c.wrap)) {
-                    c.backend = {name: 'this', method: c.wrap[0], args: c.wrap.slice(1)};
+                    c.backend = {name: 'this', method: c.as || c.wrap[0], args: c.wrap.slice(1)};
                 } else {
                     throw new Error(`Unknown wrap format for microservice '${microservice.name}' type '${name}' and operation '${k}': ${c.wrap}`);
                 }
@@ -275,14 +275,14 @@ export default class MicroserviceType {
             }
         };
     }
-    buildServiceMethodConfig({backend, name, vars = {}}) {
+    buildServiceMethodConfig({backend, as, name, vars = {}}) {
         const listeners = this.microservice.package.getEventListeners(`${this.name}_${name}`);
         let backendDef = backend || this.defaultBackendName;
         if (backendDef) {
             if ('string' === typeof backendDef) {
                 backendDef = {name: backendDef};
             }
-            backendDef = {method: name, args: ['query'], ...backendDef};
+            backendDef = {method: as || name, args: ['query'], ...backendDef};
             (backendDef.name && ('@' === backendDef.name.substr(0, 1)) && (backendDef.name = backendDef.name.substr(1)));
         }
         const localRequirements = {};

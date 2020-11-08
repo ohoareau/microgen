@@ -1,0 +1,9 @@
+inputs:
+  env_var:
+    main: true
+
+backend:
+  name: codepipeline
+  method: startPipeline
+  args:
+    - process.env.<%- env_var %>
