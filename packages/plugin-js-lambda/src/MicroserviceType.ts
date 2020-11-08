@@ -91,7 +91,7 @@ export default class MicroserviceType {
         let parsedVars = {};
         if (!!match && !!match.length) {
             type = match[1];
-            parsedVars = !!match[1] ? match[1].split(/\s*,\s*/g).reduce((acc, t) => {
+            parsedVars = !!match[1] ? match[2].split(/\s*,\s*/g).reduce((acc, t) => {
                 const [k, v = 'true'] = t.split(/\s*=\s*/)
                 acc[k] = YAML.parse(v);
                 return acc;
