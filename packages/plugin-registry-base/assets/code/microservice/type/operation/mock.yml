@@ -4,4 +4,4 @@ inputs:
 
 backend:
   name: raw
-  value: <%- require('fs').readFileSync(`${__dirname}/../../mocks/${mock}`, 'utf8') %>
+  value: <%- readProjectFile(`mocks/${mock}`) %>

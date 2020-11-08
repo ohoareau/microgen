@@ -2,4 +2,4 @@ inputs:
   mock:
     main: true
 
-code: <%- require('fs').readFileSync(`${__dirname}/../../mocks/${mock}`, 'utf8') %>
+code: <%- readProjectFile(`mocks/${mock}`) %>
