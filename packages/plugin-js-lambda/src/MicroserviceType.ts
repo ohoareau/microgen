@@ -40,7 +40,12 @@ export default class MicroserviceType {
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
         operations = Object.entries(operations).reduce((acc, [k, v]) => {
-            const c = this.enrichConfigOperation({...((null === v || undefined === v || !v) ? {} : (('string' === typeof v ) ? {type: v} : v))});
+            let c;
+            try {
+                c = this.enrichConfigOperation({...((null === v || undefined === v || !v) ? {} : (('string' === typeof v) ? {type: v} : v))});
+            } catch (e) {
+                throw new Error(`Unable to prepare operation '${k}' for microservice type ${this.name}: ${e.message}`);
+            }
             if (c.wrap) {
                 if ('string' === typeof c.wrap) {
                     c.backend = {name: 'raw', value: c.wrap};
@@ -55,7 +60,11 @@ export default class MicroserviceType {
         }, {});
         this.rawOperations = operations;
         this.functions = Object.entries(functions).reduce((acc, [k, v]) => {
-            acc[k] = this.enrichConfigFunction(v as any);
+            try {
+                acc[k] = this.enrichConfigFunction(v as any);
+            } catch (e) {
+                throw new Error(`Unable to prepare function '${k}' for microservice type ${this.name}: ${e.message}`);
+            }
             return acc;
         }, {});
         this.model = new SchemaParser().parse({name: this.name, attributes, operations});
@@ -110,6 +119,7 @@ export default class MicroserviceType {
             let value = vars[k] || undefined;
             if (!!input.main && vars.default) value = vars.default;
             (undefined === value) && (value = input.default);
+            if ((undefined === value) && input.required) throw new Error(`Required input '${k}' is missing (vars: ${JSON.stringify(vars)}, inputs: ${JSON.stringify(inputs)})`);
             switch (input.type) {
                 case 'string': value = String(value); break;
                 case 'boolean': value = Boolean(value); break;
