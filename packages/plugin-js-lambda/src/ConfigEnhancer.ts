@@ -31,10 +31,11 @@ export class ConfigEnhancer {
     }
     mergeConfigMicroservice(a: any = {}, b: any = {}) {
         const x = this.mergeConfigMicroserviceRaw(a, b);
-        return (x.mixins || []).reduce((acc, m) => {
+        const xx = (x.mixins || []).reduce((acc, m) => {
             const [asset, cfg] = this.enhanceConfig('microservice-mixin', ...this.parseTypeAndConfigFromRawValue(m))
             return this.mergeConfigMicroserviceRaw(acc, this.mergeConfigMicroserviceRaw(asset, cfg));
         }, x);
+        return this.mergeConfigMicroserviceRaw(xx, x);
     }
     mergeConfigType(a: any = {}, b: any = {}) {
         const x = this.mergeConfigTypeRaw(a, b);
@@ -45,10 +46,11 @@ export class ConfigEnhancer {
     }
     mergeConfigOperation(a: any = {}, b: any = {}) {
         const x = this.mergeConfigOperationRaw(a, b);
-        return (x.mixins || []).reduce((acc, m) => {
+        const xx = (x.mixins || []).reduce((acc, m) => {
             const [asset, cfg] = this.enhanceConfig('microservice/type/operation-mixin', ...this.parseTypeAndConfigFromRawValue(m))
             return this.mergeConfigOperationRaw(acc, this.mergeConfigOperationRaw(asset, cfg));
-        }, x);
+        }, {});
+        return this.mergeConfigOperationRaw(xx, x);
     }
     mergeConfigMicroserviceRaw(a: any, b: any) {
         return {
@@ -119,10 +121,11 @@ export class ConfigEnhancer {
     }
     mergeConfigFunction(a: any = {}, b: any = {}) {
         const x = this.mergeConfigFunctionRaw(a, b);
-        return (x.mixins || []).reduce((acc, m) => {
+        const xx = (x.mixins || []).reduce((acc, m) => {
             const [asset, cfg] = this.enhanceConfig('microservice/type/function-mixin', ...this.parseTypeAndConfigFromRawValue(m))
             return this.mergeConfigFunctionRaw(acc, this.mergeConfigFunctionRaw(asset, cfg));
         }, x);
+        return this.mergeConfigFunctionRaw(xx, x);
     }
     enrichConfig(c: any, type: string) {
         const [asset, cfg] = this.enhanceConfig('microservice/type', ...this.parseConfigType(c, type));
