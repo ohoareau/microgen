@@ -5,6 +5,7 @@ import Microservice from './Microservice';
 import stringifyObject from 'stringify-object';
 import {TestFileConfig} from './TestFile';
 import MicroserviceTypeOperation, {MicroserviceTypeOperationConfig} from './MicroserviceTypeOperation';
+import YAML from 'yaml';
 
 export type MicroserviceTypeConfig = {
     type?: string|undefined,
@@ -39,7 +40,7 @@ export default class MicroserviceType {
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
         operations = Object.entries(operations).reduce((acc, [k, v]) => {
-            const c = this.enrichConfigOperation({...v});
+            const c = this.enrichConfigOperation({...((null === v || undefined === v || !v) ? {} : (('string' === typeof v ) ? {type: v} : v))});
             if (c.wrap) {
                 if ('string' === typeof c.wrap) {
                     c.backend = {name: 'raw', value: c.wrap};
@@ -85,7 +86,22 @@ export default class MicroserviceType {
         );
         this.test = test;
     }
+    parseConfigType = (cfg: any, type: string) => {
+        const match = type.match(/^([^(]+)\(([^)]*)\)$/);
+        let parsedVars = {};
+        if (!!match && !!match.length) {
+            type = match[1];
+            parsedVars = !!match[1] ? match[1].split(/\s*,\s*/g).reduce((acc, t) => {
+                const [k, v = 'true'] = t.split(/\s*=\s*/)
+                acc[k] = YAML.parse(v);
+                return acc;
+            }, {}) : {};
+        }
+        cfg = {...cfg, vars: {...parsedVars, ...(cfg.vars || {})}};
+        return [type, cfg];
+    }
     enrichConfig(cfg: any, type: string) {
+        [type, cfg] = this.parseConfigType(cfg, type);
         const asset = this.microservice.package.getAsset('code', `microservice/type/${type}`);
         return this.mergeConfig(asset, cfg);
     }
