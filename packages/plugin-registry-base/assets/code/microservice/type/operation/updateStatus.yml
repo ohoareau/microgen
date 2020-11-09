@@ -2,9 +2,11 @@ require:
   - update
 
 inputs:
+  field:
+    default: status
   step:
     main: true
 
 wrap:
   - update
-  - "{...query, data: {...query.data, status: '<%- step -%>'}}"
+  - "{...query, data: {...query.data, <%- field %>: '<%- step -%>'}}"

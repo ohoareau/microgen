@@ -1,0 +1,13 @@
+inputs:
+  index:
+    main: true
+  key: ~
+  value: ~
+  r_key: ~
+  r_op:
+    default: eq
+  r_value: ~
+
+wrap:
+  - find
+  - "{...query, index: '<%- index %>', hashKey: ['<%- key %>', <%- value %>], rangeKey: ['<%- r_key %>', '<%- r_ok %>', <%- r_value %>]}"

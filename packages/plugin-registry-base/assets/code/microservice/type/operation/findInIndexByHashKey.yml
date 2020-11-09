@@ -2,8 +2,7 @@ inputs:
   index:
     main: true
   key: ~
-  value:
-    default: query.user.id
+  value: ~
 
 wrap:
   - find

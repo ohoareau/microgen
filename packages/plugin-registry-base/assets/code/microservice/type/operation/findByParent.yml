@@ -4,7 +4,9 @@ require:
 inputs:
   index:
     main: true
+  value:
+    default: query.parent.id
 
 wrap:
   - find
-  - "{index: '<%- index -%>', hashKey: query.parent.id}"
+  - "{index: '<%- index -%>', hashKey: <%- value %>}"
