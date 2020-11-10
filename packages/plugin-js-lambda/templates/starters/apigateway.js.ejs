@@ -82,13 +82,20 @@ const r = async (req, res, statusCode, n, o = {}, p = {}) => {
 
 const server = require('http').createServer();
 
+const serialize = x => {
+    if (!!x && ('object' === typeof x)) {
+        x = x.serialize ? x.serialize() : (x instanceof Error ? {errorType: 'error', message: e.message} : x);
+    }
+    return JSON.stringify(x);
+}
+
 server.on('request', async (req, res) => {
     return new Promise((resolve) => {
         Object.assign(req, {path: req.url, bodyOnly: false});
         const finalize = response => {
             Object.entries(response.headers || {}).forEach(([k, v]) => res.setHeader(k, v));
             res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-            res.write(JSON.stringify(response.body));
+            res.write(serialize(response.body));
             res.end();
         };
         let data = []
