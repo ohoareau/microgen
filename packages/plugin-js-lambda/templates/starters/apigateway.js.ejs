@@ -87,6 +87,7 @@ server.on('request', async (req, res) => {
         Object.assign(req, {path: req.url, bodyOnly: false});
         const finalize = response => {
             Object.entries(response.headers || {}).forEach(([k, v]) => res.setHeader(k, v));
+            res.setHeader('Content-Type', 'application/json; charset=UTF-8');
             res.write(JSON.stringify(response.body));
             res.end();
         };
@@ -98,7 +99,7 @@ server.on('request', async (req, res) => {
                 !!data && (req.params = {data: JSON.parse(data)});
                 fnm(req, res)
                     .then(response => { finalize(response); resolve(); })
-                    .catch(e => { finalize({headers: {'Content-Type': 'application/json'}, body: e}); resolve(); })
+                    .catch(e => { finalize({headers: {'Content-Type': 'application/json; charset=UTF-8'}, body: e}); resolve(); })
         });
     });
 });
