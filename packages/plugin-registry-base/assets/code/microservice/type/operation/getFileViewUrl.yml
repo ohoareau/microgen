@@ -1,0 +1,13 @@
+inputs:
+  env_var:
+    main: true
+  key: ~
+  content_type:
+    default: query.contentType
+
+backend:
+  type: service
+  name: s3
+  method: getFileViewUrl
+  args:
+    - "{bucket: process.env.<%- env_var %>, key: `<%- key %>`, contentType: <%- content_type %>}"

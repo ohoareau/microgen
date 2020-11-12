@@ -1,0 +1,13 @@
+inputs:
+  env_var:
+    main: true
+  key: ~
+  name:
+    default: query.name
+
+backend:
+  type: service
+  name: s3
+  method: getFileDownloadUrl
+  args:
+    - "{bucket: process.env.<%- env_var %>, key: `<%- key %>`, name: <%- name %>}"

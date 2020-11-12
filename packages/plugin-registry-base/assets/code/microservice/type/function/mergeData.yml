@@ -1,0 +1,14 @@
+inputs:
+  method_name:
+    default: mergeData
+
+args:
+  - a
+  - b
+
+code: |
+  if (!b) return a;
+  return (!a || ('object' !== typeof a) || ('object' !== typeof b))
+      ? b
+      : Object.entries(b).reduce((acc, [k, v]) => Object.assign(acc, {[k]: service.<%- method_name %>(acc[k], v)}), a)
+  ;

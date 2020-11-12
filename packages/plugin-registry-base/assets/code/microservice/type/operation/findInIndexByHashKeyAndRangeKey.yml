@@ -10,4 +10,4 @@ inputs:
 
 wrap:
   - find
-  - "{...query, index: '<%- index %>', hashKey: ['<%- key %>', <%- value %>], rangeKey: ['<%- r_key %>', '<%- r_ok %>', <%- r_value %>]}"
+  - "{...query, index: '<%- index %>', hashKey: ['<%- key %>', <%- value %>], rangeKey: ['<%- r_key %>', '<%- r_op %>', <%- r_value %>]}"

@@ -1,0 +1,13 @@
+attributes:
+  status:
+    type: workflow
+    default: CREATION_IN_PROGRESS
+    config:
+      steps:
+        - CREATION_IN_PROGRESS
+        - CREATED
+        - CREATION_FAILED
+        - UPDATE_FAILED
+        - DELETE_IN_PROGRESS
+        - UPDATE_IN_PROGRESS
+        - DELETE_FAILED

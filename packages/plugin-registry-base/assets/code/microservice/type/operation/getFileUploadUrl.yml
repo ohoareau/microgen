@@ -1,0 +1,11 @@
+inputs:
+  env_var:
+    main: true
+  key: ~
+
+backend:
+  type: service
+  name: s3
+  method: getFileUploadUrl
+  args:
+    - "{bucket: process.env.<%- env_var %>, key: `<%- key %>`}"

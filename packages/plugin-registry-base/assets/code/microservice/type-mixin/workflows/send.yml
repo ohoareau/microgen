@@ -1,0 +1,7 @@
+attributes:
+  status:
+    type: workflow
+    default: CREATED
+    config:
+      steps: [ CREATED, PENDING, SENDING, SENT, BOUNCED, COMPLAINED, DELIVERED, SEND_FAILED ]
+      autoTransitionTo: PENDING

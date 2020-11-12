@@ -1,0 +1,5 @@
+attributes:
+  sentAt: :timestamp
+  deliveredAt: :timestamp
+  bouncedAt: :timestamp
+  complainedAt: :timestamp
