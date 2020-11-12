@@ -84,7 +84,7 @@ const server = require('http').createServer();
 
 const serialize = x => {
     if (!!x && ('object' === typeof x)) {
-        x = x.serialize ? x.serialize() : (x instanceof Error ? {errorType: 'error', message: e.message} : x);
+        x = x.serialize ? x.serialize() : (x instanceof Error ? {errorType: 'error', message: x.message} : x);
     }
     return JSON.stringify(x);
 }
