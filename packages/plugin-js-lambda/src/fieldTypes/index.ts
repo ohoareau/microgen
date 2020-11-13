@@ -40,3 +40,8 @@ export {default as youtube} from './youtube';
 export {default as zipCode} from './zipCode';
 export {default as year} from './year';
 export {default as url} from './url';
+export {default as dynaform} from './dynaform';
+export {default as dynaformObject} from './dynaformObject';
+export {default as dynaformString} from './dynaformString';
+export {default as json} from './json';
+export {default as jsonString} from './jsonString';

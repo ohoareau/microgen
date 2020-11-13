@@ -28,6 +28,9 @@ export default class SchemaParser {
             autoTransitionTo: {},
             cascadeValues: {},
             authorizers: {},
+            mutators: {},
+            pretransformers: {},
+            converters: {},
         };
         this.parseAttributes(def, schema);
         this.parseRefAttributeFields(def, schema);
@@ -68,6 +71,7 @@ export default class SchemaParser {
                 value = undefined, default: rawDefaultValue = undefined, defaultValue = undefined, updateValue = undefined, updateDefault: rawUpdateDefaultValue = undefined, updateDefaultValue = undefined,
                 upper = false, lower = false, transform = undefined, reference = undefined, refAttribute = undefined,
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
+                pretransform = undefined, convert = undefined, mutate = undefined,
             } = def;
             acc.fields[k] = {
                 type, primaryKey, volatile,
@@ -75,6 +79,9 @@ export default class SchemaParser {
                 ...(list ? {list} : {}),
             };
             acc.authorizers[k] = [];
+            acc.mutators[k] = mutate ? (Array.isArray(mutate) ? [...mutate] : [mutate]) : [];
+            acc.pretransformers[k] = pretransform ? (Array.isArray(pretransform) ? [...pretransform] : [pretransform]) : [];
+            acc.converters[k] = convert ? (Array.isArray(convert) ? [...convert] : [convert]) : [];
             acc.transformers[k] = transform ? (Array.isArray(transform) ? [...transform] : [transform]) : [];
             required && (acc.requiredFields[k] = true);
             if (refAttribute) {
@@ -107,6 +114,9 @@ export default class SchemaParser {
             prefetch && ((acc.prefetchs['update'] = acc.prefetchs['update'] || {})[k] = true);
             if (!acc.transformers[k].length) delete acc.transformers[k];
             if (!acc.authorizers[k].length) delete acc.authorizers[k];
+            if (!acc.pretransformers[k].length) delete acc.pretransformers[k];
+            if (!acc.converters[k].length) delete acc.converters[k];
+            if (!acc.mutators[k].length) delete acc.mutators[k];
             return acc;
         }, schema);
     }

@@ -189,12 +189,12 @@ export default class MicroserviceType {
             (backendDef.name && ('@' === backendDef.name.substr(0, 1)) && (backendDef.name = backendDef.name.substr(1)));
         }
         const localRequirements = {};
-        const befores = ['init', 'prepopulate', 'validate', 'populate', 'transform', 'authorize', 'before', 'prepare'].reduce((acc, n) => {
+        const befores = ['init', 'prepopulate', 'pretransform', 'validate', 'populate', 'transform', 'authorize', 'before', 'prepare'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before'})));
         }, []);
-        const afters = ['after', 'notify', 'clean', 'end'].reduce((acc, n) => {
+        const afters = ['after', 'convert', 'notify', 'clean', 'end'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after'})));
@@ -418,6 +418,10 @@ export default class MicroserviceType {
             requirements['transform'] = true;
             return `    ${conditionCode || ''}await transform(query);`;
         }
+        if ('@pretransform' === type) {
+            requirements['pretransform'] = true;
+            return `    ${conditionCode || ''}await pretransform(query);`;
+        }
         if ('@auto-transitions' === type) {
             requirements['autoTransitions'] = true;
             switch (options['position']) {
@@ -433,6 +437,10 @@ export default class MicroserviceType {
                 case 'after':  return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await mutate(result, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'result', returnValue)});` : `${this.buildHookStatement(`await mutate(result, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'result', returnValue)};`}`;
                 default: return undefined;
             }
+        }
+        if ('@convert' === type) {
+            requirements['convert'] = true;
+            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await convert(result, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'result', returnValue)});` : `${this.buildHookStatement(`await convert(result, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'result', returnValue)};`}`;
         }
         if ('@populate' === type) {
             requirements['populate'] = true;

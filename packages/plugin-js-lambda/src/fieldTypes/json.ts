@@ -1,0 +1,1 @@
+export default () => ({type: 'string', pretransform: [{type: '@jsonStringify'}], convert: [{type: '@jsonParse'}], validators: [{type: '@jsonString'}]})

@@ -46,23 +46,27 @@ export default class MicroserviceTypeOperation {
         switch (opType) {
             case 'create':
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
+                this.hasHooks('pretransform', opType, microserviceType, name) && microserviceType.registerHook(name, 'pretransform', {type: '@pretransform', config: {}});
                 this.hasHooks('validate', opType, microserviceType, name) && microserviceType.registerHook(name, 'validate', {type: '@validate', config: {}});
                 this.hasHooks('transform', opType, microserviceType, name) && microserviceType.registerHook(name, 'transform', {type: '@transform', config: {}});
                 this.hasHooks('prepopulate', opType, microserviceType, name) && microserviceType.registerHook(name, 'prepopulate', {type: '@prepopulate', config: {}});
                 this.hasHooks('populate', opType, microserviceType, name) && microserviceType.registerHook(name, 'populate', {type: '@populate', config: {}});
                 this.hasHooks('prepare', opType, microserviceType, name) && microserviceType.registerHook(name, 'prepare', {type: '@prepare', config: {}});
                 this.hasHooks('after', opType, microserviceType, name) && microserviceType.registerHook(name, 'after', {type: '@after', config: {}});
+                this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
                 this.hasHooks('autoTransitionTo', opType, microserviceType, name) && microserviceType.registerHook(name, 'end', {type: '@auto-transitions', config: {}});
                 break;
             case 'update':
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
                 this.hasHooks('prefetch', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@prefetch'});
+                this.hasHooks('pretransform', opType, microserviceType, name) && microserviceType.registerHook(name, 'pretransform', {type: '@pretransform', config: {}});
                 this.hasHooks('validate', opType, microserviceType, name) && microserviceType.registerHook(name, 'validate', {type: '@validate', config: {required: false}});
                 this.hasHooks('transform', opType, microserviceType, name) && microserviceType.registerHook(name, 'transform', {type: '@transform', config: {}});
                 this.hasHooks('prepopulate', opType, microserviceType, name) && microserviceType.registerHook(name, 'prepopulate', {type: '@prepopulate', config: {prefix: 'update'}});
                 this.hasHooks('populate', opType, microserviceType, name) && microserviceType.registerHook(name, 'populate', {type: '@populate', config: {prefix: 'update'}});
                 this.hasHooks('prepare', opType, microserviceType, name) && microserviceType.registerHook(name, 'prepare', {type: '@prepare', config: {}});
                 this.hasHooks('after', opType, microserviceType, name) && microserviceType.registerHook(name, 'after', {type: '@after', config: {}});
+                this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
                 Object.entries(model.referenceFields || {}).forEach(([k, v]: [string, any]) =>
                     registerReferenceEventListener(v, 'update', {
                         type: '@update-references',
@@ -74,9 +78,16 @@ export default class MicroserviceTypeOperation {
                     })
                 );
                 break;
+            case 'get':
+                this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
+                break;
+            case 'find':
+                this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}, loop: 'items'});
+                break;
             case 'delete':
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
                 this.hasHooks('prefetch', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@prefetch'});
+                this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
                 Object.entries(model.referenceFields || {}).forEach(([k, v]: [string, any]) =>
                     registerReferenceEventListener(v, 'delete', {
                         type: '@delete-references',
@@ -106,6 +117,12 @@ export default class MicroserviceTypeOperation {
                 return !!Object.keys(microserviceType.model.fields).length;
             case 'transform':
                 return !!Object.keys(microserviceType.model.transformers).length;
+            case 'pretransform':
+                return !!Object.keys(microserviceType.model.pretransformers).length;
+            case 'convert':
+                return !!Object.keys(microserviceType.model.converters).length;
+            case 'mutator':
+                return !!Object.keys(microserviceType.model.mutators).length;
             case 'prepopulate':
                 switch (operation) {
                     case 'create':

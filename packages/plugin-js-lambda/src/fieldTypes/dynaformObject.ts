@@ -1,0 +1,1 @@
+export default () => ({type: 'object', validators: [{type: '@dynaform'}]})
