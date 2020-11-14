@@ -1,0 +1,2 @@
+backends:
+  - {type: 'service', name: 'codepipeline', realName: '@aws/codepipeline'}

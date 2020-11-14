@@ -1,0 +1,6 @@
+attributes:
+  role:
+    type: constant
+    default: user
+    config:
+      values: [admin, contributor, moderator, user]
