@@ -1,11 +1,9 @@
 inputs:
   index:
     main: true
-  key:
-    required: false
   value:
     default: query.id
 
 wrap:
   - find
-  - "{...query, index: '<%- index %>', hashKey: ['<%- key ? key : index %>', <%- value %>]}"
+  - "{...query, index: '<%- index %>', hashKey: ['<%- index %>', <%- value %>]}"
