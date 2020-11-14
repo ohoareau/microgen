@@ -1,0 +1,6 @@
+backends:
+  - { type: "service", name: "@auth" }
+
+operations:
+  createAuthToken: createAuthToken
+  refreshAuthToken: refreshAuthToken

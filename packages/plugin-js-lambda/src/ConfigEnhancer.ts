@@ -10,8 +10,7 @@ export class ConfigEnhancer {
         if (type) {
             const [rawType, ...mixins] = type.split(/\s*\+\s*/g);
             type = rawType;
-            cfg.mixins = cfg.mixins || [];
-            cfg.mixins = cfg.mixins.concat(mixins);
+            cfg.mixins = this.mergeConfigMixins(cfg.mixins || [], mixins);
         }
         const asset = type ? this.assetFetcher('code', `${location}/${type}`) : {};
         cfg.vars = this.prepareVarsFromAssetInputs(cfg.vars || {} , asset.inputs || {});
@@ -78,7 +77,11 @@ export class ConfigEnhancer {
         return this.mergeConfigFunction(asset, cfg);
     }
     mergeConfigMixins(a: any[] = [], b: any[] = []) {
-        return a.concat(b);
+        const mixins = a.concat(b);
+        return mixins.reduce((acc, x) => {
+            !acc.includes(x) && (acc.push(x));
+            return acc;
+        }, <any[]>[]);
     }
     mergeConfigFunctionRaw(a: any, b: any) {
         return {
@@ -105,11 +108,33 @@ export class ConfigEnhancer {
         return {
             ...a,
             ...b,
+            handlers: this.mergeConfigHandlers(a.handlers, b.handlers),
+            middlewares: this.mergeConfigMiddlewares(a.middlewares, b.middlewares),
+            backends: this.mergeConfigBackends(a.backends, b.backends),
             mixins: this.mergeConfigMixins(a.mixins, b.mixins),
             attributes: this.mergeConfigAttributes(a.attributes, b.attributes),
             operations: this.mergeConfigOperations(a.operations, b.operations),
             functions: this.mergeConfigFunctions(a.functions, b.functions),
         };
+    }
+    mergeConfigHandlers(a: any = {}, b: any = {}) {
+        return {...a, ...b};
+    }
+    mergeConfigMiddlewares(a: any[] = [], b: any[] = []) {
+        const middlewares = a.concat(b);
+        return middlewares.reduce((acc, b) => {
+            if ('string' !== typeof b) acc.push(b)
+            else if (!acc.includes(b)) acc.push(b);
+            return acc;
+        }, <any[]>[]);
+    }
+    mergeConfigBackends(a: any[] = [], b: any[] = []) {
+        const backends = a.concat(b);
+        return backends.reduce((acc, b) => {
+            if ('string' !== typeof b) acc.push(b)
+            else if (!acc.includes(b)) acc.push(b);
+            return acc;
+        }, <any[]>[]);
     }
     mergeConfigAttributes(a: any = {}, b: any = {}) {
         return {...a, ...b};
