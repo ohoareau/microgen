@@ -25,6 +25,7 @@ export default class Service {
                     service: this,
                     name,
                     ...c,
+                    vars: {...(c.vars || {}), ...vars},
                 })
         );
         Object.entries(variables).forEach(

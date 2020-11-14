@@ -1,6 +1,7 @@
 module.exports = {
     plugins: [
         '@js-lambda',
+        '@registry-base'
     ],
     vars: {
         author: {
@@ -20,6 +21,7 @@ module.exports = {
                 user: {
                     types: {
                         user: {
+                            mixins: ['token'],
                             backends: ['dynamoose'],
                             operations: {
                                 create: {},

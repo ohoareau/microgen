@@ -1,0 +1,2 @@
+functions:
+  getBy: getBy(type=<%- model.shortName %>)

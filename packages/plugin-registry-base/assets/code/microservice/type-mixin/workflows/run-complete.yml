@@ -1,0 +1,6 @@
+attributes:
+  status:
+    type: workflow
+    default: CREATED
+    config:
+      steps: [CREATED, RUNNING, COMPLETED, FAILED]

@@ -101,8 +101,8 @@ export default class MicroserviceType {
         return this;
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
-        const service = new Service({rootDir: vars.rootDir, name: `crud/${this.name}`, ...this.buildServiceConfig({attributes: this.rawAttributes, operations: this.rawOperations, functions: this.functions, test: this.test})});
         vars = {...vars, model: this.model};
+        const service = new Service({vars, rootDir: vars.rootDir, name: `crud/${this.name}`, ...this.buildServiceConfig({attributes: this.rawAttributes, operations: this.rawOperations, functions: this.functions, test: this.test})});
         return (await Promise.all(Object.values(this.operations).map(
             async o => o.generate(vars)))).reduce((acc, r) =>
             Object.assign(acc, r),

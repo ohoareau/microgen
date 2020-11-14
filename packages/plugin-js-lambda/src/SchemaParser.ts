@@ -6,7 +6,7 @@ export default class SchemaParser {
         Object.entries(fieldTypes).forEach(([k, v]) => this.fieldTypes[k] = v);
     }
     parse(def: any): any {
-        def = {name: 'unknown', attributes: {}, operations: {}, indexes: {}, hooks: {}, ...def};
+        def = {name: 'unknown', shortName: 'unknown', attributes: {}, operations: {}, indexes: {}, hooks: {}, ...def};
         const schema = {
             primaryKey: <any>undefined,
             fields: {},
@@ -31,6 +31,7 @@ export default class SchemaParser {
             mutators: {},
             pretransformers: {},
             converters: {},
+            shortName: (def.name || '').replace(/^.+_([^_]+)$/, '$1'),
         };
         this.parseAttributes(def, schema);
         this.parseRefAttributeFields(def, schema);
