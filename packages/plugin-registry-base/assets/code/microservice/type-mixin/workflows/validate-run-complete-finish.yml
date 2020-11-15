@@ -1,0 +1,61 @@
+attributes:
+  createdAt: :timestamp
+  validationRequestedAt: :timestamp
+  validatedAt: :timestamp
+  runningAt: :timestamp
+  completedAt: :timestamp
+  pausedAt: :timestamp
+  dateReachedAt: :timestamp
+  cancellationRequestedAt: :timestamp
+  canceledAt: :timestamp
+  closedAt: :timestamp
+  drawnRequested: :timestamp
+  drawn: :timestamp
+  finished: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: {createdAt: '@now', createdBy: '@user_id'}
+      VALIDATION_REQUESTED: {validationRequestedAt: '@now', validationRequestedBy: '@user_id'}
+      VALIDATED: {validatedAt: '@now', validatedBy: '@user_id'}
+      RUNNING: {runningAt: '@now', runningBy: '@user_id'}
+      COMPLETED: {completedAt: '@now', completedBy: '@user_id'}
+      PAUSED: {pausedAt: '@now', pausedBy: '@user_id'}
+      DATE_REACHED: {dateReachedAt: '@now', dateReachedBy: '@user_id'}
+      CANCELLATION_REQUESTED: {cancellationRequestedAt: '@now', cancellationRequestedBy: '@user_id'}
+      CANCELED: {canceledAt: '@now', canceledBy: '@user_id'}
+      CLOSED: {closedAt: '@now', closedBy: '@user_id'}
+      DRAW_REQUESTED: {drawRequestedAt: '@now', drawRequestedBy: '@user_id'}
+      DRAWN: {drawnAt: '@now', drawnBy: '@user_id'}
+      FINISHED: {finishedAt: '@now', finishedBy: '@user_id'}
+    cascadeClear:
+      CREATED: [validationRequestedAt, validatedAt, runningAt, completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
+      VALIDATION_REQUESTED: [validatedAt, runningAt, completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
+      VALIDATED: [runningAt, completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
+      RUNNING: [completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
+      COMPLETED: [pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
+      PAUSED: [completedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
+      DATE_REACHED: [completedAt, pausedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
+      CANCELLATION_REQUESTED: [canceledAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
+      CANCELED: [closedAt, drawRequestedAt, drawnAt, finishedAt]
+      CLOSED: [drawRequestedAt, drawnAt, finishedAt]
+      DRAW_REQUESTED: [drawnAt, finishedAt]
+      DRAWN: [finishedAt]
+      FINISHED: []
+    config:
+      steps: [CREATED, VALIDATION_REQUESTED, VALIDATED, RUNNING, COMPLETED, PAUSED, DATE_REACHED, CANCELED, CANCELLATION_REQUESTED, CLOSED, DRAW_REQUESTED, DRAWN, FINISHED]
+
+operations:
+  requestValidation: updateStatus(VALIDATION_REQUESTED)
+  validate: updateStatus(VALIDATED)
+  run: updateStatus(RUNNING)
+  complete: updateStatus(COMPLETED)
+  pause: updateStatus(PAUSED)
+  markDateAsReached: updateStatus(DATE_REACHED)
+  requestCancellation: updateStatus(CANCELLATION_REQUESTED)
+  cancel: updateStatus(CANCELED)
+  close: updateStatus(CLOSED)
+  requestDraw: updateStatus(DRAW_REQUESTED)
+  draw: updateStatus(DRAWN)
+  finish: updateStatus(FINISHED)
