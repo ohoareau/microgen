@@ -1,6 +1,6 @@
 {
   "name": "@ohoareau/microgen-plugin-js-lambda",
-  "version": "0.10.58",
+  "version": "0.10.59",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@ohoareau/microgen-behaviours": "^0.2.11",
-    "@ohoareau/microgen-templates": "^0.3.24",
+    "@ohoareau/microgen-templates": "^0.3.25",
     "yaml": "^1.10.0"
   },
   "devDependencies": {
