@@ -69,7 +69,7 @@ export default class Package extends AbstractPackage {
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()})`)
             .setDefaultTarget('install')
             .addPredefinedTarget('install', 'yarn-install')
-            .addPredefinedTarget('build', 'yarn-build')
+            .addPredefinedTarget('build', 'yarn-build', {ci: (!!vars.hide_ci) ? 'hidden' : undefined})
             .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'build/'})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])

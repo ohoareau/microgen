@@ -56,7 +56,7 @@ export class GenericTarget {
     convertSteps(steps: string[], options: any): string[] {
         options.dir && (steps = steps.map(s => `cd ${options.dir} && ${s}`));
         options.awsProfile && (steps = steps.map(s => /(aws |make )/.test(s) ? `AWS_PROFILE=${('string' === typeof options.awsProfile) ? options.awsProfile : '$(AWS_PROFILE)'} ${s}` : s));
-        options.ci && (steps = steps.map(s => `CI=true ${s}`));
+        options.ci && (steps = steps.map(s => `CI=${(options.ci === 'hidden') ? '' : 'true'} ${s}`));
         options.sourceLocalEnvLocal && (steps = steps.map(s => `set -a && . ./.env.local && set +a && ${s}`));
         steps = steps.map(s => (s.slice(0, 1) === '@') ? s : `@${s}`);
         return steps;
