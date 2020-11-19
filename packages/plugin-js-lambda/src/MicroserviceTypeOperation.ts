@@ -73,7 +73,7 @@ export default class MicroserviceTypeOperation {
                         config: {
                             name: microserviceType.name,
                             key: k,
-                            idField: v.idField
+                            idField: v.targetIdField || v.idField
                         },
                     })
                 );
@@ -94,7 +94,7 @@ export default class MicroserviceTypeOperation {
                         config: {
                             name: microserviceType.name,
                             key: k,
-                            idField: v.idField
+                            idField: v.targetIdField || v.idField
                         },
                     })
                 );
