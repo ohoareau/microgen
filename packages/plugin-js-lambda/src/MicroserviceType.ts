@@ -97,7 +97,7 @@ export default class MicroserviceType {
     registerHook(operation, type, hook) {
         this.hooks[operation] = this.hooks[operation] || {};
         this.hooks[operation][type] = this.hooks[operation][type] || [];
-        this.hooks[operation][type].push(hook);
+        this.hooks[operation][type].push('string' === typeof hook ? {type: hook} : hook);
         return this;
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
