@@ -295,7 +295,8 @@ export default class SchemaParser {
         const config = {
             type: this.buildTypeName(def.reference, modelName),
             localField,
-            ...this.buildIdFieldInfos(def['idField']),
+            idField: def['idField'],
+            ...(def['targetIdField'] ? {targetIdField: def['targetIdField']} : {}),
             fetchedFields: def['fetchedFields'] || [],
         };
         return {
