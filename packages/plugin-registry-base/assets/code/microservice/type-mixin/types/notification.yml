@@ -1,0 +1,6 @@
+attributes:
+  type:
+    type: constant
+    required: true
+    config:
+      values: [ email, sms, push ]

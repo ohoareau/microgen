@@ -1,0 +1,6 @@
+attributes:
+  capacity:
+    type: constant
+    required: true
+    config:
+      values: [ min, xs, s, m, l, xl, xxl, max ]
