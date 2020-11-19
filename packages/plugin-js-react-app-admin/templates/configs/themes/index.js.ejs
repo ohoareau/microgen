@@ -1,0 +1,3 @@
+<% themes.forEach(theme => { %>import <%- theme.name %> from './<%- theme.name %>';
+<% }) %>
+export default {<% themes.forEach((theme, i) => { %><%- theme.name %><%- (i === (themes.length - 1)) ? '' : ', ' %><% }) %>}

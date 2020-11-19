@@ -1,0 +1,14 @@
+import React from 'react'
+import {reduxForm} from 'redux-form'
+import component from "@ohoareau/react-component";
+import {required} from '../../../constraints';
+import FormTemplate from "../../misc/FormTemplate";
+import {
+} from "../../nucleons/fields";
+
+export const <%- form.componentName %> = component({}, reduxForm({form: '<%- form.name %>', enableReinitialize: true})(({t, ...props}) => (
+    <FormTemplate type={'<%- form.type %>'} {...props}>
+    </FormTemplate>
+)));
+
+export default <%- form.componentName%>

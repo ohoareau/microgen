@@ -1,0 +1,3 @@
+<% translations.forEach(translation => { %>import <%- translation.name %> from './<%- translation.name %>';
+<% }) %>
+export default {<% translations.forEach((translation, i) => { %><%- translation.name %><%- (i === (translations.length - 1)) ? '' : ', ' %><% }) %>}
