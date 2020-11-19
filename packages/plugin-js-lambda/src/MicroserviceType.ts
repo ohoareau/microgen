@@ -388,7 +388,7 @@ export default class MicroserviceType {
         }
         if ('@delete-references' === type) {
             requirements['deleteRefs'] = true;
-            return `    ${conditionCode || ''}await deleteRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['idField']});`
+            return `    ${conditionCode || ''}await deleteRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['targetIdField'] || config['idField']});`
         }
         if ('@authorize' === type) {
             requirements['authorize'] = true;
@@ -452,7 +452,7 @@ export default class MicroserviceType {
         }
         if ('@update-references' === type) {
             requirements['updateRefs'] = true;
-            return `    ${conditionCode || ''}await updateRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['idField']});`
+            return `    ${conditionCode || ''}await updateRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['targetIdField'] || config['idField']});`
         }
         if (!rawOpts && '@operation' === type) {
             requirements['call'] = true;

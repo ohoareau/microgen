@@ -232,7 +232,7 @@ export default class SchemaParser {
             const tokens = d.type.substr(4).split(':');
             d.reference = {
                 reference: tokens[0],
-                idField: tokens[1] || 'id',
+                ...this.buildIdFieldInfos(tokens[1]),
                 fetchedFields: [],
             };
             d.type = 'string';
@@ -277,15 +277,30 @@ export default class SchemaParser {
         }
         return fullType;
     }
+    buildIdFieldInfos(idField: string|string[] = 'id') {
+        idField = ('string' === typeof idField) ? idField.split(/\s*,\s*/g) : idField;
+        let targetIdFieldIndex = idField.findIndex(x => '*' === (x.slice(x.length - 1, x.length)));
+        if (-1 < targetIdFieldIndex) {
+            idField[targetIdFieldIndex] = idField[targetIdFieldIndex].slice(0, idField[targetIdFieldIndex].length - 1);
+        } else {
+            targetIdFieldIndex = 0;
+        }
+        const targetIdField = idField[targetIdFieldIndex];
+        (1 === idField.length) && (idField = idField[0]);
+        const infos = {idField};
+        ('string' !== typeof idField) && (infos['targetIdField'] = targetIdField);
+        return infos;
+    }
     buildReferenceValidator(def: {[key: string]: any}, localField: string, modelName: string) {
+        const config = {
+            type: this.buildTypeName(def.reference, modelName),
+            localField,
+            ...this.buildIdFieldInfos(def['idField']),
+            fetchedFields: def['fetchedFields'] || [],
+        };
         return {
             type: '@reference',
-            config: {
-                type: this.buildTypeName(def.reference, modelName),
-                localField,
-                idField: def['idField'] || 'id',
-                fetchedFields: def['fetchedFields'] || [],
-            },
+            config,
         };
     }
 }
