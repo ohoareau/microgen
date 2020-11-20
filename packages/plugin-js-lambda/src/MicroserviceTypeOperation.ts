@@ -55,6 +55,9 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('after', opType, microserviceType, name) && microserviceType.registerHook(name, 'after', {type: '@after', config: {}});
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
                 this.hasHooks('autoTransitionTo', opType, microserviceType, name) && microserviceType.registerHook(name, 'end', {type: '@auto-transitions', config: {}});
+                Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
+                    microserviceType.registerHook(name, 'after', {type: '@create-owned-items', config: {...v, field: k, mode: 'post'}})
+                );
                 break;
             case 'update':
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
@@ -77,6 +80,9 @@ export default class MicroserviceTypeOperation {
                         },
                     })
                 );
+                Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
+                    microserviceType.registerHook(name, 'after', {type: '@update-owned-items', config: {...v, field: k, mode: 'post'}})
+                );
                 break;
             case 'get':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
@@ -97,6 +103,9 @@ export default class MicroserviceTypeOperation {
                             idField: v.targetIdField || v.idField
                         },
                     })
+                );
+                Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
+                    microserviceType.registerHook(name, 'after', {type: '@delete-owned-items', config: {...v, field: k, mode: 'post'}})
                 );
                 break;
             default:

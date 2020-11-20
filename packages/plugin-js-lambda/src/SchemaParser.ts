@@ -21,6 +21,7 @@ export default class SchemaParser {
             volatileFields: {},
             transformers: {},
             referenceFields: {},
+            ownedReferenceListFields: {},
             refAttributeFields: {},
             hooks: def.hooks,
             name: def.name,
@@ -56,7 +57,7 @@ export default class SchemaParser {
     parseAttributes(def: any, schema: any) {
         Object.entries(def.attributes).reduce((acc, [k, d]) => {
             d = {
-                ...('string' === typeof d) ? this.parseFieldString(d, k) : d,
+                ...('string' === typeof d) ? this.parseFieldString(d, k, schema) : d,
             };
             const forcedDef: any = {...(<any>d || {})};
             delete forcedDef.config;
@@ -70,7 +71,7 @@ export default class SchemaParser {
             const {
                 type = 'string', prefetch = false, list = false, volatile = false, required = false, index = [], internal = false, validators = undefined, primaryKey = false,
                 value = undefined, default: rawDefaultValue = undefined, defaultValue = undefined, updateValue = undefined, updateDefault: rawUpdateDefaultValue = undefined, updateDefaultValue = undefined,
-                upper = false, lower = false, transform = undefined, reference = undefined, refAttribute = undefined,
+                upper = false, lower = false, transform = undefined, reference = undefined, ownedReferenceList = undefined, refAttribute = undefined,
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
                 pretransform = undefined, convert = undefined, mutate = undefined,
             } = def;
@@ -94,6 +95,7 @@ export default class SchemaParser {
                 });
             }
             (undefined !== reference) && (acc.referenceFields[k] = reference);
+            (undefined !== ownedReferenceList) && (acc.ownedReferenceListFields[k] = ownedReferenceList);
             (validators && 0 < validators.length) && (acc.validators[k] = validators);
             (authorizers && 0 < authorizers.length) && (acc.authorizers[k] = [...acc.authorizers[k], ...authorizers]);
             (undefined !== value) && (acc.values[k] = value);
@@ -197,11 +199,12 @@ export default class SchemaParser {
 
         return a;
     }
-    parseFieldString(string, name): any {
+    parseFieldString(string, name, schema: any): any {
         const d = {
             type: string, config: {},
             internal: false, required: false, primaryKey: false, volatile: false,
             reference: <any>undefined, refAttribute: <any>undefined, validators: [],
+            ownedReferenceList: <any>undefined,
             index: <any>[],
         };
         if (/!$/.test(d.type)) {
@@ -236,6 +239,15 @@ export default class SchemaParser {
                 fetchedFields: [],
             };
             d.type = 'string';
+        }
+        if (/^reflist:/.test(d.type)) {
+            const tokens = d.type.substr(8).split(':');
+            d.ownedReferenceList = {
+                type: this.buildTypeName(tokens[0], schema.name),
+                ...this.buildParentIdFieldInfos(tokens[1], schema),
+            };
+            d.type = 'object';
+            d['list'] = true;
         }
         if (/^refattr:/.test(d.type)) {
             const [parentField, sourceField] = d.type.substr(8).split(/:/);
@@ -290,6 +302,9 @@ export default class SchemaParser {
         const infos = {idField};
         ('string' !== typeof idField) && (infos['targetIdField'] = targetIdField);
         return infos;
+    }
+    buildParentIdFieldInfos(parentIdField: string|undefined = undefined, schema) {
+        return parentIdField || schema.shortName;
     }
     buildReferenceValidator(def: {[key: string]: any}, localField: string, modelName: string) {
         const config = {
