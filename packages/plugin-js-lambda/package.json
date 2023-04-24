@@ -28,7 +28,7 @@
   "dependencies": {
     "@ohoareau/microgen-behaviours": "^0.2.11",
     "@ohoareau/microgen-templates": "^0.3.25",
-    "yaml": "^1.10.0"
+    "yaml": "^2.2.2"
   },
   "devDependencies": {
     "@ohoareau/microgen": "^0.22.11",
